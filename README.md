@@ -39,5 +39,5 @@ npm run typecheck
 
 `npm run dev` で起動後、画面上の以下ボタンで Supabase 接続を確認できます。
 
-- `Check REST API`: Data API への HTTP 到達確認
+- `Check REST API`: `users` テーブルへの HTTP 読み取り確認
 - `Check Auth Session`: Supabase SDK 経由のセッション確認

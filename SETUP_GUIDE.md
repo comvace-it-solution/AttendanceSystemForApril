@@ -254,6 +254,7 @@ git push -u origin main
 - 認証、データ取得、更新処理は `supabase/` または `services/` に分離する
 - テーブル設計、RLS、認証設定は Supabase コンソール側で管理する
 - 現在の接続先は `comvace_simulated_project` (`fxeffanglrojuuadtbso`) を利用する
+- 接続確認には `users` テーブルを利用する
 
 `.gitignore` に含める項目:
 

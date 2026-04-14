@@ -6,7 +6,7 @@ type HealthResult = {
 }
 
 export const checkSupabaseRestApi = async (): Promise<HealthResult> => {
-  const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/`, {
+  const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/users?select=*&limit=1`, {
     method: 'GET',
     headers: {
       apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
