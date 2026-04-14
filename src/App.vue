@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { storeToRefs } from 'pinia'
 import { useCounterStore } from './stores/counter'
 import { checkSupabaseRestApi, getSupabaseSessionState } from './services/supabaseHealth'
 
 const counterStore = useCounterStore()
-const { count } = storeToRefs(counterStore)
 
 type Status = 'idle' | 'success' | 'error'
 
@@ -32,6 +30,10 @@ const toAlertType = (status: Status) => {
 
 const restStatusType = computed(() => toAlertType(restStatus.value))
 const sessionStatusType = computed(() => toAlertType(sessionStatus.value))
+
+const incrementCounter = () => {
+  counterStore.increment()
+}
 
 const checkSupabaseRest = async () => {
   isCheckingRest.value = true
@@ -80,11 +82,11 @@ const checkSupabaseSession = async () => {
       </p>
 
       <div class="action-row">
-        <el-button type="primary" size="large" @click="counterStore.increment()">
-          Count: {{ count }}
+        <el-button type="primary" size="large" @click="incrementCounter">
+          カウント: {{ counterStore.count }}
         </el-button>
-        <el-tag type="success" size="large">Pinia Enabled</el-tag>
-        <el-tag type="info" size="large">Project: {{ supabaseProjectRef }}</el-tag>
+        <el-tag type="success" size="large">Pinia 有効</el-tag>
+        <el-tag type="info" size="large">プロジェクト: {{ supabaseProjectRef }}</el-tag>
         <el-button
           plain
           size="large"
