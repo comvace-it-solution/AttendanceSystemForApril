@@ -91,7 +91,7 @@ const checkSupabaseSession = async () => {
           :loading="isCheckingRest"
           @click="checkSupabaseRest()"
         >
-          Check REST API
+          Check users
         </el-button>
         <el-button
           plain
@@ -105,7 +105,7 @@ const checkSupabaseSession = async () => {
 
       <el-alert
         class="connection-alert"
-        :title="`REST API: ${restMessage}`"
+        :title="`users table: ${restMessage}`"
         :type="restStatusType"
         :closable="false"
         show-icon

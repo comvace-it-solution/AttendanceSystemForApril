@@ -6,17 +6,20 @@ type HealthResult = {
 }
 
 export const checkSupabaseRestApi = async (): Promise<HealthResult> => {
-  const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/users?select=*&limit=1`, {
-    method: 'GET',
-    headers: {
-      apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-    },
-  })
+  const { data, error, status, statusText } = await supabase.from('users').select('*').limit(1)
+
+  if (error) {
+    return {
+      ok: false,
+      message: `HTTP ${status} ${error.message}`,
+    }
+  }
+
+  const rowCount = data?.length ?? 0
 
   return {
-    ok: response.ok,
-    message: `HTTP ${response.status} ${response.statusText || ''}`.trim(),
+    ok: true,
+    message: `HTTP ${status} ${statusText || 'OK'} / users rows: ${rowCount}`,
   }
 }
 
