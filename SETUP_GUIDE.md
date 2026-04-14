@@ -85,7 +85,6 @@ environment-setup/
 │  ├─ App.vue
 │  └─ main.ts
 ├─ .env
-├─ .env.example
 ├─ package.json
 ├─ tsconfig.json
 └─ vite.config.ts
@@ -140,14 +139,14 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 ```
 
-`.env.example`
+`.env`
 
 ```env
 VITE_SUPABASE_URL=https://fxeffanglrojuuadtbso.supabase.co
-VITE_SUPABASE_ANON_KEY=please-set-from-supabase-dashboard
+VITE_SUPABASE_ANON_KEY=sb_publishable_1bmhq_xC-5W03DFiiMPKKw_5S5oRxwp
 ```
 
-`VITE_SUPABASE_ANON_KEY` は Supabase ダッシュボードの `Connect` または `Project Settings > Data API` から取得する。
+`VITE_SUPABASE_ANON_KEY` には Supabase の Publishable key を使用する。Secret key はフロントエンドに設定しない。
 
 ## 6. 状態管理方針
 
@@ -249,8 +248,9 @@ git push -u origin main
 
 ## 9. Supabase 利用方針
 
-- 接続情報は `.env` で管理し、機密情報は Git に含めない
-- `.env.example` のみコミットする
+- 接続情報は `.env` で管理する
+- Publishable key はフロントエンド公開用のキーとして `.env` に含める
+- Secret key や service_role key は Git に含めない
 - 認証、データ取得、更新処理は `supabase/` または `services/` に分離する
 - テーブル設計、RLS、認証設定は Supabase コンソール側で管理する
 - 現在の接続先は `comvace_simulated_project` (`fxeffanglrojuuadtbso`) を利用する
@@ -261,7 +261,6 @@ git push -u origin main
 ```gitignore
 node_modules/
 dist/
-.env
 .DS_Store
 ```
 

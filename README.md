@@ -11,20 +11,19 @@ Vue 3 + TypeScript + Vite をベースに、以下を組み込んだフロント
 
 ```powershell
 npm install
-cp .env.example .env
 npm run dev
 ```
 
 ## 環境変数
 
-`.env` に以下を設定します。
+`.env` に Supabase 接続情報を設定済みです。
 
 ```env
 VITE_SUPABASE_URL=https://fxeffanglrojuuadtbso.supabase.co
-VITE_SUPABASE_ANON_KEY=please-set-from-supabase-dashboard
+VITE_SUPABASE_ANON_KEY=sb_publishable_1bmhq_xC-5W03DFiiMPKKw_5S5oRxwp
 ```
 
-`VITE_SUPABASE_ANON_KEY` は Supabase ダッシュボードの `Connect` または `Project Settings > Data API` から取得します。
+`VITE_SUPABASE_ANON_KEY` には Supabase の Publishable key を使用します。Secret key はフロントエンドに設定しません。
 
 ## 利用可能なコマンド
 
