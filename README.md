@@ -119,9 +119,13 @@ Supabase users sample: [...]
 - `src/views/`: ページ単位の Vue コンポーネント
 - `src/router/`: Vue Router の設定
 - `src/components/`: 再利用コンポーネント
+- `src/components/modal/`: モーダル系コンポーネント
+- `src/composables/`: 計算、判定、状態などのロジック
 - `src/model/`: 型定義、データモデル
+- `src/types/`: 共通の型定義
 - `src/services/`: API 通信や外部サービス連携
 - `src/stores/counter.ts`: Pinia のカウント状態管理
+- `src/styles/reset.css`: ブラウザ標準スタイルのリセット
 - `src/styles/main.scss`: 画面全体の SCSS
 - `src/styles/_variables.scss`: SCSS 変数
 - `src/supabase/client.ts`: Supabase クライアント
