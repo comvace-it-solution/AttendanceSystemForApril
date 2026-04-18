@@ -1,18 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useCounterStore } from './stores/counter'
-import { checkSupabaseRestApi, getSupabaseSessionState } from './services/supabaseHealth'
+import { checkSupabaseRestApi } from './services/supabaseHealth'
 
 const counterStore = useCounterStore()
 
 type Status = 'idle' | 'success' | 'error'
 
 const isCheckingRest = ref(false)
-const isCheckingSession = ref(false)
 const restStatus = ref<Status>('idle')
 const restMessage = ref('未確認')
-const sessionStatus = ref<Status>('idle')
-const sessionMessage = ref('未確認')
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseProjectRef = new URL(supabaseUrl).hostname.split('.')[0]
 
@@ -29,7 +26,6 @@ const toAlertType = (status: Status) => {
 }
 
 const restStatusType = computed(() => toAlertType(restStatus.value))
-const sessionStatusType = computed(() => toAlertType(sessionStatus.value))
 
 const incrementCounter = () => {
   counterStore.increment()
@@ -53,23 +49,6 @@ const checkSupabaseRest = async () => {
   }
 }
 
-const checkSupabaseSession = async () => {
-  isCheckingSession.value = true
-  sessionStatus.value = 'idle'
-  sessionMessage.value = '確認中...'
-
-  try {
-    const result = await getSupabaseSessionState()
-    sessionStatus.value = result.ok ? 'success' : 'error'
-    sessionMessage.value = result.message
-  } catch (error) {
-    sessionStatus.value = 'error'
-    sessionMessage.value =
-      error instanceof Error ? error.message : 'Supabase セッション確認に失敗しました。'
-  } finally {
-    isCheckingSession.value = false
-  }
-}
 </script>
 
 <template>
@@ -86,6 +65,9 @@ const checkSupabaseSession = async () => {
           カウント: {{ counterStore.count }}
         </el-button>
         <el-tag type="success" size="large">Pinia 有効</el-tag>
+        <el-tag type="warning" size="large">
+          最終クリック: {{ counterStore.lastClickedAt || '未クリック' }}
+        </el-tag>
         <el-tag type="info" size="large">プロジェクト: {{ supabaseProjectRef }}</el-tag>
         <el-button
           plain
@@ -95,27 +77,12 @@ const checkSupabaseSession = async () => {
         >
           Check users
         </el-button>
-        <el-button
-          plain
-          size="large"
-          :loading="isCheckingSession"
-          @click="checkSupabaseSession()"
-        >
-          Check Auth Session
-        </el-button>
       </div>
 
       <el-alert
         class="connection-alert"
         :title="`users table: ${restMessage}`"
         :type="restStatusType"
-        :closable="false"
-        show-icon
-      />
-      <el-alert
-        class="connection-alert"
-        :title="`Auth Session: ${sessionMessage}`"
-        :type="sessionStatusType"
         :closable="false"
         show-icon
       />

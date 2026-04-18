@@ -8,7 +8,7 @@
 
 - GitHub Organization: `https://github.com/comvace-it-solution`
 - この Organization 配下に本案件用の新規リポジトリを作成する
-- 本手順書では推奨リポジトリ名を `environment-setup` として記載する
+- 本手順書では推奨リポジトリ名を `AttendanceSystemForApril` として記載する
 - 接続先 Supabase プロジェクト: `comvace_simulated_project`
 - Supabase Project URL: `https://fxeffanglrojuuadtbso.supabase.co`
 
@@ -45,8 +45,8 @@ git --version
 ### 3.1 Vite + Vue 3 + TypeScript の初期化
 
 ```powershell
-npm create vite@latest environment-setup -- --template vue-ts
-cd environment-setup
+npm create vite@latest AttendanceSystemForApril -- --template vue-ts
+cd AttendanceSystemForApril
 ```
 
 ### 3.2 パッケージインストール
@@ -66,7 +66,7 @@ npm run dev
 ## 4. 推奨ディレクトリ構成
 
 ```text
-environment-setup/
+AttendanceSystemForApril/
 ├─ public/
 ├─ src/
 │  ├─ assets/
@@ -197,23 +197,23 @@ export const useUserStore = defineStore('user', () => {
 
 推奨名:
 
-- `environment-setup`
+- `AttendanceSystemForApril`
 
 用途別の命名例:
 
-- `environment-setup`
-- `frontend-environment-setup`
-- `vue3-environment-setup`
+- `AttendanceSystemForApril`
+- `frontend-AttendanceSystemForApril`
+- `vue3-AttendanceSystemForApril`
 
 ```powershell
 git init
 git branch -M main
-git remote add origin https://github.com/comvace-it-solution/environment-setup.git
+git remote add origin https://github.com/comvace-it-solution/AttendanceSystemForApril.git
 ```
 
 補足:
 
-- 環境構築専用で使うなら `environment-setup` が最も分かりやすい
+- 環境構築専用で使うなら `AttendanceSystemForApril` が最も分かりやすい
 - 今後フロントエンド実装用リポジトリを別で作る場合は、実装側だけ `*-frontend` 命名に分離すると整理しやすい
 
 ### 8.2 ブランチ運用
