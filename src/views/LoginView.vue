@@ -6,17 +6,17 @@ import { Message, Lock } from '@element-plus/icons-vue'
 const { form, emailError, passwordError, loginError, validateEmail, validatePassword, isLoginDisabled, onLogin } = useAuth()
 const router = useRouter()
 
+// ログインフォームの送信処理
+// テスト用ページに遷移で記載（マージ後はダッシュボード遷移へ変更する）
 const onLoginSubmit = async () => { 
   try {
     await onLogin()
-        router.push('/dashboard')
+        router.push('/home')
   } catch (error) {
     console.error("Login failed in component", error)
   }
 }
-
 </script>
-
 
 <template>
     <div class="login-container">
@@ -124,7 +124,7 @@ position: relative;
   .login-input-group {
     position: relative;
     margin-bottom: 75px;
-    
+
     :deep(.el-input__inner) {
       font-size: $fs-input;
       color: $text-color;
