@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useCounterStore } from './stores/counter'
 import { checkSupabaseRestApi } from './services/supabaseHealth'
+import Modal from './components/modal/Modal.vue'
 
 const counterStore = useCounterStore()
 
@@ -52,6 +53,7 @@ const checkSupabaseRest = async () => {
 </script>
 
 <template>
+  <Modal />
   <main class="app-shell">
     <section class="hero-panel">
       <p class="eyebrow">Environment Setup</p>
@@ -69,23 +71,12 @@ const checkSupabaseRest = async () => {
           最終クリック: {{ counterStore.lastClickedAt || '未クリック' }}
         </el-tag>
         <el-tag type="info" size="large">プロジェクト: {{ supabaseProjectRef }}</el-tag>
-        <el-button
-          plain
-          size="large"
-          :loading="isCheckingRest"
-          @click="checkSupabaseRest()"
-        >
+        <el-button plain size="large" :loading="isCheckingRest" @click="checkSupabaseRest()">
           Check users
         </el-button>
       </div>
 
-      <el-alert
-        class="connection-alert"
-        :title="`users table: ${restMessage}`"
-        :type="restStatusType"
-        :closable="false"
-        show-icon
-      />
+      <el-alert class="connection-alert" :title="`users table: ${restMessage}`" :type="restStatusType" :closable="false" show-icon />
     </section>
 
     <section class="status-grid">
