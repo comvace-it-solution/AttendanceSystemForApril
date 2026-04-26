@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>勤怠ダッシュボード</title>
+  <link rel="stylesheet" href="dashboard-main.css">
+</head>
+<body>
+  <div class="page-shell">
+    <div class="page-title">ダッシュボード PC</div>
+
+    <main class="dashboard-card">
+      <header class="dashboard-header">
+        <div>
+          <p class="eyebrow">Attendance Dashboard</p>
+          <h1>勤怠ダッシュボード</h1>
+          <p class="description">本日の勤務状況と従業員の現在状態を確認できます。</p>
+        </div>
+        <div class="date-chip" id="todayLabel">2026年1月1日(木)</div>
+      </header>
+
+      <section class="section-box summary-section">
+        <div class="section-heading">
+          <p class="eyebrow">Today</p>
+          <h2>勤務サマリー</h2>
+        </div>
+
+        <div class="summary-grid">
+          <article class="summary-item">
+            <span>現在の状態</span>
+            <strong id="summaryStatus">出勤前</strong>
+            <p id="summaryStatusNote">本日の勤務はまだ開始されていません。</p>
+          </article>
+          <article class="summary-item">
+            <span>実働時間</span>
+            <strong id="workedHours">00:00</strong>
+            <p>休憩時間を除いた本日の累計</p>
+          </article>
+          <article class="summary-item">
+            <span>休憩時間</span>
+            <strong id="breakDuration">00:00</strong>
+            <p>本日取得した休憩時間</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section-box punch-section">
+        <div class="section-heading">
+          <p class="eyebrow">Punch</p>
+          <h2>本日の打刻</h2>
+        </div>
+
+        <div class="punch-grid">
+          <button class="punch-button pink" type="button" data-action="clock-in">出勤開始</button>
+          <button class="punch-button navy" type="button" data-action="break-start">休憩開始</button>
+          <button class="punch-button pink" type="button" data-action="break-end">休憩終了</button>
+          <button class="punch-button navy" type="button" data-action="clock-out">退勤</button>
+        </div>
+
+      <section class="employee-section">
+        <div class="list-heading">
+          <h2>出勤状況一覧</h2>
+        </div>
+
+        <div class="employee-table-wrap">
+          <table class="employee-table">
+            <thead>
+              <tr>
+                <th>名前</th>
+                <th>状態</th>
+                <th>出勤</th>
+                <th>休憩開始</th>
+                <th>休憩終了</th>
+                <th>退勤</th>
+              </tr>
+            </thead>
+            <tbody id="employeeTableBody"></tbody>
+          </table>
+        </div>
+        <div class="employee-mobile-list" id="employeeMobileList"></div>
+      </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="dashboard-main.js"></script>
+</body>
+</html>
