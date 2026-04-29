@@ -3,22 +3,14 @@
     <h2>モーダル動作確認</h2>
 
     <div style="margin-bottom: 16px;">
-      <el-input
-        v-model="deleteUserId"
-        placeholder="削除するユーザーID"
-        style="width: 240px; margin-right: 8px;"
-      />
+      <el-input v-model="deleteUserId" placeholder="削除するユーザーID" style="width: 240px; margin-right: 8px;" />
 
       <el-button type="danger" @click="handleDeleteClick">
         削除API実行
       </el-button>
     </div>
 
-    <Modal
-      v-model="errorModalVisible"
-      :title="modalTitle"
-      @ok="closeErrorModal"
-    />
+    <Modal v-model="errorModalVisible" :title="modalTitle" @ok="closeErrorModal" />
   </div>
 </template>
 

@@ -46,13 +46,11 @@ export function useFeedbackMessage() {
   }
 
   // 登録失敗時のエラーモーダルを表示する処理
-  // 登録API自体は登録画面担当が実装する
   const openRegisterErrorModal = () => {
     openErrorModal('従業員情報の登録に失敗しました')
   }
 
   // 編集失敗時のエラーモーダルを表示する処理
-  // 編集API自体は編集画面担当が実装する
   const openEditErrorModal = () => {
     openErrorModal('従業員情報の編集に失敗しました')
   }
