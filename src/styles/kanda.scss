@@ -1,0 +1,95 @@
+// --- 背景色 ---
+$bg-color: #FFF9FD;
+$accent-bg-color: #FFF2FA;
+
+$accent-color: #DE2583;
+
+// --- 文字色 ---
+$text-color: #0D2B81;     // メインの文字
+$text-error: #FF0000;     // エラー表示文字用
+$text-white: #FFFFFF;
+
+// --- 表の色---
+$table-header-color: #F898C9;  // 表のヘッダー背景
+$table-row-color: #FFFFFF;     // 表の行背景
+$table-border-color: #0D2B81;   // 表のボーダー
+
+// --- 文字サイズ ---
+$fs-title-main: 2rem;      // 32px ページタイトル
+$fs-title-sub: 1.5rem;     // 24px 項目タイトル
+$fs-body: 1.25rem;         // 20px 基本本文
+$fs-body-sm: 1rem;           // 16px 表・リスト用
+$fs-small: 0.8rem;         // 12px 小さな文字(エラー・補足)
+
+$fs-input: $fs-body-sm;    // input内の文字サイズ
+$fs-error: $fs-small;// エラーメッセージのサイズ
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: $bg-color;
+  color: $text-color;
+  font-size: $fs-body;
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  font-size: $fs-title-main;
+  font-weight: normal;
+}
+
+h2 {
+  font-size: $fs-title-sub;
+  font-weight: normal;
+}
+
+p {
+  font-size: $fs-body;
+}
+
+button {
+  // padding: 10px;
+  font-size: $fs-title-sub;
+  border-radius: 10px;
+  width: 100%;
+  height: 100%;
+}
+
+@mixin table-style {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $fs-body-sm;
+  text-align: center;
+
+  thead {
+    tr {
+      background-color: $table-header-color;
+      th {
+        font-weight: normal;
+        border: 1px solid $table-border-color;
+        padding: 8px 4px;
+      }
+    }
+  }
+  tbody {
+    tr {
+      background-color: $table-row-color;
+      td {
+        border: 1px solid $table-border-color;
+        padding: 8px 4px;
+      }
+    }
+    
+  }
+}
+
+@mixin sp { 
+  @media screen and (max-width: 480px) {
+    @content;
+  }
+}

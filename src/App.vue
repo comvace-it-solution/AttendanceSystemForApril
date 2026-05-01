@@ -52,7 +52,8 @@ const checkSupabaseRest = async () => {
 </script>
 
 <template>
-  <main class="app-shell">
+  <RouterView />
+  <!-- <main class="app-shell">
     <section class="hero-panel">
       <p class="eyebrow">Environment Setup</p>
       <h1>Vue 3 Frontend Starter</h1>
@@ -102,5 +103,5 @@ const checkSupabaseRest = async () => {
         <p>クライアントは `src/supabase/client.ts`、疎通確認は `src/services/` から利用します。</p>
       </article>
     </section>
-  </main>
+  </main> -->
 </template>
