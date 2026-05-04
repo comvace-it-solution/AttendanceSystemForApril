@@ -1,45 +1,61 @@
 <template>
   <div>
-    <el-input v-model="deleteUserId" placeholder="削除するユーザーID" style="width: 240px; margin-right: 8px;" />
+    <h2>削除処理 動作確認</h2>
 
-    <el-button type="danger" @click="deleteDialogVisible = true">
-      削除
-    </el-button>
+    <div style="margin-bottom: 16px;">
+      <el-input v-model="deleteUserId" placeholder="削除するユーザーID" style="width: 240px; margin-right: 8px;" />
 
-    <Dialog v-model="deleteDialogVisible" @delete="handleDelete" @cancel="handleCancel" />
+      <el-button type="danger" @click="handleDelete">
+        削除API実行
+      </el-button>
+    </div>
 
     <Modal v-model="errorModalVisible" :title="modalTitle" @ok="closeErrorModal" />
+
+    <Snackbar v-model="snackbarVisible" :message="snackbarMessage" :type="snackbarType" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import Dialog from '../components/modal/Dialog.vue'
 import Modal from '../components/modal/Modal.vue'
+import Snackbar from '../components/modal/Snackbar.vue'
 import { useEmployeeDelete } from '../composables/useEmployeeDelete'
 import { useFeedbackMessage } from '../composables/useFeedbackMessage'
 
+// 画面で入力した削除対象ID
 const deleteUserId = ref('')
-const deleteDialogVisible = ref(false)
 
+// 削除API処理
 const { deleteEmployee } = useEmployeeDelete()
 
+// モーダル・スナックバー表示処理
 const {
   errorModalVisible,
   modalTitle,
+  snackbarVisible,
+  snackbarMessage,
+  snackbarType,
+  closeErrorModal,
   openDeleteErrorModal,
-  closeErrorModal
+  openDeleteSuccessSnackbar,
+  openCommunicationErrorSnackbar,
+  openProcessErrorSnackbar
 } = useFeedbackMessage()
 
 const handleDelete = async () => {
   const result = await deleteEmployee(deleteUserId.value)
 
-  if (!result) {
-    openDeleteErrorModal()
-  }
-}
+  console.log('削除結果:', result)
 
-const handleCancel = () => {
-  console.log('削除をキャンセルしました')
+  if (result === 'success') {
+    openDeleteSuccessSnackbar()
+  } else if (result === 'notFound') {
+    openDeleteErrorModal()
+  } else if (result === 'communicationError') {
+    openCommunicationErrorSnackbar()
+  } else {
+    openProcessErrorSnackbar()
+  }
 }
 </script>
