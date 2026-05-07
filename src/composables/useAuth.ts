@@ -1,13 +1,13 @@
 import { ref,reactive,computed } from 'vue'
 import axios from 'axios'
 import { useAuthStore } from '../stores/auth.ts'
-// import { useSnackbar } from '../components/modal/snackbar.ts'
+import { useFeedbackMessage } from './useFeedbackMessage.ts'
 
 export function useAuth() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
   const INTERNAL_API_KEY = import.meta.env.VITE_INTERNAL_API_KEY
   const authStore = useAuthStore()
-  // const { showErrorMessage } = useSnackbar()
+  const { openCommunicationErrorSnackbar } = useFeedbackMessage()
   const form = reactive({
     email: '',
     password: ''
@@ -57,7 +57,6 @@ export function useAuth() {
   const onLogin = async () => {
     loginError.value = '';
     try {
-      console.log('送信開始:', form)
       const response = await axios.post(`${API_BASE_URL}/auth/login`, {
         email: form.email,
         password: form.password
@@ -85,12 +84,19 @@ export function useAuth() {
       // ログインエラー時
     } catch (error: any) {
       const status = error.response?.status
-      if (status >= 400 && status < 500) {
-        loginError.value = 'メールアドレスまたはパスワードが異なります。';
-      } else{
+
+      if (status !== undefined) {
+        if (status >= 400 && status < 500) {
+          loginError.value = 'メールアドレスまたはパスワードが異なります。';
+        } else {
+          loginError.value = '';
+          openCommunicationErrorSnackbar();
+        }
+      } else {
         loginError.value = '';
-        // showErrorMessage('サーバーエラー')
+        openCommunicationErrorSnackbar(); 
       }
+      
       throw error
     }
   }
