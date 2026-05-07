@@ -22,14 +22,12 @@ export function useAuth() {
     const value = form.email.trim();
     if (!value) {
       emailError.value = '※必須項目です。';
-      console.error('メールアドレスは必須です')
       return
     }
     // メールアドレス形式チェック
     const emailRegex = /^[!-~]+@[!-~]+\.[!-~]+$/
     if (!emailRegex.test(form.email)) {
       emailError.value = '※メールアドレスの形式が間違っています。xxxxx@xxx.xxxで入力してください。';
-      console.error('メールアドレスの形式が間違っています')
     }
     else {
       emailError.value = '';
@@ -41,12 +39,10 @@ export function useAuth() {
     const value = form.password.trim();
     if (!value) {
       passwordError.value = '※必須項目です。';
-      console.error('パスワードは必須です')
     }
     // パスワード形式チェック
     else if (form.password.length !== 6) {
       passwordError.value = '※半角英数字6文字で入力してください。';
-      console.error('パスワードを半角英数字6文字で入力してください')
     }
     else {
       passwordError.value = '';
@@ -84,7 +80,6 @@ export function useAuth() {
       form.email = '';
       form.password = '';
 
-      console.log('ログイン成功:', response.data)
       return response.data
       
       // ログインエラー時
@@ -96,7 +91,6 @@ export function useAuth() {
         loginError.value = '';
         // showErrorMessage('サーバーエラー')
       }
-      console.error('ログインエラー:', error.response?.data || error)
       throw error
     }
   }

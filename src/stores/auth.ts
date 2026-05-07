@@ -10,7 +10,6 @@ export const useAuthStore = defineStore('auth', () => {
   const setAuth = (userId: string | number, userName: string) => {
     user.value = { userId, userName }
     localStorage.setItem('user', JSON.stringify(user.value))
-    console.log('ユーザーID:', userId, 'ユーザー名:', userName)
   }
   
   // ログアウト処理
