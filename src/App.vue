@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useCounterStore } from './stores/counter'
 import { checkSupabaseRestApi } from './services/supabaseHealth'
+import AppHeader from './components/layout/header/AppHeader.vue'
 
 const counterStore = useCounterStore()
 
@@ -43,15 +44,18 @@ const checkSupabaseRest = async () => {
   } catch (error) {
     restStatus.value = 'error'
     restMessage.value =
-      error instanceof Error ? error.message : 'Supabase への接続確認に失敗しました。'
+      error instanceof Error
+        ? error.message
+        : 'Supabase への接続確認に失敗しました。'
   } finally {
     isCheckingRest.value = false
   }
 }
-
 </script>
 
 <template>
+  <AppHeader />
+  <div style="height: var(--app-header-height)"></div>
   <RouterView />
   <!-- <main class="app-shell">
     <section class="hero-panel">

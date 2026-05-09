@@ -1,1 +1,182 @@
-<!-- ヘッダーコンポーネント モバイル用： AppHeaderMobile.vue -->
+<template>
+  <header class="sp-app-header-mobile">
+    <div class="sp-container">
+      <div class="sp-hamburger-wrap">
+        <button
+          class="sp-hamburger"
+          :class="{ open: sideVisible }"
+          @click="toggleSide"
+          aria-label="メニュー"
+          :aria-expanded="sideVisible"
+        >
+          <span class="sp-hamburger-box"
+            ><span class="sp-hamburger-inner"></span
+          ></span>
+        </button>
+      </div>
+      <div class="sp-logo-wrap">
+        <img class="sp-logo" src="/logo.svg" alt="ロゴ" />
+      </div>
+      <div class="sp-profile-wrap">
+        <img
+          class="sp-profeel-icon"
+          src="/profeelBearWhiteIcon.svg"
+          alt="プロフィールアイコン"
+        />
+        <div>伊地智 明佳</div>
+      </div>
+    </div>
+    <AppSideMenuMobile :visible="sideVisible" @close="sideVisible = false" />
+  </header>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import AppSideMenuMobile from '../sideMenu/AppSideMenuMobile.vue'
+
+const sideVisible = ref(false)
+const toggleSide = () => {
+  sideVisible.value = !sideVisible.value
+}
+</script>
+
+<style scoped>
+.sp-app-header-mobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--app-header-height, 100px);
+  padding: 0 8px 8px 10px;
+  background: #de2583;
+  z-index: 10010;
+  box-sizing: border-box;
+}
+.sp-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  position: relative;
+}
+
+.sp-hamburger-wrap {
+  width: 30px;
+  height: 30px;
+}
+
+.sp-hamburger {
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.sp-hamburger-box {
+  width: 28px;
+  height: 17px;
+  display: inline-block;
+  position: relative;
+}
+.sp-hamburger-inner,
+.sp-hamburger-inner::before,
+.sp-hamburger-inner::after {
+  height: 3px;
+  background-color: #fff;
+  position: absolute;
+  left: 0;
+  transition:
+    transform 220ms ease,
+    opacity 220ms ease;
+}
+
+.sp-hamburger-inner {
+  width: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.sp-hamburger-inner::before {
+  content: '';
+  width: 28px;
+  top: 50%;
+  transform: translateY(calc(-50% - 7px));
+}
+
+.sp-hamburger-inner::after {
+  content: '';
+  width: 17px;
+  top: 50%;
+  transform: translateY(calc(-50% + 7px));
+}
+
+.sp-hamburger-box::before,
+.sp-hamburger-box::after {
+  content: '';
+  position: absolute;
+  height: 2px;
+  width: 29px;
+  left: calc((100% - 29px) / 2);
+  top: 50%;
+  background: #fff;
+  opacity: 0;
+  transform-origin: center;
+  transition:
+    transform 220ms ease,
+    opacity 220ms ease;
+}
+.sp-hamburger-box::before {
+  transform: translateY(-50%) rotate(45deg);
+}
+.sp-hamburger-box::after {
+  transform: translateY(-50%) rotate(-45deg);
+}
+
+.sp-hamburger.open .sp-hamburger-inner,
+.sp-hamburger.open .sp-hamburger-inner::before,
+.sp-hamburger.open .sp-hamburger-inner::after {
+  opacity: 0;
+}
+.sp-hamburger.open .sp-hamburger-box::before,
+.sp-hamburger.open .sp-hamburger-box::after {
+  opacity: 1;
+}
+
+.sp-logo-wrap {
+  height: 33px;
+  width: 110px;
+  overflow: hidden;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.sp-logo {
+  height: 101px;
+  width: 100%;
+  display: block;
+  transform: translateY(-34px);
+}
+
+.sp-profile-wrap {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  height: 30px;
+  cursor: pointer;
+  position: relative;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.sp-profeel-icon {
+  width: 25px;
+  height: 25px;
+  margin-right: 8px;
+}
+</style>
