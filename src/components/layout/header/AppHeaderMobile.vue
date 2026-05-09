@@ -17,14 +17,17 @@
       <div class="sp-logo-wrap">
         <img class="sp-logo" src="/logo.svg" alt="ロゴ" />
       </div>
-      <div class="sp-profile-wrap">
+      <router-link
+        :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
+        class="sp-profile-wrap"
+      >
         <img
           class="sp-profeel-icon"
           src="/profeelBearWhiteIcon.svg"
           alt="プロフィールアイコン"
         />
         <div>伊地智 明佳</div>
-      </div>
+      </router-link>
     </div>
     <AppSideMenuMobile :visible="sideVisible" @close="sideVisible = false" />
   </header>

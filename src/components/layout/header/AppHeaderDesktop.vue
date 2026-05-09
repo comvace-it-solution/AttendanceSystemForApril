@@ -6,7 +6,8 @@
         <img class="pc-logo" src="/logo.svg" alt="ロゴ" />
       </div>
       <nav class="pc-nav-wrap" aria-label="メインナビ">
-        <div
+        <router-link
+          :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
           class="pc-nav-item"
           @mouseenter="isProfeelHover = true"
           @mouseleave="isProfeelHover = false"
@@ -21,7 +22,7 @@
             alt="プロフィールアイコン"
           />
           <div>伊地智 明佳</div>
-        </div>
+        </router-link>
         <div
           class="pc-nav-item"
           @mouseenter="isMenuHover = true"

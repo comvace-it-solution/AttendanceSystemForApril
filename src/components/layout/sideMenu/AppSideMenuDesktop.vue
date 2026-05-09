@@ -19,22 +19,26 @@
             </span>
           </button>
         </div>
-        <div class="pc-header-item-wrap">
+        <router-link to="/login" class="pc-header-item-wrap" @click="close">
           <img
             class="pc-header-icon"
             src="/logoutBlueIcon.svg"
             alt="ログアウトアイコン"
           />
           <div class="pc-header-text">ログアウト</div>
-        </div>
-        <div class="pc-header-item-wrap">
+        </router-link>
+        <router-link
+          :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
+          class="pc-header-item-wrap"
+          @click="close"
+        >
           <img
             class="pc-header-icon"
             src="/profeelBearBlueIcon.svg"
             alt="マイページアイコン"
           />
           <div class="pc-header-text">マイページ</div>
-        </div>
+        </router-link>
       </div>
 
       <div class="pc-user-wrap">
@@ -48,23 +52,23 @@
         </header>
 
         <nav class="pc-menu-list-wrap">
-          <div class="pc-menu-item-wrap">
+          <router-link to="/home" class="pc-menu-item-wrap" @click="close">
             <img
               class="pc-menu-icon"
               src="/dashBordPinkIcon.svg"
               alt="ダッシュボードアイコン"
             />
-            <router-link to="/home">ダッシュボード</router-link>
-          </div>
+            <span>ダッシュボード</span>
+          </router-link>
 
-          <div class="pc-menu-item-wrap">
+          <router-link to="/home" class="pc-menu-item-wrap" @click="close">
             <img
               class="pc-menu-icon"
               src="/employeeListPinkIcon.svg"
               alt="従業員一覧アイコン"
             />
-            <router-link to="/home">従業員一覧</router-link>
-          </div>
+            <span>従業員一覧</span>
+          </router-link>
         </nav>
 
         <header class="pc-section-header-wrap">
@@ -72,12 +76,29 @@
         </header>
 
         <nav class="pc-menu-list-wrap">
-          <div class="pc-sub-menu-item-wrap">
-            <router-link to="/home">従業員登録</router-link>
-          </div>
-          <div class="pc-sub-menu-item-wrap">
-            <router-link to="/home">従業員詳細</router-link>
-          </div>
+          <router-link
+            to="/employee/register"
+            class="pc-sub-menu-item-wrap"
+            @click="close"
+          >
+            <span>従業員登録</span>
+          </router-link>
+
+          <router-link
+            :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
+            class="pc-sub-menu-item-wrap"
+            @click="close"
+          >
+            <span>従業員詳細</span>
+          </router-link>
+
+          <router-link
+            :to="{ name: 'EmployeeEdit', params: { id: 1 } }"
+            class="pc-sub-menu-item-wrap"
+            @click="close"
+          >
+            <span>従業員編集</span>
+          </router-link>
         </nav>
       </div>
     </aside>
