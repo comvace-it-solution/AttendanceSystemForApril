@@ -9,20 +9,25 @@ import { useDashboardStore } from '../stores/dashboard'
 const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
 
-const displayUserName = computed(() => authStore.userName || 'ユーザー')
+const currentUserId = computed(() => {
+  const userId = authStore.userId ?? authStore.user?.userId
+  const numericUserId = Number(userId)
+  return Number.isFinite(numericUserId) ? numericUserId : null
+})
+const displayUserName = computed(() => authStore.userName || authStore.user?.userName || 'ユーザー')
 
 const formatTime = (value: string | null) => value ?? '-'
 const getStatusClass = (status: AttendanceStatus) => dashboardStore.statusClassMap[status]
 
 const loadDashboard = async () => {
-  if (!authStore.userId) {
+  if (!currentUserId.value) {
     return
   }
 
   dashboardStore.setAttendanceLoading(true)
 
   try {
-    const dashboardData = await fetchDashboardData(authStore.userId)
+    const dashboardData = await fetchDashboardData(currentUserId.value)
     dashboardStore.setSummary(dashboardData.summary)
     dashboardStore.setHasBreakEnded(dashboardData.hasBreakEnded)
     dashboardStore.setAttendanceUsers(dashboardData.attendanceUsers)
@@ -39,16 +44,16 @@ const handlePunchClick = async (action: PunchAction) => {
   dashboardStore.setPunchLoading(true)
 
   try {
-    if (!authStore.userId) {
+    if (!currentUserId.value) {
       await authStore.loadCurrentUser()
     }
 
-    if (!authStore.userId) {
+    if (!currentUserId.value) {
       ElMessage.error('ログインユーザーが取得できないため、打刻できません。')
       return
     }
 
-    await executePunchAction(authStore.userId, action)
+    await executePunchAction(currentUserId.value, action)
     await loadDashboard()
     ElMessage.success('打刻を更新しました。')
   } catch (error) {
@@ -70,7 +75,7 @@ onMounted(async () => {
   )
 
   try {
-    if (!authStore.userName) {
+    if (!authStore.isAuthenticated) {
       await authStore.loadCurrentUser()
     }
   } catch (error) {

@@ -1,3 +1,8 @@
+export type User = {
+  userId: string | number
+  userName: string
+}
+
 export type AuthRow = {
   id: number
   user_id: number
