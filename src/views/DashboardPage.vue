@@ -1,13 +1,63 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { fetchAttendanceUsers } from '../services/attendanceService'
+import { computed, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import type { AttendanceStatus, PunchAction } from '../types/attendance'
+import { executePunchAction, fetchDashboardData } from '../services/attendanceService'
 import { useAuthStore } from '../stores/auth'
 import { useDashboardStore } from '../stores/dashboard'
 
 const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
 
+const displayUserName = computed(() => authStore.userName || 'ユーザー')
+
 const formatTime = (value: string | null) => value ?? '-'
+const getStatusClass = (status: AttendanceStatus) => dashboardStore.statusClassMap[status]
+
+const loadDashboard = async () => {
+  if (!authStore.userId) {
+    return
+  }
+
+  dashboardStore.setAttendanceLoading(true)
+
+  try {
+    const dashboardData = await fetchDashboardData(authStore.userId)
+    dashboardStore.setSummary(dashboardData.summary)
+    dashboardStore.setHasBreakEnded(dashboardData.hasBreakEnded)
+    dashboardStore.setAttendanceUsers(dashboardData.attendanceUsers)
+  } finally {
+    dashboardStore.setAttendanceLoading(false)
+  }
+}
+
+const handlePunchClick = async (action: PunchAction) => {
+  if (dashboardStore.isPunchLoading) {
+    return
+  }
+
+  dashboardStore.setPunchLoading(true)
+
+  try {
+    if (!authStore.userId) {
+      await authStore.loadCurrentUser()
+    }
+
+    if (!authStore.userId) {
+      ElMessage.error('ログインユーザーが取得できないため、打刻できません。')
+      return
+    }
+
+    await executePunchAction(authStore.userId, action)
+    await loadDashboard()
+    ElMessage.success('打刻を更新しました。')
+  } catch (error) {
+    console.error('打刻更新エラー:', error)
+    ElMessage.error(error instanceof Error ? error.message : '打刻の更新に失敗しました。')
+  } finally {
+    dashboardStore.setPunchLoading(false)
+  }
+}
 
 onMounted(async () => {
   dashboardStore.setWorkDate(
@@ -19,12 +69,20 @@ onMounted(async () => {
     }).format(new Date()),
   )
 
-  dashboardStore.setAttendanceLoading(true)
+  try {
+    if (!authStore.userName) {
+      await authStore.loadCurrentUser()
+    }
+  } catch (error) {
+    console.error('ログインユーザー取得エラー:', error)
+    ElMessage.error(error instanceof Error ? error.message : 'ログインユーザー情報の取得に失敗しました。')
+  }
 
   try {
-    dashboardStore.setAttendanceUsers(await fetchAttendanceUsers())
-  } finally {
-    dashboardStore.setAttendanceLoading(false)
+    await loadDashboard()
+  } catch (error) {
+    console.error('ダッシュボード取得エラー:', error)
+    ElMessage.error('出勤状況一覧の取得に失敗しました。')
   }
 })
 </script>
@@ -38,7 +96,7 @@ onMounted(async () => {
             <p class="dashboard-kicker">Attendance Dashboard</p>
             <h1>{{ dashboardStore.dashboardTitle }}</h1>
             <p class="dashboard-description">
-              {{ authStore.userName }}さんの勤務状況と従業員の現在状態を確認できます。
+              {{ displayUserName }}さんの勤務状況と従業員の現在状態を確認できます。
             </p>
           </div>
 
@@ -65,6 +123,7 @@ onMounted(async () => {
               </div>
             </article>
           </div>
+
         </section>
 
         <section class="dashboard-section punch-section" aria-labelledby="punch-title">
@@ -76,10 +135,12 @@ onMounted(async () => {
           <div class="punch-grid">
             <el-button
               v-for="button in dashboardStore.punchButtons"
-              :key="button.label"
+              :key="button.action"
               class="punch-button"
               :class="button.className"
               size="large"
+              :disabled="button.disabled"
+              @click="handlePunchClick(button.action)"
             >
               {{ button.label }}
             </el-button>
@@ -92,39 +153,83 @@ onMounted(async () => {
           </div>
 
           <div class="employee-table-wrap">
-            <table class="employee-table">
-              <thead>
-                <tr>
-                  <th>名前</th>
-                  <th>状態</th>
-                  <th>出勤</th>
-                  <th>休憩開始</th>
-                  <th>休憩終了</th>
-                  <th>退勤</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-if="dashboardStore.isAttendanceLoading">
-                  <td colspan="6">読み込み中...</td>
-                </tr>
-                <tr
-                  v-for="user in dashboardStore.attendanceUsers"
-                  v-else
-                  :key="user.userId"
-                >
-                  <td>{{ user.userName }}</td>
-                  <td>
-                    <span class="status-text" :class="dashboardStore.statusClassMap[user.status]">
-                      {{ user.status }}
-                    </span>
-                  </td>
-                  <td>{{ formatTime(user.clockInTime) }}</td>
-                  <td>{{ formatTime(user.breakStartTime) }}</td>
-                  <td>{{ formatTime(user.breakEndTime) }}</td>
-                  <td>{{ formatTime(user.clockOutTime) }}</td>
-                </tr>
-              </tbody>
-            </table>
+            <el-table
+              :data="dashboardStore.attendanceUsers"
+              class="employee-table"
+              empty-text="表示できる従業員データがありません。"
+              table-layout="fixed"
+              v-loading="dashboardStore.isAttendanceLoading"
+            >
+              <el-table-column prop="userName" label="名前" min-width="180" />
+              <el-table-column label="状態" min-width="120">
+                <template #default="{ row }">
+                  <span class="status-text" :class="getStatusClass(row.status)">
+                    {{ row.status }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column label="出勤" min-width="110">
+                <template #default="{ row }">
+                  {{ formatTime(row.clockInTime) }}
+                </template>
+              </el-table-column>
+              <el-table-column label="休憩開始" min-width="110">
+                <template #default="{ row }">
+                  {{ formatTime(row.breakStartTime) }}
+                </template>
+              </el-table-column>
+              <el-table-column label="休憩終了" min-width="110">
+                <template #default="{ row }">
+                  {{ formatTime(row.breakEndTime) }}
+                </template>
+              </el-table-column>
+              <el-table-column label="退勤" min-width="110">
+                <template #default="{ row }">
+                  {{ formatTime(row.clockOutTime) }}
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+
+          <div class="employee-card-list employee-card-list--bottom">
+            <div v-if="dashboardStore.isAttendanceLoading" class="employee-card employee-card--empty">
+              読み込み中...
+            </div>
+            <div
+              v-else-if="dashboardStore.attendanceUsers.length === 0"
+              class="employee-card employee-card--empty"
+            >
+              表示できる従業員データがありません。
+            </div>
+            <article
+              v-for="user in dashboardStore.attendanceUsers"
+              v-else
+              :key="`bottom-card-${user.userId}`"
+              class="employee-card"
+            >
+              <h3 class="employee-card__name">{{ user.userName }}</h3>
+              <p class="employee-card__status" :class="getStatusClass(user.status)">
+                {{ user.status }}
+              </p>
+              <dl class="employee-card__details">
+                <div class="employee-card__row">
+                  <dt>出勤</dt>
+                  <dd>{{ formatTime(user.clockInTime) }}</dd>
+                </div>
+                <div class="employee-card__row">
+                  <dt>休憩開始</dt>
+                  <dd>{{ formatTime(user.breakStartTime) }}</dd>
+                </div>
+                <div class="employee-card__row">
+                  <dt>休憩終了</dt>
+                  <dd>{{ formatTime(user.breakEndTime) }}</dd>
+                </div>
+                <div class="employee-card__row">
+                  <dt>退勤</dt>
+                  <dd>{{ formatTime(user.clockOutTime) }}</dd>
+                </div>
+              </dl>
+            </article>
           </div>
         </section>
       </section>
@@ -275,7 +380,7 @@ onMounted(async () => {
 }
 
 .punch-button.el-button:hover,
-.punch-button.el-button:focus {
+.punch-button.el-button:focus-visible {
   background: #ffffff;
   opacity: 1;
 }
@@ -285,7 +390,7 @@ onMounted(async () => {
 }
 
 .punch-button--pink.el-button:hover,
-.punch-button--pink.el-button:focus {
+.punch-button--pink.el-button:focus-visible {
   border: 1px solid var(--dashboard-pink);
   color: var(--dashboard-pink);
 }
@@ -295,9 +400,19 @@ onMounted(async () => {
 }
 
 .punch-button--navy.el-button:hover,
-.punch-button--navy.el-button:focus {
+.punch-button--navy.el-button:focus-visible {
   border: 1px solid var(--dashboard-navy);
   color: var(--dashboard-navy);
+}
+
+.punch-button.el-button.is-disabled,
+.punch-button.el-button.is-disabled:hover,
+.punch-button.el-button.is-disabled:focus-visible {
+  border: 1px solid var(--dashboard-soft-line);
+  background: #f2f2f2;
+  color: #999999;
+  cursor: not-allowed;
+  opacity: 1;
 }
 
 .employee-section {
@@ -323,31 +438,29 @@ onMounted(async () => {
   overflow-x: auto;
 }
 
+.employee-card-list {
+  display: none;
+}
+
 .employee-table {
   width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
 }
 
-.employee-table th,
-.employee-table td {
+.employee-table .el-table__cell {
   padding: 8px 12px;
-  border-bottom: 1px solid var(--dashboard-soft-line);
   text-align: center;
-  white-space: nowrap;
 }
 
-.employee-table th {
+.employee-table th.el-table__cell {
   font-size: 0.9rem;
   font-weight: 700;
 }
 
-.employee-table td {
+.employee-table td.el-table__cell {
   font-size: 0.9rem;
 }
 
-.employee-table td:first-child,
-.employee-table th:first-child {
+.employee-table .el-table__cell:first-child .cell {
   text-align: left;
   font-weight: 700;
 }
@@ -438,7 +551,6 @@ onMounted(async () => {
   }
 
   .summary-item {
-    grid-template-rows: auto 1fr;
     min-height: 40px;
     padding: 7px 9px 8px;
   }
@@ -486,10 +598,82 @@ onMounted(async () => {
     font-size: 0.78rem;
   }
 
-  .employee-table th,
-  .employee-table td {
-    padding: 7px 10px;
-    font-size: 0.7rem;
+  .employee-table-wrap {
+    display: none;
+  }
+
+  .employee-card-list {
+    display: grid;
+    gap: 16px;
+    max-height: min(58vh, 560px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 18px 0 12px;
+    scrollbar-gutter: stable;
+    scrollbar-color: #bdbdbd transparent;
+    scrollbar-width: thin;
+  }
+
+  .employee-card-list::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .employee-card-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .employee-card-list::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: #bdbdbd;
+  }
+
+  .employee-card {
+    padding: 14px 14px 18px;
+    border: 1px solid var(--dashboard-line);
+    border-radius: var(--dashboard-radius);
+    background: var(--dashboard-card-bg);
+  }
+
+  .employee-card--empty {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .employee-card__name {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+
+  .employee-card__status {
+    margin: 12px 0 8px;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .employee-card__details {
+    margin: 0;
+  }
+
+  .employee-card__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--dashboard-soft-line);
+  }
+
+  .employee-card__row dt,
+  .employee-card__row dd {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .employee-card__row dd {
+    text-align: right;
   }
 }
 </style>
