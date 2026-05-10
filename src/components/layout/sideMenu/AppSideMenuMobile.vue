@@ -109,7 +109,7 @@ const close = () => emit('close')
   align-items: center;
   flex-direction: column;
   overflow: auto;
-  padding: 10px 20%;
+  padding: 10px 15%;
 }
 
 .sp-section-header-wrap {

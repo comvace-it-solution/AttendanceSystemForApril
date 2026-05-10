@@ -14,19 +14,43 @@
         <input type="email" placeholder="例: contact@example.com" />
       </div>
 
-      <div class="form-group password-group">
+      <div class="form-group">
         <label><span class="required">必須</span>パスワード</label>
         <div class="input-icon-wrap">
-          <input type="password" placeholder="半角英数混合6文字" />
-          <span class="eye-icon">⌁</span>
+          <input
+            :type="isPasswordVisible ? 'text' : 'password'"
+            v-model="password"
+            placeholder="半角英数混合6文字"
+          />
+          <img
+            class="eye-icon"
+            :src="
+              isPasswordVisible ? '/passwordOpen.svg' : '/passwordClose.svg'
+            "
+            alt="パスワード表示切替アイコン"
+            @click="isPasswordVisible = !isPasswordVisible"
+          />
         </div>
       </div>
 
-      <div class="form-group password-group">
+      <div class="form-group">
         <label><span class="required">必須</span>パスワード（確認用）</label>
         <div class="input-icon-wrap">
-          <input type="password" placeholder="半角英数混合6文字" />
-          <span class="eye-icon">◉</span>
+          <input
+            :type="isSecondPasswordVisible ? 'text' : 'password'"
+            v-model="secondPassword"
+            placeholder="半角英数混合6文字"
+          />
+          <img
+            class="eye-icon"
+            :src="
+              isSecondPasswordVisible
+                ? '/passwordOpen.svg'
+                : '/passwordClose.svg'
+            "
+            alt="パスワード表示切替アイコン"
+            @click="isSecondPasswordVisible = !isSecondPasswordVisible"
+          />
         </div>
       </div>
 
@@ -40,19 +64,23 @@
 
       <div class="form-group">
         <label><span class="required">必須</span>郵便番号</label>
-        <div class="postal-row">
-          <input class="postal-first" type="text" placeholder="000" />
-          <span class="hyphen">-</span>
-          <input class="postal-second" type="text" placeholder="0000" />
+        <div class="postal-row sp-postal-row">
+          <div class="postal-row">
+            <input class="postal-first" type="text" placeholder="000" />
+            <span class="hyphen">-</span>
+            <input class="postal-second" type="text" placeholder="0000" />
+          </div>
           <button type="button" class="search-button">郵便番号検索</button>
         </div>
       </div>
 
       <div class="form-group prefecture-group">
         <label><span class="required">必須</span>都道府県</label>
-        <select>
-          <option>選択してください</option>
-        </select>
+        <div class="date-row">
+          <select class="date-select prefecture-dropdown">
+            <option>選択してください</option>
+          </select>
+        </div>
       </div>
 
       <div class="form-group">
@@ -68,15 +96,17 @@
       <div class="form-group">
         <label><span class="required">必須</span>生年月日</label>
         <div class="date-row">
-          <select>
+          <select class="date-select year-date">
             <option>YYYY</option>
           </select>
           <span>年</span>
-          <select>
+
+          <select class="date-select month-date">
             <option>MM</option>
           </select>
           <span>月</span>
-          <select>
+
+          <select class="date-select day-date">
             <option>DD</option>
           </select>
           <span>日</span>
@@ -86,15 +116,17 @@
       <div class="form-group">
         <label><span class="required">必須</span>配属日</label>
         <div class="date-row">
-          <select>
+          <select class="date-select year-date">
             <option>YYYY</option>
           </select>
           <span>年</span>
-          <select>
+
+          <select class="date-select month-date">
             <option>MM</option>
           </select>
           <span>月</span>
-          <select>
+
+          <select class="date-select day-date">
             <option>DD</option>
           </select>
           <span>日</span>
@@ -109,7 +141,17 @@
   </main>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from 'vue'
+
+/** パスワードアイコンのホバー状態を管理 */
+const isPasswordVisible = ref(false)
+/** パスワード確認用アイコンのホバー状態を管理 */
+const isSecondPasswordVisible = ref(false)
+
+const password = ref('')
+const secondPassword = ref('')
+</script>
 
 <style scoped>
 .employee-register-page {
@@ -122,7 +164,7 @@
 
 .page-title {
   text-align: center;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 700;
   margin-bottom: 40px;
 }
@@ -151,14 +193,14 @@ label {
   color: #fff;
   font-size: 10px;
   font-weight: 700;
-  padding: 2px 6px;
+  padding: 1px 6px;
 }
 
-input,
-select {
+input {
   width: 100%;
   height: 40px;
-  border: 1px solid #bbb;
+  border: 2px solid #bbb;
+  border-radius: 0px;
   padding: 0 12px;
   font-size: 12px;
   box-sizing: border-box;
@@ -166,13 +208,52 @@ select {
   background: #fff;
 }
 
+input:focus {
+  outline: none;
+  border-color: #de2583;
+}
+
 input::placeholder {
   color: #cfcfcf;
   font-weight: 700;
 }
 
-select {
+.date-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.date-select {
+  height: 40px;
+  border: 2px solid #bbb;
+  border-radius: 0px;
+  padding: 0 30px 0 12px;
+  font-size: 12px;
   color: #aaa;
+  background-color: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23999' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 15px;
+}
+
+.date-select:focus {
+  outline: none;
+  border-color: #de2583;
+}
+
+.year-date,
+.prefecture-dropdown {
+  width: 160px;
+}
+
+.month-date,
+.day-date {
+  width: 100px;
 }
 
 .label-row {
@@ -201,7 +282,8 @@ select {
   top: 50%;
   transform: translateY(-50%);
   color: #aaa;
-  font-size: 16px;
+  width: 18px;
+  height: 18px;
 }
 
 .postal-row {
@@ -211,11 +293,11 @@ select {
 }
 
 .postal-first {
-  width: 80px;
+  width: 100px;
 }
 
 .postal-second {
-  width: 120px;
+  width: 150px;
 }
 
 .hyphen {
@@ -223,12 +305,12 @@ select {
 }
 
 .search-button {
-  width: 150px;
+  width: 200px;
   height: 40px;
   margin-left: auto;
   background: #de2583;
   color: #fff;
-  border: none;
+  border-radius: 3px;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
@@ -242,10 +324,6 @@ select {
   display: flex;
   align-items: center;
   gap: 14px;
-}
-
-.date-row select {
-  width: 120px;
 }
 
 .date-row span {
@@ -267,6 +345,7 @@ select {
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
+  border-radius: 3px;
 }
 
 .submit-button {
@@ -284,11 +363,11 @@ select {
 /* SP対応（max-width: 480px） */
 @media (max-width: 480px) {
   .employee-register-page {
-    padding: 20px 12px 40px;
+    padding: 40px 10% 40px;
   }
 
   .page-title {
-    font-size: 16px;
+    font-size: 14px;
     margin-bottom: 24px;
   }
 
@@ -297,41 +376,72 @@ select {
   }
 
   .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
 
   label {
-    font-size: 11px;
+    margin-bottom: 2px;
+    font-size: 10px;
+    gap: 4px;
+  }
+
+  .helper-text {
+    font-size: 8px;
+    margin: 0;
   }
 
   .required {
-    font-size: 9px;
-    padding: 2px 4px;
+    font-size: 8px;
+    padding: 1px 5px;
   }
 
   input,
   select {
-    height: 38px;
-    font-size: 12px;
+    height: 36px;
+    font-size: 10px;
   }
 
   /* 郵便番号 */
   .postal-row {
     gap: 8px;
+    width: 100%;
+  }
+
+  .sp-postal-row {
+    display: flex;
+    flex-direction: column;
   }
 
   .postal-first {
-    width: 60px;
+    width: 30%;
   }
 
   .postal-second {
-    width: 90px;
+    width: 70%;
   }
 
   .search-button {
-    width: 110px;
-    height: 38px;
-    font-size: 11px;
+    width: 100%;
+    height: 36px;
+    font-size: 10px;
+    margin-top: 15px;
+  }
+
+  .date-select {
+    height: 36px;
+    font-size: 10px;
+  }
+
+  .prefecture-dropdown {
+    width: 160px;
+  }
+  .year-date {
+    width: 90px;
+  }
+
+  .month-date,
+  .day-date {
+    width: 70px;
   }
 
   /* 日付 */
@@ -339,18 +449,13 @@ select {
     gap: 6px;
   }
 
-  .date-row select {
-    width: 80px;
-  }
-
   .date-row span {
     font-size: 11px;
   }
 
-  /* アイコン */
   .eye-icon {
-    right: 10px;
-    font-size: 14px;
+    width: 16px;
+    height: 16px;
   }
 
   /* ボタン */
@@ -361,9 +466,9 @@ select {
 
   .submit-button,
   .cancel-button {
-    width: 100%;
-    height: 44px;
-    font-size: 14px;
+    width: 50%;
+    height: 36px;
+    font-size: 9px;
   }
 }
 </style>
