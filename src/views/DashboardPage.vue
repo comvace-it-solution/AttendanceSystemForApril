@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import Snackbar from '../components/modal/Snackbar.vue'
+import { useFeedbackMessage } from '../composables/useFeedbackMessage'
 import type { AttendanceStatus, PunchAction } from '../types/attendance'
 import { executePunchAction, fetchDashboardData } from '../services/attendanceService'
 import { useAuthStore } from '../stores/auth'
@@ -8,6 +9,14 @@ import { useDashboardStore } from '../stores/dashboard'
 
 const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
+const {
+  snackbarVisible,
+  snackbarMessage,
+  snackbarType,
+  openSuccessSnackbar,
+  openErrorSnackbar,
+  openCommunicationErrorSnackbar,
+} = useFeedbackMessage()
 
 const currentUserId = computed(() => {
   const userId = authStore.userId ?? authStore.user?.userId
@@ -49,16 +58,16 @@ const handlePunchClick = async (action: PunchAction) => {
     }
 
     if (!currentUserId.value) {
-      ElMessage.error('ログインユーザーが取得できないため、打刻できません。')
+      openErrorSnackbar('ログインユーザーが取得できないため、打刻できません。')
       return
     }
 
     await executePunchAction(currentUserId.value, action)
     await loadDashboard()
-    ElMessage.success('打刻を更新しました。')
+    openSuccessSnackbar('打刻を更新しました')
   } catch (error) {
     console.error('打刻更新エラー:', error)
-    ElMessage.error(error instanceof Error ? error.message : '打刻の更新に失敗しました。')
+    openErrorSnackbar('打刻の更新に失敗しました')
   } finally {
     dashboardStore.setPunchLoading(false)
   }
@@ -80,20 +89,22 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('ログインユーザー取得エラー:', error)
-    ElMessage.error(error instanceof Error ? error.message : 'ログインユーザー情報の取得に失敗しました。')
+    openErrorSnackbar('ログインユーザー情報の取得に失敗しました。')
   }
 
   try {
     await loadDashboard()
   } catch (error) {
     console.error('ダッシュボード取得エラー:', error)
-    ElMessage.error('出勤状況一覧の取得に失敗しました。')
+    openCommunicationErrorSnackbar()
   }
 })
 </script>
 
 <template>
   <main class="dashboard-page">
+    <Snackbar v-model="snackbarVisible" :message="snackbarMessage" :type="snackbarType" />
+
     <div class="dashboard-shell">
       <section class="dashboard-card">
         <header class="dashboard-header">

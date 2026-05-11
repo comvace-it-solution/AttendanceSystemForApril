@@ -14,7 +14,7 @@ import type {
 } from '../types/attendance'
 
 const getNowIsoString = () => new Date().toISOString()
-const getWorkDateString = (isoDateTime = getNowIsoString()) => isoDateTime.slice(0, 10)
+const getDatabaseWorkDateString = (isoDateTime: string) => isoDateTime.slice(0, 10)
 
 const formatTime = (value: string | null) => {
   if (!value) {
@@ -83,8 +83,12 @@ const getLatestAttendanceMap = (attendanceRows: AttendanceRow[]) => {
 }
 
 const getTodayAttendanceForUser = (attendanceRows: AttendanceRow[], userId: number) => {
-  const todayDate = getWorkDateString()
-  return attendanceRows.find((attendance) => attendance.user_id === userId && attendance.work_date === todayDate) ?? null
+  return (
+    attendanceRows.find(
+      (attendance) =>
+        attendance.user_id === userId && isSameLocalDate(attendance.work_start_dt, new Date()),
+    ) ?? null
+  )
 }
 
 const getBreakRowsForAttendance = (
@@ -333,7 +337,7 @@ const getCurrentAttendanceId = async (userId: number) => {
 
 export const executePunchAction = async (userId: number, action: PunchAction) => {
   const now = getNowIsoString()
-  const todayDate = getWorkDateString(now)
+  const todayDate = getDatabaseWorkDateString(now)
 
   if (action === 'clockIn') {
     const { data: attendanceData, error: attendanceError } = await supabase
