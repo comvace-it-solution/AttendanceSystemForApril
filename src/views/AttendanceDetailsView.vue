@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import { DArrowLeft, DArrowRight } from '@element-plus/icons-vue'
 import { useAttendance } from '../composables/useAttendance';
-// import { useAuthStore } from '../stores/auth'
-// const authStore = useAuthStore()
-const { currentView, setView, currentConfig, currentTableData } = useAttendance();
+import { computed } from 'vue'
+
+const props = defineProps<{
+  id: number;
+  initialName: string;
+}>();
+
+const { userId, userName, targetMonth, changeMonth,currentView, setView, currentConfig, currentTableData, isLoading, error } = useAttendance(props);
+
+const displayMonth = computed(() => {
+  const [y, m] = targetMonth.value.split('-');
+  return `${y}年${m}月`;
+});
 
 </script>
 
@@ -13,10 +23,8 @@ const { currentView, setView, currentConfig, currentTableData } = useAttendance(
       <div class="attendance-details-title-area">
         <h1 class="page-title">勤怠詳細</h1>
         <div class="user-date-area">
-          <!-- <span class="user-id">ID:{{ authStore.user?.userId }} </span>
-          <span class="user-name">{{ authStore.user?.userName }}</span> -->
-          <span class="user-id">ID:1</span>
-          <span class="user-name">山田太郎</span>
+          <span class="user-id">ID:{{ userId }} </span>
+          <span class="user-name">{{ userName }}</span>
         </div>
       </div>
 
@@ -37,9 +45,9 @@ const { currentView, setView, currentConfig, currentTableData } = useAttendance(
             <p>対象期間</p>
           </div>
           <div class="display-period-btn-area">
-            <el-icon><DArrowLeft /></el-icon>
-            <p>2026年04月</p>
-            <el-icon><DArrowRight /></el-icon>
+            <el-icon class="cursor-pointer" @click="changeMonth(-1)"><DArrowLeft /></el-icon>
+            <p>{{ displayMonth }}</p>
+            <el-icon class="cursor-pointer" @click="changeMonth(1)"><DArrowRight /></el-icon>
           </div>
         </div>
       </div>
@@ -47,7 +55,13 @@ const { currentView, setView, currentConfig, currentTableData } = useAttendance(
 
     <div class="attendance-main">
       <h2 class="summary-title">勤怠サマリ</h2>
-      <div class="table-wrapper" :class="`${currentView}-view`">
+      <div v-if="isLoading" class="message">
+        <p>読み込み中...</p>
+      </div>
+      <div v-else-if="error" class="message">
+        <p>勤怠一覧の取得に失敗しました。<br>しばらく経ってから、再度お試しください。</p>
+      </div>
+      <div v-else class="table-wrapper" :class="`${currentView}-view`">
         <table class="custom-table">
           <thead>
             <tr>
@@ -205,6 +219,17 @@ const { currentView, setView, currentConfig, currentTableData } = useAttendance(
     @include sp {
       margin-bottom: 20px;
     }
+  }
+
+  .message {
+    text-align: center;
+    // margin-bottom: 30px;
+    // font-size: $fs-body;
+
+    // @include sp {
+    //   margin-bottom: 20px;
+    //   font-size: $fs-small;
+    // }
   }
 
   .table-wrapper {

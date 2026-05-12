@@ -1,18 +1,55 @@
 //----------------
 // 勤怠詳細
 // ---------------
+// 表示月情報
+export interface UserInfo {
+  id: number;
+  name: string;
+  targetMonth: string;
+}
+
+// 休憩時間の情報
+export interface Break {
+  id: number;
+  breakStartDt: string;
+  breakEndDt: string;
+}
+
+// 1日の勤怠記録
+export interface AttendanceRecord {
+  id: number;
+  workDate: string;
+  workStartDt: string;
+  workEndDt: string | null;
+  breaks: Break[];
+}
+
+// 勤怠APIのレスポンス
+export interface AttendanceApiResponse {
+  result: string;
+  message: string;
+  data: {
+    userId: number;
+    targetMonth: string;
+    attendanceRecords: AttendanceRecord[];
+  };
+}
+
+// 勤怠の表示タイプ
 export type ViewType = 'daily' | 'weekly' | 'monthly';
 
+// 勤怠テーブルの列定義
 export interface TableConfig {
   label: string;
   key: string;
 }
 
+// 勤怠テーブルの行データ
 export interface AttendanceRow {
   [key: string]: string | number; 
 }
 
-// 各Viewごとの列定義
+// 表示タイプごとの列定義
 export const TABLE_CONFIGS: Record<ViewType, TableConfig[]> = {
   daily: [
     { label: '日付', key: 'date' },

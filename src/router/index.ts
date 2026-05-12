@@ -13,9 +13,13 @@ const router = createRouter({
     //   component: LoginView
     // },
     {
-      path: '/attendanceDetails',
+      path: '/attendanceDetails/:id',
       name: 'AttendanceDetails',
-      component: AttendanceDetailsView
+      component: AttendanceDetailsView,
+      props: route => ({ 
+        id: Number(route.params.id),
+        initialName: route.query.name as string
+      })
     },
   ]
 })
