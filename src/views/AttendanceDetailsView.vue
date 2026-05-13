@@ -55,34 +55,33 @@ const displayMonth = computed(() => {
 
     <div class="attendance-main">
       <h2 class="summary-title">勤怠サマリ</h2>
-      <div v-if="isLoading" class="message">
-        <p>読み込み中...</p>
-      </div>
-      <div v-else-if="error" class="message">
-        <p>勤怠一覧の取得に失敗しました。<br>しばらく経ってから、再度お試しください。</p>
-      </div>
-      <div v-else class="table-wrapper" :class="`${currentView}-view`">
-        <table class="custom-table">
-          <thead>
-            <tr>
-              <th v-for="col in currentConfig" :key="col.key">
-                {{ col.label }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, index) in currentTableData" :key="index">
-              <td v-for="col in currentConfig" :key="col.key">
-                {{ (item as any)[col.key] }}
+      <div v-loading="isLoading" element-loading-background="rgba(0, 0, 0, 0)" class="spinner-area">
+        <div v-if="!isLoading && error" class="message">
+          <p>勤怠一覧の取得に失敗しました。<br>しばらく経ってから、再度お試しください。</p>
+        </div>
+        <div v-else-if="!isLoading && !error"  class="table-wrapper" :class="`${currentView}-view`">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th v-for="col in currentConfig" :key="col.key">
+                  {{ col.label }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in currentTableData" :key="index">
+                <td v-for="col in currentConfig" :key="col.key">
+                  {{ (item as any)[col.key] }}
+                </td>
+              </tr>
+              <tr v-if="currentTableData.length === 0">
+              <td :colspan="currentConfig.length" style="text-align: center;">
+                データがありません
               </td>
             </tr>
-            <tr v-if="currentTableData.length === 0">
-            <td :colspan="currentConfig.length" style="text-align: center;">
-              データがありません
-            </td>
-          </tr>
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -221,15 +220,13 @@ const displayMonth = computed(() => {
     }
   }
 
+  .spinner-area {
+    position: relative;
+    min-height: 100px; 
+  }
+
   .message {
     text-align: center;
-    // margin-bottom: 30px;
-    // font-size: $fs-body;
-
-    // @include sp {
-    //   margin-bottom: 20px;
-    //   font-size: $fs-small;
-    // }
   }
 
   .table-wrapper {

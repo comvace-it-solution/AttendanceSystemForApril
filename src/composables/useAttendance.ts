@@ -120,10 +120,10 @@ export function useAttendance(props: { id: number, initialName: string }) {
         return {
           date: dateStr.replace(/-/g, '/'),
           day: new Date(dateStr).toLocaleDateString('ja-JP', { weekday: 'short' }),
-          startTime: '-',
-          endTime: '-',
-          breakTime: '-',
-          workingHours: '-'
+          startTime: '0:00',
+          endTime: '0:00',
+          breakTime: '0:00',
+          workingHours: '0:00'
         };
       }
     });
