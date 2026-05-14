@@ -59,7 +59,12 @@
           <label><span class="required">必須</span>電話番号</label>
           <p class="helper-text">※ハイフン(-)は自動で入力されます。</p>
         </div>
-        <input type="tel" placeholder="090-0000-0000" />
+        <input
+          type="tel"
+          v-model="phone"
+          @input="formatPhone"
+          placeholder="例:090-0000-0000"
+        />
       </div>
 
       <div class="form-group">
@@ -76,9 +81,18 @@
 
       <div class="form-group prefecture-group">
         <label><span class="required">必須</span>都道府県</label>
+
         <div class="date-row">
-          <select class="date-select prefecture-dropdown">
-            <option>選択してください</option>
+          <select
+            v-model="prefecture"
+            :class="{ selected: prefecture }"
+            class="date-select prefecture-dropdown"
+          >
+            <option value="">選択してください</option>
+
+            <option v-for="p in prefectures" :key="p" :value="p">
+              {{ p }}
+            </option>
           </select>
         </div>
       </div>
@@ -95,19 +109,44 @@
 
       <div class="form-group">
         <label><span class="required">必須</span>生年月日</label>
+
         <div class="date-row">
-          <select class="date-select year-date">
-            <option>YYYY</option>
+          <!-- 年 -->
+          <select
+            v-model="birthYear"
+            :class="{ selected: birthYear }"
+            class="date-select year-date"
+          >
+            <option value="">YYYY</option>
+            <option v-for="y in birthYears" :key="y" :value="y">
+              {{ y }}
+            </option>
           </select>
           <span>年</span>
 
-          <select class="date-select month-date">
-            <option>MM</option>
+          <!-- 月 -->
+          <select
+            v-model="birthMonth"
+            :class="{ selected: birthMonth }"
+            class="date-select month-date"
+          >
+            <option value="">MM</option>
+            <option v-for="m in 12" :key="m" :value="m">
+              {{ String(m).padStart(2, '0') }}
+            </option>
           </select>
           <span>月</span>
 
-          <select class="date-select day-date">
-            <option>DD</option>
+          <!-- 日 -->
+          <select
+            v-model="birthDay"
+            :class="{ selected: birthDay }"
+            class="date-select day-date"
+          >
+            <option value="">DD</option>
+            <option v-for="d in birthDays" :key="d" :value="d">
+              {{ String(d).padStart(2, '0') }}
+            </option>
           </select>
           <span>日</span>
         </div>
@@ -115,19 +154,41 @@
 
       <div class="form-group">
         <label><span class="required">必須</span>配属日</label>
+
         <div class="date-row">
-          <select class="date-select year-date">
-            <option>YYYY</option>
+          <select
+            v-model="assignYear"
+            :class="{ selected: assignYear }"
+            class="date-select year-date"
+          >
+            <option value="">YYYY</option>
+            <option v-for="y in assignYears" :key="y" :value="y">
+              {{ y }}
+            </option>
           </select>
           <span>年</span>
 
-          <select class="date-select month-date">
-            <option>MM</option>
+          <select
+            v-model="assignMonth"
+            :class="{ selected: assignMonth }"
+            class="date-select month-date"
+          >
+            <option value="">MM</option>
+            <option v-for="m in 12" :key="m" :value="m">
+              {{ String(m).padStart(2, '0') }}
+            </option>
           </select>
           <span>月</span>
 
-          <select class="date-select day-date">
-            <option>DD</option>
+          <select
+            v-model="assignDay"
+            :class="{ selected: assignDay }"
+            class="date-select day-date"
+          >
+            <option value="">DD</option>
+            <option v-for="d in assignDays" :key="d" :value="d">
+              {{ String(d).padStart(2, '0') }}
+            </option>
           </select>
           <span>日</span>
         </div>
@@ -142,15 +203,128 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
+
+const birthYear = ref('')
+const birthMonth = ref('')
+const birthDay = ref('')
+
+const currentYear = new Date().getFullYear()
+
+// 生年月日は「今年まで」
+const birthYears = Array.from({ length: 100 }, (_, i) => currentYear - i)
+// 月に応じた日数
+const birthDays = computed(() => {
+  if (!birthYear.value || !birthMonth.value) return 31
+  return new Date(
+    Number(birthYear.value),
+    Number(birthMonth.value),
+    0,
+  ).getDate()
+})
+// 月や年変えたら日リセット
+watch([birthYear, birthMonth], () => {
+  birthDay.value = ''
+})
+
+const assignYear = ref('')
+const assignMonth = ref('')
+const assignDay = ref('')
+
+const assignYears = Array.from({ length: 111 }, (_, i) => currentYear + 10 - i)
+// 月に応じた日数
+const assignDays = computed(() => {
+  if (!assignYear.value || !assignMonth.value) return 31
+  return new Date(
+    Number(assignYear.value),
+    Number(assignMonth.value),
+    0,
+  ).getDate()
+})
+// 年・月変更時に日をリセット
+watch([assignYear, assignMonth], () => {
+  assignDay.value = ''
+})
+
+const phone = ref('')
+/** 電話番号のフォーマットを整える */
+const formatPhone = () => {
+  let value = phone.value
+  // 全角 → 半角変換
+  value = value.replace(/[０-９]/g, (s) =>
+    String.fromCharCode(s.charCodeAt(0) - 0xfee0),
+  )
+  // 数字だけにする
+  value = value.replace(/\D/g, '')
+  // ハイフン付与
+  if (value.length > 3 && value.length <= 7) {
+    value = value.replace(/(\d{3})(\d+)/, '$1-$2')
+  } else if (value.length > 7) {
+    value = value.replace(/(\d{3})(\d{4})(\d+)/, '$1-$2-$3')
+  }
+  phone.value = value
+}
 
 /** パスワードアイコンのホバー状態を管理 */
 const isPasswordVisible = ref(false)
+
 /** パスワード確認用アイコンのホバー状態を管理 */
 const isSecondPasswordVisible = ref(false)
 
 const password = ref('')
 const secondPassword = ref('')
+
+const prefecture = ref('')
+
+const prefectures = [
+  '北海道',
+  '青森県',
+  '岩手県',
+  '宮城県',
+  '秋田県',
+  '山形県',
+  '福島県',
+  '茨城県',
+  '栃木県',
+  '群馬県',
+  '埼玉県',
+  '千葉県',
+  '東京都',
+  '神奈川県',
+  '新潟県',
+  '富山県',
+  '石川県',
+  '福井県',
+  '山梨県',
+  '長野県',
+  '岐阜県',
+  '静岡県',
+  '愛知県',
+  '三重県',
+  '滋賀県',
+  '京都府',
+  '大阪府',
+  '兵庫県',
+  '奈良県',
+  '和歌山県',
+  '鳥取県',
+  '島根県',
+  '岡山県',
+  '広島県',
+  '山口県',
+  '徳島県',
+  '香川県',
+  '愛媛県',
+  '高知県',
+  '福岡県',
+  '佐賀県',
+  '長崎県',
+  '熊本県',
+  '大分県',
+  '宮崎県',
+  '鹿児島県',
+  '沖縄県',
+]
 </script>
 
 <style scoped>
@@ -244,6 +418,10 @@ input::placeholder {
 .date-select:focus {
   outline: none;
   border-color: #de2583;
+}
+
+.date-select.selected {
+  color: #000;
 }
 
 .year-date,
