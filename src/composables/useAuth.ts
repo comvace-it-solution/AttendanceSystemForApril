@@ -25,8 +25,6 @@ export function useAuth() {
       return
     }
     // メールアドレス形式チェック
-    // const emailRegex = /^[!-~]+@[!-~]+\.[!-~]+$/
-    // if (!emailRegex.test(form.email)) {
     else if(!form.email.match(/^[a-zA-Z0-9]([a-zA-Z0-9._%+-]*[a-zA-Z0-9])?@[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?\.[a-zA-Z]{2,}$/)) {
       emailError.value = '※メールアドレスの形式が間違っています。xxxxx@xxx.xxxで入力してください。';
     }
