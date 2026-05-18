@@ -25,8 +25,9 @@ export function useAuth() {
       return
     }
     // メールアドレス形式チェック
-    const emailRegex = /^[!-~]+@[!-~]+\.[!-~]+$/
-    if (!emailRegex.test(form.email)) {
+    // const emailRegex = /^[!-~]+@[!-~]+\.[!-~]+$/
+    // if (!emailRegex.test(form.email)) {
+    else if(!form.email.match(/^[a-zA-Z0-9]([a-zA-Z0-9._%+-]*[a-zA-Z0-9])?@[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?\.[a-zA-Z]{2,}$/)) {
       emailError.value = '※メールアドレスの形式が間違っています。xxxxx@xxx.xxxで入力してください。';
     }
     else {
@@ -41,7 +42,7 @@ export function useAuth() {
       passwordError.value = '※必須項目です。';
     }
     // パスワード形式チェック
-    else if (form.password.length !== 6) {
+    else if (form.password.length !== 6 || !form.password.match(/^[A-Za-z0-9]+$/)) {
       passwordError.value = '※半角英数字6文字で入力してください。';
     }
     else {
