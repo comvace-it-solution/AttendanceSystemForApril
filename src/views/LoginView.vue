@@ -9,11 +9,10 @@ const { form, emailError, passwordError, loginError, validateEmail, validatePass
 const router = useRouter()
 
 // ログインフォームの送信処理
-// テスト用ページに遷移で記載（マージ後はダッシュボード遷移へ変更する）
 const onLoginSubmit = async () => { 
   try {
     await onLogin()
-        router.push('/home')
+        router.push('/dashboard')
   } catch (error) {
     console.error("Login failed in component", error)
   }
