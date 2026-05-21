@@ -1,32 +1,73 @@
-<!-- 従業員編集： EmployeeEdit.vue -->
+<!-- 従業員登録： EmployeeRegister.vue -->
 <template>
-  <main class="employee-edit-page">
+  <main class="employee-register-page">
     <h1 class="page-title">従業員編集</h1>
-    <form class="edit-form" @submit.prevent="handleUpdate">
+    <!-- 登録フォーム -->
+    <form class="register-form" @submit.prevent="handleUpdate">
+      <!-- ユーザー名 -->
       <div class="form-group">
-        <label><span class="required">必須</span>ユーザー名</label>
-        <input type="text" v-model="form.userName" />
+        <label>
+          <span class="required">必須</span>
+          ユーザー名
+        </label>
+        <input
+          v-model="editForm.userName"
+          type="text"
+          placeholder="例: 山田花子"
+        />
       </div>
-
+      <!-- メールアドレス -->
       <div class="form-group">
-        <label><span class="required">必須</span>メールアドレス</label>
-        <input type="email" v-model="form.email" />
+        <label>
+          <span class="required">必須</span>
+          メールアドレス
+        </label>
+        <input
+          v-model="editForm.email"
+          type="email"
+          placeholder="例: contact@example.com"
+        />
       </div>
-
+      <!-- 電話番号 -->
       <div class="form-group">
         <div class="label-row">
-          <label><span class="required">必須</span>電話番号</label>
+          <label>
+            <span class="required">必須</span>
+            電話番号
+          </label>
           <p class="helper-text">※ハイフン(-)は自動で入力されます。</p>
         </div>
-        <input type="tel" v-model="form.phoneNumber" />
+        <input
+          type="tel"
+          v-model="editForm.phoneNumber"
+          placeholder="例:090-0000-0000"
+        />
       </div>
-
+      <!-- 郵便番号 -->
       <div class="form-group">
-        <label><span class="required">必須</span>郵便番号</label>
-        <div class="postal-row">
-          <input class="postal-first" type="text" v-model="postalCodeFirst" />
-          <span class="hyphen">ー</span>
-          <input class="postal-second" type="text" v-model="postalCodeSecond" />
+        <label>
+          <span class="required">必須</span>
+          郵便番号
+        </label>
+        <div class="postal-row sp-postal-row">
+          <div class="postal-row">
+            <!-- 郵便番号前半 -->
+            <input
+              class="postal-first"
+              v-model="postalCodeFirst"
+              type="text"
+              placeholder="000"
+            />
+            <span class="hyphen">-</span>
+            <!-- 郵便番号後半 -->
+            <input
+              class="postal-second"
+              v-model="postalCodeSecond"
+              type="text"
+              placeholder="0000"
+            />
+          </div>
+          <!-- 郵便番号検索 -->
           <button
             type="button"
             class="search-button"
@@ -36,101 +77,111 @@
           </button>
         </div>
       </div>
-
+      <!-- 都道府県 -->
       <div class="form-group prefecture-group">
-        <label><span class="required">必須</span>都道府県</label>
-        <select v-model="form.prefecture">
-          <option value="">選択してください</option>
-          <option v-for="p in prefectures" :key="p" :value="p">
-            {{ p }}
-          </option>
-        </select>
+        <label>
+          <span class="required">必須</span>
+          都道府県
+        </label>
+        <div class="date-row">
+          <select
+            v-model="editForm.prefecture"
+            :class="{ selected: editForm.prefecture }"
+            class="date-select prefecture-dropdown"
+          >
+            <option value="">選択してください</option>
+            <option v-for="p in prefectures" :key="p" :value="p">
+              {{ p }}
+            </option>
+          </select>
+        </div>
       </div>
-
+      <!-- 住所 -->
       <div class="form-group">
-        <label><span class="required">必須</span>住所</label>
-        <input type="text" v-model="form.streetAddress" />
+        <label>
+          <span class="required">必須</span>
+          住所
+        </label>
+        <input
+          v-model="editForm.streetAddress"
+          type="text"
+          placeholder="例: ○○区○○"
+        />
       </div>
-
+      <!-- 建物名 -->
       <div class="form-group">
         <label>建物名</label>
-        <input type="text" v-model="form.buildingName" />
+        <input
+          v-model="editForm.buildingName"
+          type="text"
+          placeholder="例: ○○タウン 101"
+        />
       </div>
-
+      <!-- 生年月日 -->
       <div class="form-group">
-        <label><span class="required">必須</span>生年月日</label>
+        <label>
+          <span class="required">必須</span>
+          生年月日
+        </label>
+
         <div class="date-row">
-          <select v-model="form.birthYear">
-            <option value="">YYYY</option>
-            <option v-for="y in birthYears" :key="y" :value="String(y)">
-              {{ y }}
-            </option>
-          </select>
-          <span>年</span>
-
-          <select v-model="form.birthMonth">
-            <option value="">MM</option>
-            <option
-              v-for="m in 12"
-              :key="m"
-              :value="String(m).padStart(2, '0')"
+          <template v-for="item in birthDateSelects" :key="item.type">
+            <select
+              v-model="item.model.value"
+              :class="[
+                'date-select',
+                item.className,
+                { selected: item.model.value },
+              ]"
             >
-              {{ String(m).padStart(2, '0') }}
-            </option>
-          </select>
-          <span>月</span>
+              <option value="">{{ item.placeholder }}</option>
 
-          <select v-model="form.birthDay">
-            <option value="">DD</option>
-            <option
-              v-for="d in birthDays"
-              :key="d"
-              :value="String(d).padStart(2, '0')"
-            >
-              {{ String(d).padStart(2, '0') }}
-            </option>
-          </select>
-          <span>日</span>
+              <option
+                v-for="option in item.options"
+                :key="option"
+                :value="option"
+              >
+                {{ option }}
+              </option>
+            </select>
+
+            <span>{{ item.label }}</span>
+          </template>
         </div>
       </div>
 
+      <!-- 配属日 -->
       <div class="form-group">
-        <label><span class="required">必須</span>配属日</label>
+        <label>
+          <span class="required">必須</span>
+          配属日
+        </label>
+
         <div class="date-row">
-          <select v-model="form.assignmentYear">
-            <option value="">YYYY</option>
-            <option v-for="y in assignYears" :key="y" :value="String(y)">
-              {{ y }}
-            </option>
-          </select>
-          <span>年</span>
-
-          <select v-model="form.assignmentMonth">
-            <option value="">MM</option>
-            <option
-              v-for="m in 12"
-              :key="m"
-              :value="String(m).padStart(2, '0')"
+          <template v-for="item in assignDateSelects" :key="item.type">
+            <select
+              v-model="item.model.value"
+              :class="[
+                'date-select',
+                item.className,
+                { selected: item.model.value },
+              ]"
             >
-              {{ String(m).padStart(2, '0') }}
-            </option>
-          </select>
-          <span>月</span>
+              <option value="">{{ item.placeholder }}</option>
 
-          <select v-model="form.assignmentDay">
-            <option value="">DD</option>
-            <option
-              v-for="d in assignmentDays"
-              :key="d"
-              :value="String(d).padStart(2, '0')"
-            >
-              {{ String(d).padStart(2, '0') }}
-            </option>
-          </select>
-          <span>日</span>
+              <option
+                v-for="option in item.options"
+                :key="option"
+                :value="option"
+              >
+                {{ option }}
+              </option>
+            </select>
+
+            <span>{{ item.label }}</span>
+          </template>
         </div>
       </div>
-
       <div class="password-change-area">
         <p class="password-change-title">
           パスワードを変更する場合チェックしてください
@@ -142,8 +193,60 @@
         </label>
       </div>
 
+      <!-- パスワード変更時のみ表示 -->
+      <template v-if="isPasswordChange">
+        <!-- パスワード -->
+        <div class="password-group">
+          <label>
+            <span class="required">必須</span>
+            パスワード
+          </label>
+          <div class="input-icon-wrap">
+            <input
+              :type="isPasswordVisible ? 'text' : 'password'"
+              v-model="editForm.password"
+              placeholder="半角英数混合6文字"
+            />
+            <img
+              class="eye-icon"
+              :src="
+                isPasswordVisible ? '/passwordOpen.svg' : '/passwordClose.svg'
+              "
+              alt="パスワード表示切替アイコン"
+              @click="isPasswordVisible = !isPasswordVisible"
+            />
+          </div>
+        </div>
+        <!-- パスワード確認 -->
+        <div class="password-group">
+          <label>
+            <span class="required">必須</span>
+            パスワード（確認用）
+          </label>
+          <div class="input-icon-wrap">
+            <input
+              :type="isSecondPasswordVisible ? 'text' : 'password'"
+              v-model="secondPassword"
+              placeholder="半角英数混合6文字"
+            />
+            <img
+              class="eye-icon"
+              :src="
+                isSecondPasswordVisible
+                  ? '/passwordOpen.svg'
+                  : '/passwordClose.svg'
+              "
+              alt="パスワード表示切替アイコン"
+              @click="isSecondPasswordVisible = !isSecondPasswordVisible"
+            />
+          </div>
+        </div>
+      </template>
+      <!-- ボタン -->
       <div class="button-area">
-        <button type="submit" class="submit-button">上記の内容で変更</button>
+        <!-- 登録 -->
+        <button type="submit" class="submit-button">上記の内容で登録</button>
+        <!-- キャンセル -->
         <button type="button" class="cancel-button">キャンセル</button>
       </div>
     </form>
@@ -151,155 +254,86 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { useEmployeeEdit } from '../composables/useEmployeeEdit'
-import { useAuthStore } from '../stores/auth'
-import { useEmployeeDetail } from '../composables/useEmployeeDetail'
-import { useRoute } from 'vue-router'
+/** ========================
+ * Import
+ * ===================== */
+import { ref, toRef, computed, watch, onMounted, reactive } from 'vue'
 import { useZipCode } from '../composables/useZipCode'
+import { useRoute } from 'vue-router'
+import { useEmployeeDetail } from '../composables/useEmployeeDetail'
+import { useEmployeeEdit } from '../composables/useEmployeeEdit'
 
-/** 郵便番号検索 composable */
-const { searchAddressByPostalCode } = useZipCode()
-
-/** 郵便番号検索 */
-const onSearchPostalCode = async () => {
-  const postalCode = postalCodeFirst.value + postalCodeSecond.value
-
-  if (postalCode.length !== 7) {
-    console.log('郵便番号は7桁で入力してください')
-    return
-  }
-
-  const address = await searchAddressByPostalCode(postalCode)
-
-  if (!address) {
-    console.log('住所が見つかりませんでした')
-    return
-  }
-
-  form.prefecture = address.prefecture
-  form.streetAddress = `${address.city}${address.town}`
-}
+/** ========================
+ * Router
+ * ===================== */
 const route = useRoute()
 
-/** 認証ストア */
-const authStore = useAuthStore()
-
-/** 従業員詳細 composable */
+/** ========================
+ * Composables
+ * ===================== */
+const { searchAddressByPostalCode } = useZipCode()
 const { employeeDetail, fetchEmployeeDetail } = useEmployeeDetail()
+const { updateEmployee } = useEmployeeEdit()
 
+/** ========================
+ * Reactive
+ * ===================== */
 /** 編集フォーム */
-const form = reactive({
-  /** ユーザー名 */
+const editForm = reactive({
   userName: '',
-
-  /** メールアドレス */
   email: '',
-
-  /** 電話番号 */
   phoneNumber: '',
-
-  /** 都道府県 */
   prefecture: '',
-
-  /** 住所 */
   streetAddress: '',
-
-  /** 建物名 */
   buildingName: '',
-
-  /** 生年月日（年） */
   birthYear: '',
-
-  /** 生年月日（月） */
   birthMonth: '',
-
-  /** 生年月日（日） */
   birthDay: '',
-
-  /** 配属日（年） */
   assignmentYear: '',
-
-  /** 配属日（月） */
   assignmentMonth: '',
-
-  /** 配属日（日） */
   assignmentDay: '',
-
-  /** パスワードj */
   password: '',
 })
 
-/** 郵便番号（前半3桁） */
+/** ========================
+ * Ref
+ * ===================== */
+/** パスワード表示切替フラグ */
+const isPasswordVisible = ref(false)
+/** 確認用パスワード表示切替フラグ */
+const isSecondPasswordVisible = ref(false)
+/** 確認用パスワード */
+const secondPassword = ref('')
+/** 生年月日 年 */
+const birthYear = ref('')
+/** 生年月日 月 */
+const birthMonth = ref('')
+/** 生年月日 日 */
+const birthDay = ref('')
+/** 配属日 年 */
+const assignYear = ref('')
+/** 配属日 月 */
+const assignMonth = ref('')
+/** 配属日 日 */
+const assignDay = ref('')
+/** 郵便番号 前半 */
 const postalCodeFirst = ref('')
-
-/** 郵便番号（後半4桁） */
+/** 郵便番号 後半 */
 const postalCodeSecond = ref('')
-
-/** パスワード変更チェック */
+/** パスワード変更有無 */
 const isPasswordChange = ref(false)
+/** 初期表示完了フラグ */
+const isInitialized = ref(false)
 
+/** ========================
+ * Constants
+ * ===================== */
 /** 現在年 */
 const currentYear = new Date().getFullYear()
-
-/** 生年月日 年プルダウン
- * 現在年から過去100年
- */
+/** 生年月日 年一覧 */
 const birthYears = Array.from({ length: 100 }, (_, i) => currentYear - i)
-
-/**
- * 生年月日 日数制御
- * 月・年によって日数変更
- */
-const birthDays = computed(() => {
-  if (!form.birthYear || !form.birthMonth) {
-    return 31
-  }
-
-  return new Date(Number(form.birthYear), Number(form.birthMonth), 0).getDate()
-})
-
-/**
- * 生年月日の年月変更時
- * 日をリセット
- */
-watch(
-  () => [form.birthYear, form.birthMonth],
-  () => {
-    form.birthDay = ''
-  },
-)
-
-/**
- * 配属日 年プルダウン
- * 過去100年〜未来10年
- */
+/** 配属日 年一覧 */
 const assignYears = Array.from({ length: 111 }, (_, i) => currentYear + 10 - i)
-
-/** 配属日 日数制御 */
-const assignmentDays = computed(() => {
-  if (!form.assignmentYear || !form.assignmentMonth) {
-    return 31
-  }
-
-  return new Date(
-    Number(form.assignmentYear),
-    Number(form.assignmentMonth),
-    0,
-  ).getDate()
-})
-
-/**
- * 配属日の年月変更時
- * 日をリセット
- */
-watch(
-  () => [form.assignmentYear, form.assignmentMonth],
-  () => {
-    form.assignmentDay = ''
-  },
-)
-
 /** 都道府県一覧 */
 const prefectures = [
   '北海道',
@@ -351,13 +385,125 @@ const prefectures = [
   '沖縄県',
 ]
 
-/**
- * 日付文字列分割
- * 例：
- * 2026-04-15
- * ↓
- * year month day
- */
+/** ========================
+ * Computed
+ * ===================== */
+/** 生年月日の日数制御 */
+const birthDays = computed(() => {
+  if (!birthYear.value || !birthMonth.value) {
+    return 31
+  }
+  return new Date(
+    Number(birthYear.value),
+    Number(birthMonth.value),
+    0,
+  ).getDate()
+})
+/** 配属日の日数制御 */
+const assignDays = computed(() => {
+  if (!assignYear.value || !assignMonth.value) {
+    return 31
+  }
+  return new Date(
+    Number(assignYear.value),
+    Number(assignMonth.value),
+    0,
+  ).getDate()
+})
+/** 生年月日セレクト一覧 */
+const birthDateSelects = computed(() => [
+  {
+    type: 'year',
+    model: toRef(editForm, 'birthYear'),
+    options: birthYears,
+    placeholder: 'YYYY',
+    className: 'year-date',
+    label: '年',
+  },
+  {
+    type: 'month',
+    model: toRef(editForm, 'birthMonth'),
+    options: Array.from({ length: 12 }, (_, i) =>
+      String(i + 1).padStart(2, '0'),
+    ),
+    placeholder: 'MM',
+    className: 'month-date',
+    label: '月',
+  },
+  {
+    type: 'day',
+    model: toRef(editForm, 'birthDay'),
+    options: Array.from({ length: birthDays.value }, (_, i) =>
+      String(i + 1).padStart(2, '0'),
+    ),
+    placeholder: 'DD',
+    className: 'day-date',
+    label: '日',
+  },
+])
+
+/** 配属日セレクト一覧 */
+const assignDateSelects = computed(() => [
+  {
+    type: 'year',
+    model: toRef(editForm, 'assignmentYear'),
+    options: assignYears,
+    placeholder: 'YYYY',
+    className: 'year-date',
+    label: '年',
+  },
+  {
+    type: 'month',
+    model: toRef(editForm, 'assignmentMonth'),
+    options: Array.from({ length: 12 }, (_, i) =>
+      String(i + 1).padStart(2, '0'),
+    ),
+    placeholder: 'MM',
+    className: 'month-date',
+    label: '月',
+  },
+  {
+    type: 'day',
+    model: toRef(editForm, 'assignmentDay'),
+    options: Array.from({ length: assignDays.value }, (_, i) =>
+      String(i + 1).padStart(2, '0'),
+    ),
+    placeholder: 'DD',
+    className: 'day-date',
+    label: '日',
+  },
+])
+
+/** ========================
+ * Watch
+ * ===================== */
+/** 生年月日変更時、日をリセット */
+watch(
+  () => [editForm.birthYear, editForm.birthMonth],
+  () => {
+    if (!isInitialized.value) {
+      return
+    }
+
+    editForm.birthDay = ''
+  },
+)
+/** 配属日変更時、日をリセット */
+watch(
+  () => [editForm.assignmentYear, editForm.assignmentMonth],
+  () => {
+    if (!isInitialized.value) {
+      return
+    }
+
+    editForm.assignmentDay = ''
+  },
+)
+
+/** ========================
+ * Formatters
+ * ===================== */
+/** 日付を年月日に分割 */
 const splitDate = (date: string) => {
   const [year, month, day] = date.split('-')
 
@@ -367,23 +513,11 @@ const splitDate = (date: string) => {
     day,
   }
 }
-
-/**
- * 電話番号表示整形
- * 09012345678
- * ↓
- * 090-1234-5678
- */
+/** 電話番号をハイフン付きに変換 */
 const formatPhone = (phoneNumber: string) => {
   return phoneNumber.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')
 }
-
-/**
- * 郵便番号分割
- * 1140033
- * ↓
- * 114 / 0033
- */
+/** 郵便番号を分割 */
 const splitPostalCode = (postalCode: string) => {
   return {
     first: postalCode.slice(0, 3),
@@ -391,68 +525,26 @@ const splitPostalCode = (postalCode: string) => {
   }
 }
 
-/**
- * 初期表示
- * 従業員詳細取得
- */
-onMounted(async () => {
-  /** ログインユーザーID */
-  const userId = Number(authStore.user?.userId)
-
-  /** API実行 */
-  await fetchEmployeeDetail(userId)
-
-  /** データなし */
-  if (!employeeDetail.value) {
+/** ========================
+ * Functions
+ * ===================== */
+/** 郵便番号検索 */
+const onSearchPostalCode = async () => {
+  const postalCode = postalCodeFirst.value + postalCodeSecond.value
+  if (postalCode.length !== 7) {
+    console.log('郵便番号は7桁で入力してください')
     return
   }
-
-  /** 生年月日分割 */
-  const birthDate = splitDate(employeeDetail.value.birthDate)
-
-  /** 配属日分割 */
-  const assignmentDate = splitDate(employeeDetail.value.assignmentDate)
-
-  /** 郵便番号分割 */
-  const postalCode = splitPostalCode(employeeDetail.value.postalCode)
-
-  /** フォームへ設定 */
-  form.userName = employeeDetail.value.userName
-
-  form.email = employeeDetail.value.email
-
-  form.phoneNumber = formatPhone(employeeDetail.value.phoneNumber)
-
-  postalCodeFirst.value = postalCode.first
-
-  postalCodeSecond.value = postalCode.second
-
-  form.prefecture = employeeDetail.value.prefecture
-
-  form.streetAddress = employeeDetail.value.streetAddress
-
-  form.buildingName = employeeDetail.value.buildingName
-
-  form.birthYear = birthDate.year
-
-  form.birthMonth = birthDate.month
-
-  form.birthDay = birthDate.day
-
-  form.assignmentYear = assignmentDate.year
-
-  form.assignmentMonth = assignmentDate.month
-
-  form.assignmentDay = assignmentDate.day
-
-  console.log('route.params', route.params)
-  console.log('route.params.id', route.params.id)
-  console.log('authStore.user', authStore.user)
-})
-
-/** 従業員編集 composable */
-const { editError, updateEmployee } = useEmployeeEdit()
-
+  const address = await searchAddressByPostalCode(postalCode)
+  if (!address) {
+    console.log('住所が見つかりませんでした')
+    return
+  }
+  /** 都道府県設定 */
+  editForm.prefecture = address.prefecture
+  /** 市区町村・町名設定 */
+  editForm.streetAddress = `${address.city}${address.town}`
+}
 /** 更新処理 */
 const handleUpdate = async () => {
   /** ログインユーザーID */
@@ -460,38 +552,76 @@ const handleUpdate = async () => {
 
   /** API送信用データ */
   const requestBody = {
-    userName: form.userName,
-
+    /** ユーザー名 */
+    userName: editForm.userName,
     /** パスワード変更時のみ送信 */
-    password: isPasswordChange.value ? form.password : undefined,
-
-    email: form.email,
-
+    password: isPasswordChange.value ? editForm.password : undefined,
+    /** メールアドレス */
+    email: editForm.email,
     /** ハイフン除去 */
-    phoneNumber: form.phoneNumber.replace(/-/g, ''),
-
+    phoneNumber: editForm.phoneNumber.replace(/-/g, ''),
     /** 郵便番号結合 */
     postalCode: postalCodeFirst.value + postalCodeSecond.value,
-
-    prefecture: form.prefecture,
-
-    streetAddress: form.streetAddress,
-
-    buildingName: form.buildingName,
-
-    /** YYYY-MM-DD形式へ変換 */
-    birthDate: `${form.birthYear}-${form.birthMonth}-${form.birthDay}`,
-
-    assignmentDate: `${form.assignmentYear}-${form.assignmentMonth}-${form.assignmentDay}`,
+    /** 都道府県 */
+    prefecture: editForm.prefecture,
+    /** 市区町村・町名 */
+    streetAddress: editForm.streetAddress,
+    /** 建物名 */
+    buildingName: editForm.buildingName,
+    /** 生年月日変換 */
+    birthDate: `${editForm.birthYear}-${editForm.birthMonth}-${editForm.birthDay}`,
+    /** 配属日変換 */
+    assignmentDate: `${editForm.assignmentYear}-${editForm.assignmentMonth}-${editForm.assignmentDay}`,
   }
 
-  /** API実行 */
+  /** 従業員更新API実行 */
   await updateEmployee(userId, requestBody, isPasswordChange.value)
 }
+
+/** ========================
+ * Lifecycle
+ * ===================== */
+/** 初期表示時 */
+onMounted(async () => {
+  /** ログインユーザーID */
+  const userId = Number(route.params.id)
+  /** 従業員詳細取得 */
+  await fetchEmployeeDetail(userId)
+  /** 詳細データなし */
+  if (!employeeDetail.value) {
+    return
+  }
+  /** 生年月日分割 */
+  const birthDate = splitDate(employeeDetail.value.birthDate)
+  /** 配属日分割 */
+  const assignmentDate = splitDate(employeeDetail.value.assignmentDate)
+  /** 郵便番号分割 */
+  const postalCode = splitPostalCode(employeeDetail.value.postalCode)
+  /** フォーム初期値設定 */
+  editForm.userName = employeeDetail.value.userName
+  editForm.email = employeeDetail.value.email
+  /** 電話番号整形 */
+  editForm.phoneNumber = formatPhone(employeeDetail.value.phoneNumber)
+  /** 郵便番号設定 */
+  postalCodeFirst.value = postalCode.first
+  postalCodeSecond.value = postalCode.second
+  /** 住所設定 */
+  editForm.prefecture = employeeDetail.value.prefecture
+  editForm.streetAddress = employeeDetail.value.streetAddress
+  editForm.buildingName = employeeDetail.value.buildingName
+  /** 生年月日設定 */
+  editForm.birthYear = birthDate.year
+  editForm.birthMonth = birthDate.month
+  editForm.birthDay = birthDate.day
+  /** 配属日設定 */
+  editForm.assignmentYear = assignmentDate.year
+  editForm.assignmentMonth = assignmentDate.month
+  editForm.assignmentDay = assignmentDate.day
+})
 </script>
 
 <style scoped>
-.employee-edit-page {
+.employee-register-page {
   width: 100%;
   min-height: 100vh;
   padding: 40px 0 60px;
@@ -501,13 +631,13 @@ const handleUpdate = async () => {
 
 .page-title {
   text-align: center;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 700;
   margin-bottom: 40px;
 }
 
-.edit-form {
-  width: 560px;
+.register-form {
+  width: 520px;
   margin: 0 auto;
 }
 
@@ -521,27 +651,80 @@ label {
   gap: 8px;
   font-size: 12px;
   font-weight: 700;
-  color: #666;
   margin-bottom: 8px;
 }
 
 .required {
+  display: inline-block;
   background: #de2583;
   color: #fff;
   font-size: 10px;
-  padding: 2px 6px;
+  font-weight: 700;
+  padding: 1px 6px;
 }
 
-input,
-select {
+input {
   width: 100%;
-  height: 45px;
-  border: 1px solid #bbb;
+  height: 40px;
+  border: 2px solid #bbb;
+  border-radius: 0px;
   padding: 0 12px;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 12px;
   box-sizing: border-box;
+  color: #333;
   background: #fff;
+}
+
+input:focus {
+  outline: none;
+  border-color: #de2583;
+}
+
+input::placeholder {
+  color: #cfcfcf;
+  font-weight: 700;
+}
+
+.date-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.date-select {
+  height: 40px;
+  border: 2px solid #bbb;
+  border-radius: 0px;
+  padding: 0 30px 0 12px;
+  font-size: 12px;
+  color: #aaa;
+  background-color: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23999' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 15px;
+}
+
+.date-select:focus {
+  outline: none;
+  border-color: #de2583;
+}
+
+.date-select.selected {
+  color: #000;
+}
+
+.year-date,
+.prefecture-dropdown {
+  width: 160px;
+}
+
+.month-date,
+.day-date {
+  width: 100px;
 }
 
 .label-row {
@@ -556,19 +739,36 @@ select {
   margin: 0 8px 8px 0;
 }
 
-.postal-row,
-.date-row {
+.input-icon-wrap {
+  position: relative;
+}
+
+.input-icon-wrap input {
+  padding-right: 42px;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  width: 18px;
+  height: 18px;
+}
+
+.postal-row {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
 }
 
 .postal-first {
-  width: 90px;
+  width: 100px;
 }
 
 .postal-second {
-  width: 140px;
+  width: 150px;
 }
 
 .hyphen {
@@ -576,28 +776,63 @@ select {
 }
 
 .search-button {
-  width: 180px;
-  height: 45px;
+  width: 200px;
+  height: 40px;
   margin-left: auto;
-  border: none;
   background: #de2583;
   color: #fff;
-  font-size: 14px;
+  border-radius: 3px;
+  font-size: 12px;
   font-weight: 700;
+  cursor: pointer;
 }
 
 .prefecture-group select {
-  width: 170px;
+  width: 150px;
 }
 
-.date-row select {
-  width: 140px;
+.date-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
 .date-row span {
   font-size: 12px;
 }
 
+.button-area {
+  margin-top: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.submit-button,
+.cancel-button {
+  width: 210px;
+  height: 44px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.submit-button {
+  background: #de2583;
+  color: #fff;
+  border: 1px solid #de2583;
+}
+
+.cancel-button {
+  background: #fff;
+  color: #de2583;
+  border: 2px solid #de2583;
+}
+.password-group {
+  margin-top: 25px;
+}
 .password-change-area {
   margin-top: 50px;
 }
@@ -627,92 +862,92 @@ select {
   width: auto;
   height: auto;
 }
-
-.button-area {
-  margin-top: 90px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 35px;
+input[type='checkbox'] {
+  accent-color: #de2583;
 }
 
-.submit-button,
-.cancel-button {
-  width: 240px;
-  height: 50px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.submit-button {
-  background: #de2583;
-  color: #fff;
-  border: 1px solid #de2583;
-}
-
-.cancel-button {
-  background: #fff;
-  color: #de2583;
-  border: 2px solid #de2583;
-}
 /* SP対応（max-width: 480px） */
 @media (max-width: 480px) {
-  /* 全体 */
-  .employee-register-page,
-  .employee-edit-page,
-  .employee-detail-page {
-    padding: 20px 12px 40px;
+  .employee-register-page {
+    padding: 40px 10% 40px;
   }
 
-  /* タイトル */
   .page-title {
-    font-size: 16px;
+    font-size: 14px;
     margin-bottom: 24px;
   }
 
-  /* フォーム・リスト幅を100%に */
-  .register-form,
-  .edit-form,
-  .detail-list {
+  .register-form {
     width: 100%;
   }
 
-  /* 入力系 */
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  label {
+    margin-bottom: 2px;
+    font-size: 10px;
+    gap: 4px;
+  }
+
+  .helper-text {
+    font-size: 8px;
+    margin: 0;
+  }
+
+  .required {
+    font-size: 8px;
+    padding: 1px 5px;
+  }
+
   input,
   select {
-    height: 38px;
-    font-size: 12px;
+    height: 36px;
+    font-size: 10px;
   }
 
-  /* ラベル */
-  label {
-    font-size: 11px;
-  }
-
-  /* 必須タグ */
-  .required {
-    font-size: 9px;
-    padding: 2px 4px;
-  }
-
-  /* 郵便番号横並び */
+  /* 郵便番号 */
   .postal-row {
     gap: 8px;
+    width: 100%;
+  }
+
+  .sp-postal-row {
+    display: flex;
+    flex-direction: column;
   }
 
   .postal-first {
-    width: 60px;
+    width: 30%;
   }
 
   .postal-second {
-    width: 90px;
+    width: 70%;
   }
 
   .search-button {
-    width: 120px;
-    height: 38px;
-    font-size: 11px;
+    width: 100%;
+    height: 36px;
+    font-size: 10px;
+    margin-top: 15px;
+  }
+
+  .date-select {
+    height: 36px;
+    font-size: 10px;
+  }
+
+  .prefecture-dropdown {
+    width: 160px;
+  }
+  .year-date {
+    width: 90px;
+  }
+
+  .month-date,
+  .day-date {
+    width: 70px;
   }
 
   /* 日付 */
@@ -720,41 +955,27 @@ select {
     gap: 6px;
   }
 
-  .date-row select {
-    width: 80px;
+  .date-row span {
+    font-size: 11px;
   }
 
-  /* 詳細画面 */
-  .detail-item {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 12px;
-  }
-
-  .detail-label {
-    width: auto;
-    font-size: 12px;
-    margin-bottom: 4px;
-  }
-
-  .detail-value {
-    font-size: 13px;
+  .eye-icon {
+    width: 16px;
+    height: 16px;
   }
 
   /* ボタン */
-  .submit-button,
-  .cancel-button,
-  .edit-button {
-    width: 100%;
-    height: 44px;
-    font-size: 14px;
-  }
-
   .button-area {
-    gap: 20px;
     margin-top: 40px;
+    gap: 20px;
   }
 
+  .submit-button,
+  .cancel-button {
+    width: 50%;
+    height: 36px;
+    font-size: 9px;
+  }
   /* パスワード変更エリア */
   .password-change-title {
     font-size: 13px;

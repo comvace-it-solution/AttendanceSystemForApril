@@ -39,6 +39,10 @@ interface EmployeeDetail {
 
 /**
  * 従業員詳細取得 composable
+ * @returns
+ * employeeDetail：従業員詳細データ \
+ * isLoading：ローディング状態 \
+ * fetchEmployeeDetail：従業員詳細取得関数
  */
 export function useEmployeeDetail() {
   /**

@@ -169,104 +169,60 @@
           生年月日
         </label>
         <div class="date-row">
-          <!-- 年 -->
-          <select
-            v-model="birthYear"
-            :class="{ selected: birthYear }"
-            class="date-select year-date"
-          >
-            <option value="">YYYY</option>
-            <option v-for="y in birthYears" :key="y" :value="y">
-              {{ y }}
-            </option>
-          </select>
-          <span>年</span>
-          <!-- 月 -->
-          <select
-            v-model="birthMonth"
-            :class="{ selected: birthMonth }"
-            class="date-select month-date"
-          >
-            <option value="">MM</option>
-            <option
-              v-for="m in 12"
-              :key="m"
-              :value="String(m).padStart(2, '0')"
+          <template v-for="item in birthDateSelects" :key="item.type">
+            <select
+              v-model="item.model.value"
+              :class="[
+                'date-select',
+                item.className,
+                { selected: item.model.value },
+              ]"
             >
-              {{ String(m).padStart(2, '0') }}
-            </option>
-          </select>
-          <span>月</span>
-          <!-- 日 -->
-          <select
-            v-model="birthDay"
-            :class="{ selected: birthDay }"
-            class="date-select day-date"
-          >
-            <option value="">DD</option>
-            <option
-              v-for="d in birthDays"
-              :key="d"
-              :value="String(d).padStart(2, '0')"
-            >
-              {{ String(d).padStart(2, '0') }}
-            </option>
-          </select>
-          <span>日</span>
+              <option value="">
+                {{ item.placeholder }}
+              </option>
+              <option
+                v-for="option in item.options"
+                :key="option"
+                :value="option"
+              >
+                {{ option }}
+              </option>
+            </select>
+            <span>
+              {{ item.label }}
+            </span>
+          </template>
         </div>
       </div>
       <!-- 配属日 -->
-      <div class="form-group">
-        <label>
-          <span class="required">必須</span>
-          配属日
-        </label>
-        <div class="date-row">
-          <!-- 年 -->
+      <div class="date-row">
+        <template v-for="item in assignDateSelects" :key="item.type">
           <select
-            v-model="assignYear"
-            :class="{ selected: assignYear }"
-            class="date-select year-date"
+            v-model="item.model.value"
+            :class="[
+              'date-select',
+              item.className,
+              { selected: item.model.value },
+            ]"
           >
-            <option value="">YYYY</option>
-            <option v-for="y in assignYears" :key="y" :value="y">
-              {{ y }}
+            <option value="">
+              {{ item.placeholder }}
             </option>
-          </select>
-          <span>年</span>
-          <!-- 月 -->
-          <select
-            v-model="assignMonth"
-            :class="{ selected: assignMonth }"
-            class="date-select month-date"
-          >
-            <option value="">MM</option>
             <option
-              v-for="m in 12"
-              :key="m"
-              :value="String(m).padStart(2, '0')"
+              v-for="option in item.options"
+              :key="option"
+              :value="option"
             >
-              {{ String(m).padStart(2, '0') }}
+              {{ option }}
             </option>
           </select>
-          <span>月</span>
-          <!-- 日 -->
-          <select
-            v-model="assignDay"
-            :class="{ selected: assignDay }"
-            class="date-select day-date"
-          >
-            <option value="">DD</option>
-            <option
-              v-for="d in assignDays"
-              :key="d"
-              :value="String(d).padStart(2, '0')"
-            >
-              {{ String(d).padStart(2, '0') }}
-            </option>
-          </select>
-          <span>日</span>
-        </div>
+          <span>
+            {{
+              item.type === 'year' ? '年' : item.type === 'month' ? '月' : '日'
+            }}
+          </span>
+        </template>
       </div>
       <!-- ボタン -->
       <div class="button-area">
@@ -280,219 +236,60 @@
 </template>
 
 <script setup lang="ts">
+/** ========================
+ * Import
+ * ===================== */
 import { ref, computed, watch } from 'vue'
 import { useEmployeeRegister } from '../composables/useEmployeeRegister'
 import { useZipCode } from '../composables/useZipCode'
 
+/** ========================
+ * Composables
+ * ===================== */
 const { searchAddressByPostalCode } = useZipCode()
-
-/**
- * 郵便番号検索
- */
-const onSearchPostalCode = async () => {
-  /**
-   * 郵便番号結合
-   */
-  const postalCode = postalCodeFirst.value + postalCodeSecond.value
-
-  /**
-   * 7桁チェック
-   */
-  if (postalCode.length !== 7) {
-    return
-  }
-
-  /**
-   * API実行
-   */
-  const address = await searchAddressByPostalCode(postalCode)
-
-  /**
-   * データなし
-   */
-  if (!address) {
-    return
-  }
-
-  /**
-   * 住所反映
-   */
-  form.prefecture = address.prefecture
-
-  form.streetAddress = `${address.city}${address.town}`
-}
-
-/**
- * composableから取得
- * form：APIへ送る値
- * onRegister：登録API実行
- */
 const { form, onRegister } = useEmployeeRegister()
 
-/**
- * パスワード表示切替フラグ
- */
+/** ========================
+ * Reactive
+ * ===================== */
+
+/** ========================
+ * Ref
+ * ===================== */
+/** パスワード表示切替フラグ */
 const isPasswordVisible = ref(false)
-
-/**
- * 確認用パスワード表示切替フラグ
- */
+/** 確認用パスワード表示切替フラグ */
 const isSecondPasswordVisible = ref(false)
-
-/**
- * 確認用パスワード
- * ※ APIには送らない
- */
+/** 確認用パスワード */
 const secondPassword = ref('')
-
-/**
- * 郵便番号前半3桁
- */
+/** 郵便番号前半3桁 */
 const postalCodeFirst = ref('')
-
-/**
- * 郵便番号後半4桁
- */
+/** 郵便番号後半4桁 */
 const postalCodeSecond = ref('')
-
-/**
- * 現在年
- */
-const currentYear = new Date().getFullYear()
-
-/* =====================================================
-  生年月日
-===================================================== */
-
-/**
- * 生年月日 年
- */
+/** 生年月日 年 */
 const birthYear = ref('')
-
-/**
- * 生年月日 月
- */
+/** 生年月日 月 */
 const birthMonth = ref('')
-
-/**
- * 生年月日 日
- */
+/** 生年月日 日 */
 const birthDay = ref('')
-
-/**
- * 生年月日 年一覧
- * 今年〜100年前
- */
-const birthYears = Array.from({ length: 100 }, (_, i) => currentYear - i)
-
-/**
- * 生年月日の日数を月ごとに変更
- */
-const birthDays = computed(() => {
-  if (!birthYear.value || !birthMonth.value) return 31
-
-  return new Date(
-    Number(birthYear.value),
-    Number(birthMonth.value),
-    0,
-  ).getDate()
-})
-
-/**
- * 年・月変更時に日をリセット
- */
-watch([birthYear, birthMonth], () => {
-  birthDay.value = ''
-})
-
-/* =====================================================
-  配属日
-===================================================== */
-
-/**
- * 配属日 年
- */
+/** 配属日 年 */
 const assignYear = ref('')
-
-/**
- * 配属日 月
- */
+/** 配属日 月 */
 const assignMonth = ref('')
-
-/**
- * 配属日 日
- */
+/** 配属日 日 */
 const assignDay = ref('')
 
-/**
- * 配属日 年一覧
- * 過去100年〜未来10年
- */
+/** ========================
+ * Constants
+ * ===================== */
+
+/** 現在年 */
+const currentYear = new Date().getFullYear()
+/** 生年月日 年一覧 */
+const birthYears = Array.from({ length: 100 }, (_, i) => currentYear - i)
+/** 配属日 年一覧 */
 const assignYears = Array.from({ length: 111 }, (_, i) => currentYear + 10 - i)
-
-/**
- * 配属日の日数を月ごとに変更
- */
-const assignDays = computed(() => {
-  if (!assignYear.value || !assignMonth.value) return 31
-
-  return new Date(
-    Number(assignYear.value),
-    Number(assignMonth.value),
-    0,
-  ).getDate()
-})
-
-/**
- * 年・月変更時に日をリセット
- */
-watch([assignYear, assignMonth], () => {
-  assignDay.value = ''
-})
-
-/* =====================================================
-  電話番号
-===================================================== */
-
-/**
- * 電話番号フォーマット
- * ・全角→半角変換
- * ・ハイフン自動付与
- */
-const formatPhone = () => {
-  let value = form.phoneNumber
-
-  /**
-   * 全角数字を半角へ変換
-   */
-  value = value.replace(/[０-９]/g, (s) =>
-    String.fromCharCode(s.charCodeAt(0) - 0xfee0),
-  )
-
-  /**
-   * 数字以外除去
-   */
-  value = value.replace(/\D/g, '')
-
-  /**
-   * ハイフン付与
-   */
-  if (value.length > 3 && value.length <= 7) {
-    value = value.replace(/(\d{3})(\d+)/, '$1-$2')
-  } else if (value.length > 7) {
-    value = value.replace(/(\d{3})(\d{4})(\d+)/, '$1-$2-$3')
-  }
-
-  form.phoneNumber = value
-}
-
-/* =====================================================
-  都道府県
-===================================================== */
-
-/**
- * 都道府県一覧
- */
+/** 都道府県一覧 */
 const prefectures = [
   '北海道',
   '青森県',
@@ -543,25 +340,161 @@ const prefectures = [
   '沖縄県',
 ]
 
-/* =====================================================
-  登録処理
-===================================================== */
+/** ========================
+ * Computed
+ * ===================== */
+/** 生年月日の日数制御 */
+const birthDays = computed(() => {
+  if (!birthYear.value || !birthMonth.value) {
+    return 31
+  }
+  return new Date(
+    Number(birthYear.value),
+    Number(birthMonth.value),
+    0,
+  ).getDate()
+})
+/** 配属日の日数制御 */
+const assignDays = computed(() => {
+  if (!assignYear.value || !assignMonth.value) {
+    return 31
+  }
+  return new Date(
+    Number(assignYear.value),
+    Number(assignMonth.value),
+    0,
+  ).getDate()
+})
+/** 生年月日セレクト一覧 */
+const birthDateSelects = computed(() => [
+  {
+    type: 'year',
+    model: birthYear,
+    options: birthYears,
+    placeholder: 'YYYY',
+    className: 'year-date',
+    label: '年',
+  },
 
+  {
+    type: 'month',
+    model: birthMonth,
+    options: Array.from({ length: 12 }, (_, i) =>
+      String(i + 1).padStart(2, '0'),
+    ),
+    placeholder: 'MM',
+    className: 'month-date',
+    label: '月',
+  },
+
+  {
+    type: 'day',
+    model: birthDay,
+    options: Array.from({ length: birthDays.value }, (_, i) =>
+      String(i + 1).padStart(2, '0'),
+    ),
+    placeholder: 'DD',
+    className: 'day-date',
+    label: '日',
+  },
+])
+/** 配属日セレクト一覧 */
+const assignDateSelects = computed(() => [
+  {
+    type: 'year',
+    model: assignYear,
+    options: assignYears,
+    placeholder: 'YYYY',
+    className: 'year-date',
+  },
+
+  {
+    type: 'month',
+    model: assignMonth,
+    options: Array.from({ length: 12 }, (_, i) =>
+      String(i + 1).padStart(2, '0'),
+    ),
+    placeholder: 'MM',
+    className: 'month-date',
+  },
+
+  {
+    type: 'day',
+    model: assignDay,
+    options: Array.from({ length: assignDays.value }, (_, i) =>
+      String(i + 1).padStart(2, '0'),
+    ),
+    placeholder: 'DD',
+    className: 'day-date',
+  },
+])
+
+/** ========================
+ * Watch
+ * ===================== */
+/** 生年月日変更時、日をリセット */
+watch([birthYear, birthMonth], () => {
+  birthDay.value = ''
+})
+/** 配属日変更時、日をリセット */
+watch([assignYear, assignMonth], () => {
+  assignDay.value = ''
+})
+
+/** ========================
+ * Formatters
+ * ===================== */
 /**
- * 登録ボタン押下時
+ * 電話番号フォーマット
+ * 全角→半角変換
+ * ハイフン自動付与
  */
+const formatPhone = () => {
+  let value = form.phoneNumber
+  /** 全角数字を半角変換 */
+  value = value.replace(/[０-９]/g, (s) =>
+    String.fromCharCode(s.charCodeAt(0) - 0xfee0),
+  )
+  /** 数字以外除去 */
+  value = value.replace(/\D/g, '')
+  /** ハイフン付与 */
+  if (value.length > 3 && value.length <= 7) {
+    value = value.replace(/(\d{3})(\d+)/, '$1-$2')
+  } else if (value.length > 7) {
+    value = value.replace(/(\d{3})(\d{4})(\d+)/, '$1-$2-$3')
+  }
+  form.phoneNumber = value
+}
+
+/** ========================
+ * Functions
+ * ===================== */
+/** 郵便番号検索 */
+const onSearchPostalCode = async () => {
+  const postalCode = postalCodeFirst.value + postalCodeSecond.value
+  if (postalCode.length !== 7) {
+    console.log('郵便番号は7桁で入力してください')
+    return
+  }
+  const address = await searchAddressByPostalCode(postalCode)
+  if (!address) {
+    console.log('住所が見つかりませんでした')
+    return
+  }
+  /** 都道府県設定 */
+  form.prefecture = address.prefecture
+  /** 市区町村・町名設定 */
+  form.streetAddress = `${address.city}${address.town}`
+}
+/** 登録処理 */
 const handleRegister = async () => {
   /**
    * 郵便番号結合
-   * 例：114 + 0033 → 1140033
+   * 114 + 0033 → 1140033
    */
   form.postalCode = postalCodeFirst.value + postalCodeSecond.value
-
-  /**
-   * 電話番号のハイフン除去
-   */
+  /** 電話番号ハイフン除去 */
   form.phoneNumber = form.phoneNumber.replace(/-/g, '')
-
   /**
    * 生年月日整形
    * YYYY-MM-DD
@@ -570,7 +503,6 @@ const handleRegister = async () => {
     birthYear.value && birthMonth.value && birthDay.value
       ? `${birthYear.value}-${birthMonth.value}-${birthDay.value}`
       : ''
-
   /**
    * 配属日整形
    * YYYY-MM-DD
@@ -579,7 +511,7 @@ const handleRegister = async () => {
     assignYear.value && assignMonth.value && assignDay.value
       ? `${assignYear.value}-${assignMonth.value}-${assignDay.value}`
       : ''
-
+  /** 登録API送信内容 */
   console.log('登録API送信内容', {
     userName: form.userName,
     password: form.password,
@@ -592,9 +524,7 @@ const handleRegister = async () => {
     birthDate: form.birthDate,
     assignmentDate: form.assignmentDate,
   })
-  /**
-   * API実行
-   */
+  /** API実行 */
   await onRegister()
 }
 </script>

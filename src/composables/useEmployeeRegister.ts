@@ -2,11 +2,24 @@ import { reactive, ref, computed } from 'vue'
 import axios from 'axios'
 import { useFeedbackMessage } from './useFeedbackMessage.ts'
 
+/**
+ * 従業員登録 composable
+ *
+ * @remarks
+ * form：登録フォーム
+ * onRegister：登録API実行
+ */
 export function useEmployeeRegister() {
+  /** API Base URL */
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
+  /** 内部APIキー */
   const INTERNAL_API_KEY = import.meta.env.VITE_INTERNAL_API_KEY
+
+  /** 通信エラーSnackbar */
   const { openCommunicationErrorSnackbar } = useFeedbackMessage()
 
+  /** 登録フォーム */
   const form = reactive({
     userName: '',
     password: '',
@@ -20,8 +33,10 @@ export function useEmployeeRegister() {
     assignmentDate: '',
   })
 
+  /** 登録エラーメッセージ */
   const registerError = ref('')
 
+  /** 登録ボタン活性状態 */
   const isRegisterDisabled = computed(() => {
     return (
       !form.userName ||
@@ -36,10 +51,13 @@ export function useEmployeeRegister() {
     )
   })
 
+  /** 従業員登録API */
   const onRegister = async () => {
+    /** エラー初期化 */
     registerError.value = ''
 
     try {
+      /** API実行 */
       const response = await axios.post(
         `${API_BASE_URL}/users`,
         {
@@ -67,12 +85,23 @@ export function useEmployeeRegister() {
       console.log('登録APIエラー status', error.response?.status)
       console.log('登録APIエラー data', error.response?.data)
       console.log('登録APIエラー message', error.message)
+
+      /** ステータスコード */
       const status = error.response?.status
 
+      /**
+       * 4xxエラー
+       * 入力エラー表示
+       */
       if (status !== undefined && status >= 400 && status < 500) {
         registerError.value = '入力内容に誤りがあります。'
       } else {
+        /**
+         * 通信エラー
+         * Snackbar表示
+         */
         registerError.value = ''
+
         openCommunicationErrorSnackbar()
       }
 

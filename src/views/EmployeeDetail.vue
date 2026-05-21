@@ -24,17 +24,44 @@
 </template>
 
 <script setup lang="ts">
+/** ========================
+ * Import
+ * ===================== */
 import { computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
 import { useEmployeeDetail } from '../composables/useEmployeeDetail'
 import { useAuthStore } from '../stores/auth'
 
+/** ========================
+ * Store
+ * ===================== */
 const authStore = useAuthStore()
 
-const route = useRoute()
-
+/** ========================
+ * Composables
+ * ===================== */
 const { employeeDetail, fetchEmployeeDetail } = useEmployeeDetail()
 
+/** ========================
+ * Computed
+ * ===================== */
+/** ログインユーザーID */
+const userId = computed(() => {
+  return Number(authStore.user?.userId)
+})
+
+/** 住所を結合して表示用 */
+const fullAddress = computed(() => {
+  if (!employeeDetail.value) return ''
+  return [
+    employeeDetail.value.prefecture,
+    employeeDetail.value.streetAddress,
+    employeeDetail.value.buildingName,
+  ]
+    .filter(Boolean)
+    .join('')
+})
+
+/** 詳細テーブルリスト */
 const detailItems = computed(() => [
   {
     label: 'ユーザー名：',
@@ -77,28 +104,9 @@ const detailItems = computed(() => [
   },
 ])
 
-/**
- * ログインユーザーID
- */
-const userId = computed(() => {
-  return Number(authStore.user?.userId)
-})
-
-/**
- * 住所表示用
- */
-const fullAddress = computed(() => {
-  if (!employeeDetail.value) return ''
-
-  return [
-    employeeDetail.value.prefecture,
-    employeeDetail.value.streetAddress,
-    employeeDetail.value.buildingName,
-  ]
-    .filter(Boolean)
-    .join('')
-})
-
+/** ========================
+ * Formatters
+ * ===================== */
 /**
  * 日付表示フォーマット
  * 2026-04-15 → 2026/04/15
@@ -108,7 +116,6 @@ const formatDate = (date?: string) => {
 
   return date.replaceAll('-', '/')
 }
-
 /**
  * 電話番号表示フォーマット
  * 09012345678 → 090-1234-5678
@@ -118,7 +125,6 @@ const formatPhone = (phoneNumber?: string) => {
 
   return phoneNumber.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')
 }
-
 /**
  * 郵便番号表示フォーマット
  * 1140033 → 114-0033
@@ -129,9 +135,10 @@ const formatPostalCode = (postalCode?: string) => {
   return postalCode.replace(/(\d{3})(\d{4})/, '$1-$2')
 }
 
-/**
- * 初期表示時に従業員詳細取得
- */
+/** ========================
+ * Lifecycle
+ * ===================== */
+/** 初期表示時 */
 onMounted(async () => {
   await fetchEmployeeDetail(userId.value)
 })
@@ -145,19 +152,16 @@ onMounted(async () => {
   background: #fff;
   color: #333;
 }
-
 .page-title {
   text-align: center;
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 55px;
 }
-
 .detail-list {
   width: 620px;
   margin: 0 auto;
 }
-
 .detail-item {
   min-height: 58px;
   border: 2px solid #de2583;
@@ -168,14 +172,12 @@ onMounted(async () => {
   margin-bottom: 30px;
   box-sizing: border-box;
 }
-
 .detail-label {
   width: 140px;
   font-size: 16px;
   font-weight: 700;
   color: #000;
 }
-
 .detail-value {
   flex: 1;
   font-size: 16px;
@@ -183,14 +185,15 @@ onMounted(async () => {
   color: #666;
   word-break: break-word;
 }
-
 .button-area {
   margin-top: 60px;
   display: flex;
   justify-content: center;
 }
-
 .edit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 260px;
   height: 56px;
   background: #de2583;
@@ -207,37 +210,30 @@ onMounted(async () => {
   .employee-detail-page {
     padding: 20px 12px 40px;
   }
-
   .page-title {
     font-size: 16px;
     margin-bottom: 24px;
   }
-
   .detail-list {
     width: 100%;
   }
-
   .detail-item {
     flex-direction: column;
     align-items: flex-start;
     padding: 12px;
     margin-bottom: 20px;
   }
-
   .detail-label {
     width: auto;
     font-size: 12px;
     margin-bottom: 4px;
   }
-
   .detail-value {
     font-size: 13px;
   }
-
   .button-area {
     margin-top: 40px;
   }
-
   .edit-button {
     width: 100%;
     height: 44px;
