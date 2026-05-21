@@ -4,7 +4,6 @@ import { useFeedbackMessage } from './useFeedbackMessage.ts'
 
 /**
  * 従業員登録 composable
- *
  * @remarks
  * form：登録フォーム
  * onRegister：登録API実行

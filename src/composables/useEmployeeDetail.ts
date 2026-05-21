@@ -8,31 +8,22 @@ import { useFeedbackMessage } from './useFeedbackMessage'
 interface EmployeeDetail {
   /** 従業員ID */
   id: number
-
   /** ユーザー名 */
   userName: string
-
   /** メールアドレス */
   email: string
-
   /** 電話番号 */
   phoneNumber: string
-
   /** 郵便番号 */
   postalCode: string
-
   /** 都道府県 */
   prefecture: string
-
   /** 住所 */
   streetAddress: string
-
   /** 建物名 */
   buildingName: string
-
   /** 生年月日 */
   birthDate: string
-
   /** 配属日 */
   assignmentDate: string
 }

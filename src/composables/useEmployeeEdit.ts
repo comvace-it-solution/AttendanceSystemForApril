@@ -2,9 +2,7 @@ import axios from 'axios'
 import { ref } from 'vue'
 import { useFeedbackMessage } from './useFeedbackMessage'
 
-/**
- * 従業員編集API送信用フォーム型
- */
+/** 従業員編集API送信用フォーム型 */
 interface EmployeeEditForm {
   userName: string
   password?: string
@@ -20,6 +18,9 @@ interface EmployeeEditForm {
 
 /**
  * 従業員編集 composable
+ * @remarks
+ * editError：編集エラーメッセージ
+ * updateEmployee：編集API実行
  */
 export function useEmployeeEdit() {
   /** API Base URL */
@@ -31,24 +32,26 @@ export function useEmployeeEdit() {
   /** 通信エラーSnackbar */
   const { openCommunicationErrorSnackbar } = useFeedbackMessage()
 
-  /** 編集エラー */
+  /** 編集エラーメッセージ */
   const editError = ref('')
 
   /**
-   * 従業員編集API実行
-   * @param userId 更新対象の従業員ID
+   * 従業員編集API
+   * @param userId 従業員ID
    * @param form 編集フォーム
-   * @param isPasswordChange パスワードを変更するか
+   * @param isPasswordChange パスワード変更有無
    */
   const updateEmployee = async (
     userId: number,
     form: EmployeeEditForm,
     isPasswordChange: boolean,
   ) => {
+    /** エラー初期化 */
     editError.value = ''
 
     /**
-     * パスワード変更なしの場合は password を送らない
+     * パスワード変更なし
+     * password を除外
      */
     const requestBody = isPasswordChange
       ? form
@@ -65,6 +68,7 @@ export function useEmployeeEdit() {
         }
 
     try {
+      /** API実行 */
       const response = await axios.put(
         `${API_BASE_URL}/users/${userId}`,
         requestBody,
@@ -78,12 +82,15 @@ export function useEmployeeEdit() {
 
       return response.data
     } catch (error: any) {
+      /** エラーログ */
       console.log('従業員編集APIエラー status', error.response?.status)
       console.log('従業員編集APIエラー data', error.response?.data)
 
+      /** 4xxエラー */
       if (error.response?.status >= 400 && error.response?.status < 500) {
         editError.value = '入力内容に誤りがあります。'
       } else {
+        /** 通信エラーSnackbar */
         openCommunicationErrorSnackbar()
       }
 
