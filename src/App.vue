@@ -2,7 +2,6 @@
 import { computed, ref } from 'vue'
 import { useCounterStore } from './stores/counter'
 import { checkSupabaseRestApi } from './services/supabaseHealth'
-import AppHeader from './components/layout/header/AppHeader.vue'
 
 const counterStore = useCounterStore()
 
@@ -54,7 +53,6 @@ const checkSupabaseRest = async () => {
 </script>
 
 <template>
-  <AppHeader />
   <div style="height: var(--app-header-height)"></div>
   <RouterView />
   <!-- <main class="app-shell">
