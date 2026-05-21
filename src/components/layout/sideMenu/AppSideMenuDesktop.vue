@@ -19,7 +19,7 @@
             </span>
           </button>
         </div>
-        <router-link to="/login" class="pc-header-item-wrap" @click="close">
+        <router-link to="/login" class="pc-header-item-wrap" @click="onLogout">
           <img
             class="pc-header-icon"
             src="/logoutBlueIcon.svg"
@@ -42,7 +42,7 @@
       </div>
 
       <div class="pc-user-wrap">
-        <div class="pc-user-name-text">伊地智 明佳</div>
+        <div class="pc-user-name-text">{{ authStore.user?.userName }}</div>
         <span class="pc-user-suffix-text">さん</span>
       </div>
 
@@ -106,12 +106,22 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '../../../stores/auth'
+
+const authStore = useAuthStore()
+
 const props = defineProps<{ visible: boolean }>()
 
 const emit = defineEmits(['close'])
 
 /** サイドメニューを閉じる */
 const close = () => emit('close')
+
+/** ログアウト */
+const onLogout = () => {
+  authStore.logout()
+  close()
+}
 </script>
 
 <style scoped>

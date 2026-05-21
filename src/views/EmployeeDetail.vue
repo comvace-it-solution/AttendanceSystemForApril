@@ -4,56 +4,140 @@
     <h1 class="page-title">従業員詳細</h1>
 
     <div class="detail-list">
-      <div class="detail-item">
-        <div class="detail-label">ユーザー名：</div>
-        <div class="detail-value">伊地智 明佳</div>
-      </div>
-
-      <div class="detail-item">
-        <div class="detail-label">メールアドレス：</div>
-        <div class="detail-value">ice-creeeeem@gmail.com</div>
-      </div>
-
-      <div class="detail-item">
-        <div class="detail-label">パスワード：</div>
-        <div class="detail-value">＊＊＊＊＊＊</div>
-      </div>
-
-      <div class="detail-item">
-        <div class="detail-label">生年月日：</div>
-        <div class="detail-value">1999/06/19</div>
-      </div>
-
-      <div class="detail-item">
-        <div class="detail-label">電話番号：</div>
-        <div class="detail-value">090-1234-5678</div>
-      </div>
-
-      <div class="detail-item">
-        <div class="detail-label">郵便番号：</div>
-        <div class="detail-value">114-0033</div>
-      </div>
-
-      <div class="detail-item">
-        <div class="detail-label">住所：</div>
-        <div class="detail-value">
-          東京都北区東十条１丁目　十条タウン　１０１
+      <div v-for="item in detailItems" :key="item.label" class="detail-item">
+        <div class="detail-label">
+          {{ item.label }}
         </div>
-      </div>
 
-      <div class="detail-item">
-        <div class="detail-label">配属日：</div>
-        <div class="detail-value">2026/04/15</div>
+        <div class="detail-value">
+          {{ item.value }}
+        </div>
       </div>
     </div>
 
     <div class="button-area">
-      <button type="button" class="edit-button">編集する</button>
+      <router-link
+        :to="{ name: 'EmployeeEdit', params: { id: authStore.user?.userId } }"
+        class="edit-button"
+        >編集する
+      </router-link>
     </div>
   </main>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { useEmployeeDetail } from '../composables/useEmployeeDetail'
+import { useAuthStore } from '../stores/auth'
+
+const authStore = useAuthStore()
+
+const route = useRoute()
+
+const { employeeDetail, fetchEmployeeDetail } = useEmployeeDetail()
+
+const detailItems = computed(() => [
+  {
+    label: 'ユーザー名：',
+    value: employeeDetail.value?.userName,
+  },
+
+  {
+    label: 'メールアドレス：',
+    value: employeeDetail.value?.email,
+  },
+
+  {
+    label: 'パスワード：',
+    value: '＊＊＊＊＊＊',
+  },
+
+  {
+    label: '生年月日：',
+    value: formatDate(employeeDetail.value?.birthDate),
+  },
+
+  {
+    label: '電話番号：',
+    value: formatPhone(employeeDetail.value?.phoneNumber),
+  },
+
+  {
+    label: '郵便番号：',
+    value: formatPostalCode(employeeDetail.value?.postalCode),
+  },
+
+  {
+    label: '住所：',
+    value: fullAddress.value,
+  },
+
+  {
+    label: '配属日：',
+    value: formatDate(employeeDetail.value?.assignmentDate),
+  },
+])
+
+/**
+ * ログインユーザーID
+ */
+const userId = computed(() => {
+  return Number(authStore.user?.userId)
+})
+
+/**
+ * 住所表示用
+ */
+const fullAddress = computed(() => {
+  if (!employeeDetail.value) return ''
+
+  return [
+    employeeDetail.value.prefecture,
+    employeeDetail.value.streetAddress,
+    employeeDetail.value.buildingName,
+  ]
+    .filter(Boolean)
+    .join('')
+})
+
+/**
+ * 日付表示フォーマット
+ * 2026-04-15 → 2026/04/15
+ */
+const formatDate = (date?: string) => {
+  if (!date) return ''
+
+  return date.replaceAll('-', '/')
+}
+
+/**
+ * 電話番号表示フォーマット
+ * 09012345678 → 090-1234-5678
+ */
+const formatPhone = (phoneNumber?: string) => {
+  if (!phoneNumber) return ''
+
+  return phoneNumber.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')
+}
+
+/**
+ * 郵便番号表示フォーマット
+ * 1140033 → 114-0033
+ */
+const formatPostalCode = (postalCode?: string) => {
+  if (!postalCode) return ''
+
+  return postalCode.replace(/(\d{3})(\d{4})/, '$1-$2')
+}
+
+/**
+ * 初期表示時に従業員詳細取得
+ */
+onMounted(async () => {
+  await fetchEmployeeDetail(userId.value)
+})
+</script>
 
 <style scoped>
 .employee-detail-page {

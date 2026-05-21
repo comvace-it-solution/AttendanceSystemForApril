@@ -3,6 +3,7 @@
     <div class="sp-container">
       <div class="sp-hamburger-wrap">
         <button
+          v-if="authStore.isAuthenticated"
           class="sp-hamburger"
           :class="{ open: sideVisible }"
           @click="toggleSide"
@@ -18,6 +19,7 @@
         <img class="sp-logo" src="/logo.svg" alt="ロゴ" />
       </div>
       <router-link
+        v-if="authStore.isAuthenticated"
         :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
         class="sp-profile-wrap"
       >
@@ -26,7 +28,7 @@
           src="/profeelBearWhiteIcon.svg"
           alt="プロフィールアイコン"
         />
-        <div>伊地智 明佳</div>
+        <div>{{ authStore.user?.userName }}</div>
       </router-link>
     </div>
     <AppSideMenuMobile :visible="sideVisible" @close="sideVisible = false" />
@@ -36,6 +38,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import AppSideMenuMobile from '../sideMenu/AppSideMenuMobile.vue'
+import { useAuthStore } from '../../../stores/auth'
+
+const authStore = useAuthStore()
 
 const sideVisible = ref(false)
 const toggleSide = () => {

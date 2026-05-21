@@ -5,7 +5,11 @@
       <div class="pc-brand-wrap">
         <img class="pc-logo" src="/logo.svg" alt="ロゴ" />
       </div>
-      <nav class="pc-nav-wrap" aria-label="メインナビ">
+      <nav
+        v-if="authStore.isAuthenticated"
+        class="pc-nav-wrap"
+        aria-label="メインナビ"
+      >
         <router-link
           :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
           class="pc-nav-item"
@@ -21,7 +25,7 @@
             "
             alt="プロフィールアイコン"
           />
-          <div>伊地智 明佳</div>
+          <div>{{ authStore.user?.userName }}</div>
         </router-link>
         <div
           class="pc-nav-item"
@@ -48,6 +52,9 @@
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import AppSideMenuDesktop from '../sideMenu/AppSideMenuDesktop.vue'
+import { useAuthStore } from '../../../stores/auth'
+
+const authStore = useAuthStore()
 
 /** サイドメニューの表示・非表示*/
 const sideVisible = ref(false),

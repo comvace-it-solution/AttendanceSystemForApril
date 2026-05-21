@@ -3,25 +3,46 @@
   <main class="employee-register-page">
     <h1 class="page-title">従業員登録</h1>
 
-    <form class="register-form">
+    <!-- 登録フォーム -->
+    <form class="register-form" @submit.prevent="handleRegister">
+      <!-- ユーザー名 -->
       <div class="form-group">
-        <label><span class="required">必須</span>ユーザー名</label>
-        <input type="text" placeholder="例: 山田花子" />
+        <label>
+          <span class="required">必須</span>
+          ユーザー名
+        </label>
+        <input v-model="form.userName" type="text" placeholder="例: 山田花子" />
       </div>
 
+      <!-- メールアドレス -->
       <div class="form-group">
-        <label><span class="required">必須</span>メールアドレス</label>
-        <input type="email" placeholder="例: contact@example.com" />
+        <label>
+          <span class="required">必須</span>
+          メールアドレス
+        </label>
+
+        <input
+          v-model="form.email"
+          type="email"
+          placeholder="例: contact@example.com"
+        />
       </div>
 
+      <!-- パスワード -->
       <div class="form-group">
-        <label><span class="required">必須</span>パスワード</label>
+        <label>
+          <span class="required">必須</span>
+          パスワード
+        </label>
+
         <div class="input-icon-wrap">
           <input
             :type="isPasswordVisible ? 'text' : 'password'"
-            v-model="password"
+            v-model="form.password"
             placeholder="半角英数混合6文字"
           />
+
+          <!-- パスワード表示切替 -->
           <img
             class="eye-icon"
             :src="
@@ -33,14 +54,21 @@
         </div>
       </div>
 
+      <!-- パスワード確認 -->
       <div class="form-group">
-        <label><span class="required">必須</span>パスワード（確認用）</label>
+        <label>
+          <span class="required">必須</span>
+          パスワード（確認用）
+        </label>
+
         <div class="input-icon-wrap">
           <input
             :type="isSecondPasswordVisible ? 'text' : 'password'"
             v-model="secondPassword"
             placeholder="半角英数混合6文字"
           />
+
+          <!-- パスワード表示切替 -->
           <img
             class="eye-icon"
             :src="
@@ -54,38 +82,75 @@
         </div>
       </div>
 
+      <!-- 電話番号 -->
       <div class="form-group">
         <div class="label-row">
-          <label><span class="required">必須</span>電話番号</label>
+          <label>
+            <span class="required">必須</span>
+            電話番号
+          </label>
+
           <p class="helper-text">※ハイフン(-)は自動で入力されます。</p>
         </div>
+
         <input
           type="tel"
-          v-model="phone"
+          v-model="form.phoneNumber"
           @input="formatPhone"
           placeholder="例:090-0000-0000"
         />
       </div>
 
+      <!-- 郵便番号 -->
       <div class="form-group">
-        <label><span class="required">必須</span>郵便番号</label>
+        <label>
+          <span class="required">必須</span>
+          郵便番号
+        </label>
+
         <div class="postal-row sp-postal-row">
           <div class="postal-row">
-            <input class="postal-first" type="text" placeholder="000" />
+            <!-- 郵便番号前半 -->
+            <input
+              class="postal-first"
+              v-model="postalCodeFirst"
+              type="text"
+              placeholder="000"
+            />
+
             <span class="hyphen">-</span>
-            <input class="postal-second" type="text" placeholder="0000" />
+
+            <!-- 郵便番号後半 -->
+            <input
+              class="postal-second"
+              v-model="postalCodeSecond"
+              type="text"
+              placeholder="0000"
+            />
           </div>
-          <button type="button" class="search-button">郵便番号検索</button>
+
+          <!-- 郵便番号検索 -->
+          <button
+            type="button"
+            class="search-button"
+            @click="onSearchPostalCode"
+          >
+            郵便番号検索
+          </button>
         </div>
       </div>
 
+      <!-- 都道府県 -->
       <div class="form-group prefecture-group">
-        <label><span class="required">必須</span>都道府県</label>
+        <label>
+          <span class="required">必須</span>
+          都道府県
+        </label>
 
         <div class="date-row">
           <select
-            v-model="prefecture"
-            :class="{ selected: prefecture }"
+            v-model="form.prefecture"
+            :class="{ selected: form.prefecture }"
             class="date-select prefecture-dropdown"
           >
             <option value="">選択してください</option>
@@ -97,18 +162,37 @@
         </div>
       </div>
 
+      <!-- 住所 -->
       <div class="form-group">
-        <label><span class="required">必須</span>住所</label>
-        <input type="text" placeholder="例: ○○区○○" />
+        <label>
+          <span class="required">必須</span>
+          住所
+        </label>
+
+        <input
+          v-model="form.streetAddress"
+          type="text"
+          placeholder="例: ○○区○○"
+        />
       </div>
 
+      <!-- 建物名 -->
       <div class="form-group">
         <label>建物名</label>
-        <input type="text" placeholder="例: ○○タウン 101" />
+
+        <input
+          v-model="form.buildingName"
+          type="text"
+          placeholder="例: ○○タウン 101"
+        />
       </div>
 
+      <!-- 生年月日 -->
       <div class="form-group">
-        <label><span class="required">必須</span>生年月日</label>
+        <label>
+          <span class="required">必須</span>
+          生年月日
+        </label>
 
         <div class="date-row">
           <!-- 年 -->
@@ -118,10 +202,12 @@
             class="date-select year-date"
           >
             <option value="">YYYY</option>
+
             <option v-for="y in birthYears" :key="y" :value="y">
               {{ y }}
             </option>
           </select>
+
           <span>年</span>
 
           <!-- 月 -->
@@ -131,10 +217,16 @@
             class="date-select month-date"
           >
             <option value="">MM</option>
-            <option v-for="m in 12" :key="m" :value="m">
+
+            <option
+              v-for="m in 12"
+              :key="m"
+              :value="String(m).padStart(2, '0')"
+            >
               {{ String(m).padStart(2, '0') }}
             </option>
           </select>
+
           <span>月</span>
 
           <!-- 日 -->
@@ -144,58 +236,88 @@
             class="date-select day-date"
           >
             <option value="">DD</option>
-            <option v-for="d in birthDays" :key="d" :value="d">
+
+            <option
+              v-for="d in birthDays"
+              :key="d"
+              :value="String(d).padStart(2, '0')"
+            >
               {{ String(d).padStart(2, '0') }}
             </option>
           </select>
+
           <span>日</span>
         </div>
       </div>
 
+      <!-- 配属日 -->
       <div class="form-group">
-        <label><span class="required">必須</span>配属日</label>
+        <label>
+          <span class="required">必須</span>
+          配属日
+        </label>
 
         <div class="date-row">
+          <!-- 年 -->
           <select
             v-model="assignYear"
             :class="{ selected: assignYear }"
             class="date-select year-date"
           >
             <option value="">YYYY</option>
+
             <option v-for="y in assignYears" :key="y" :value="y">
               {{ y }}
             </option>
           </select>
+
           <span>年</span>
 
+          <!-- 月 -->
           <select
             v-model="assignMonth"
             :class="{ selected: assignMonth }"
             class="date-select month-date"
           >
             <option value="">MM</option>
-            <option v-for="m in 12" :key="m" :value="m">
+
+            <option
+              v-for="m in 12"
+              :key="m"
+              :value="String(m).padStart(2, '0')"
+            >
               {{ String(m).padStart(2, '0') }}
             </option>
           </select>
+
           <span>月</span>
 
+          <!-- 日 -->
           <select
             v-model="assignDay"
             :class="{ selected: assignDay }"
             class="date-select day-date"
           >
             <option value="">DD</option>
-            <option v-for="d in assignDays" :key="d" :value="d">
+
+            <option
+              v-for="d in assignDays"
+              :key="d"
+              :value="String(d).padStart(2, '0')"
+            >
               {{ String(d).padStart(2, '0') }}
             </option>
           </select>
+
           <span>日</span>
         </div>
       </div>
 
+      <!-- ボタン -->
       <div class="button-area">
+        <!-- 登録 -->
         <button type="submit" class="submit-button">上記の内容で登録</button>
+        <!-- キャンセル -->
         <button type="button" class="cancel-button">キャンセル</button>
       </div>
     </form>
@@ -204,78 +326,218 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useEmployeeRegister } from '../composables/useEmployeeRegister'
+import { useZipCode } from '../composables/useZipCode'
 
-const birthYear = ref('')
-const birthMonth = ref('')
-const birthDay = ref('')
+const { searchAddressByPostalCode } = useZipCode()
 
+/**
+ * 郵便番号検索
+ */
+const onSearchPostalCode = async () => {
+  /**
+   * 郵便番号結合
+   */
+  const postalCode = postalCodeFirst.value + postalCodeSecond.value
+
+  /**
+   * 7桁チェック
+   */
+  if (postalCode.length !== 7) {
+    return
+  }
+
+  /**
+   * API実行
+   */
+  const address = await searchAddressByPostalCode(postalCode)
+
+  /**
+   * データなし
+   */
+  if (!address) {
+    return
+  }
+
+  /**
+   * 住所反映
+   */
+  form.prefecture = address.prefecture
+
+  form.streetAddress = `${address.city}${address.town}`
+}
+
+/**
+ * composableから取得
+ * form：APIへ送る値
+ * onRegister：登録API実行
+ */
+const { form, onRegister } = useEmployeeRegister()
+
+/**
+ * パスワード表示切替フラグ
+ */
+const isPasswordVisible = ref(false)
+
+/**
+ * 確認用パスワード表示切替フラグ
+ */
+const isSecondPasswordVisible = ref(false)
+
+/**
+ * 確認用パスワード
+ * ※ APIには送らない
+ */
+const secondPassword = ref('')
+
+/**
+ * 郵便番号前半3桁
+ */
+const postalCodeFirst = ref('')
+
+/**
+ * 郵便番号後半4桁
+ */
+const postalCodeSecond = ref('')
+
+/**
+ * 現在年
+ */
 const currentYear = new Date().getFullYear()
 
-// 生年月日は「今年まで」
+/* =====================================================
+  生年月日
+===================================================== */
+
+/**
+ * 生年月日 年
+ */
+const birthYear = ref('')
+
+/**
+ * 生年月日 月
+ */
+const birthMonth = ref('')
+
+/**
+ * 生年月日 日
+ */
+const birthDay = ref('')
+
+/**
+ * 生年月日 年一覧
+ * 今年〜100年前
+ */
 const birthYears = Array.from({ length: 100 }, (_, i) => currentYear - i)
-// 月に応じた日数
+
+/**
+ * 生年月日の日数を月ごとに変更
+ */
 const birthDays = computed(() => {
   if (!birthYear.value || !birthMonth.value) return 31
+
   return new Date(
     Number(birthYear.value),
     Number(birthMonth.value),
     0,
   ).getDate()
 })
-// 月や年変えたら日リセット
+
+/**
+ * 年・月変更時に日をリセット
+ */
 watch([birthYear, birthMonth], () => {
   birthDay.value = ''
 })
 
+/* =====================================================
+  配属日
+===================================================== */
+
+/**
+ * 配属日 年
+ */
 const assignYear = ref('')
+
+/**
+ * 配属日 月
+ */
 const assignMonth = ref('')
+
+/**
+ * 配属日 日
+ */
 const assignDay = ref('')
 
+/**
+ * 配属日 年一覧
+ * 過去100年〜未来10年
+ */
 const assignYears = Array.from({ length: 111 }, (_, i) => currentYear + 10 - i)
-// 月に応じた日数
+
+/**
+ * 配属日の日数を月ごとに変更
+ */
 const assignDays = computed(() => {
   if (!assignYear.value || !assignMonth.value) return 31
+
   return new Date(
     Number(assignYear.value),
     Number(assignMonth.value),
     0,
   ).getDate()
 })
-// 年・月変更時に日をリセット
+
+/**
+ * 年・月変更時に日をリセット
+ */
 watch([assignYear, assignMonth], () => {
   assignDay.value = ''
 })
 
-const phone = ref('')
-/** 電話番号のフォーマットを整える */
+/* =====================================================
+  電話番号
+===================================================== */
+
+/**
+ * 電話番号フォーマット
+ * ・全角→半角変換
+ * ・ハイフン自動付与
+ */
 const formatPhone = () => {
-  let value = phone.value
-  // 全角 → 半角変換
+  let value = form.phoneNumber
+
+  /**
+   * 全角数字を半角へ変換
+   */
   value = value.replace(/[０-９]/g, (s) =>
     String.fromCharCode(s.charCodeAt(0) - 0xfee0),
   )
-  // 数字だけにする
+
+  /**
+   * 数字以外除去
+   */
   value = value.replace(/\D/g, '')
-  // ハイフン付与
+
+  /**
+   * ハイフン付与
+   */
   if (value.length > 3 && value.length <= 7) {
     value = value.replace(/(\d{3})(\d+)/, '$1-$2')
   } else if (value.length > 7) {
     value = value.replace(/(\d{3})(\d{4})(\d+)/, '$1-$2-$3')
   }
-  phone.value = value
+
+  form.phoneNumber = value
 }
 
-/** パスワードアイコンのホバー状態を管理 */
-const isPasswordVisible = ref(false)
+/* =====================================================
+  都道府県
+===================================================== */
 
-/** パスワード確認用アイコンのホバー状態を管理 */
-const isSecondPasswordVisible = ref(false)
-
-const password = ref('')
-const secondPassword = ref('')
-
-const prefecture = ref('')
-
+/**
+ * 都道府県一覧
+ */
 const prefectures = [
   '北海道',
   '青森県',
@@ -325,6 +587,61 @@ const prefectures = [
   '鹿児島県',
   '沖縄県',
 ]
+
+/* =====================================================
+  登録処理
+===================================================== */
+
+/**
+ * 登録ボタン押下時
+ */
+const handleRegister = async () => {
+  /**
+   * 郵便番号結合
+   * 例：114 + 0033 → 1140033
+   */
+  form.postalCode = postalCodeFirst.value + postalCodeSecond.value
+
+  /**
+   * 電話番号のハイフン除去
+   */
+  form.phoneNumber = form.phoneNumber.replace(/-/g, '')
+
+  /**
+   * 生年月日整形
+   * YYYY-MM-DD
+   */
+  form.birthDate =
+    birthYear.value && birthMonth.value && birthDay.value
+      ? `${birthYear.value}-${birthMonth.value}-${birthDay.value}`
+      : ''
+
+  /**
+   * 配属日整形
+   * YYYY-MM-DD
+   */
+  form.assignmentDate =
+    assignYear.value && assignMonth.value && assignDay.value
+      ? `${assignYear.value}-${assignMonth.value}-${assignDay.value}`
+      : ''
+
+  console.log('登録API送信内容', {
+    userName: form.userName,
+    password: form.password,
+    email: form.email,
+    phoneNumber: form.phoneNumber,
+    postalCode: form.postalCode,
+    prefecture: form.prefecture,
+    streetAddress: form.streetAddress,
+    buildingName: form.buildingName,
+    birthDate: form.birthDate,
+    assignmentDate: form.assignmentDate,
+  })
+  /**
+   * API実行
+   */
+  await onRegister()
+}
 </script>
 
 <style scoped>

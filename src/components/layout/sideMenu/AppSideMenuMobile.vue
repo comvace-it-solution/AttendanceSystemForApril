@@ -39,7 +39,11 @@
       </header>
 
       <nav class="sp-menu-list-wrap">
-        <router-link to="/login" class="sp-sub-menu-item-wrap" @click="close">
+        <router-link
+          to="/login"
+          class="sp-sub-menu-item-wrap"
+          @click="onLogout"
+        >
           <img
             class="sp-menu-icon"
             src="/logoutBlueIcon.svg"
@@ -77,12 +81,21 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '../../../stores/auth'
+
+const authStore = useAuthStore()
 const props = defineProps<{ visible: boolean }>()
 
 const emit = defineEmits(['close'])
 
 /** サイドメニューを閉じる */
 const close = () => emit('close')
+
+/** ログアウト */
+const onLogout = () => {
+  authStore.logout()
+  close()
+}
 </script>
 
 <style scoped>
