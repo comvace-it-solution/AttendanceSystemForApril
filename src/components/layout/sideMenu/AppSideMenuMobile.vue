@@ -3,7 +3,6 @@
 <template>
   <div>
     <div class="sp-overlay-wrap" v-show="visible" @click="close"></div>
-
     <aside
       class="sp-side-menu-wrap"
       v-show="visible"
@@ -13,7 +12,6 @@
       <header class="sp-section-header-wrap">
         <span>マイメニュー</span>
       </header>
-
       <nav class="sp-menu-list-wrap" @click="close">
         <router-link to="/home" class="sp-menu-item-wrap" @click="close">
           <img
@@ -23,7 +21,6 @@
           />
           <span>ダッシュボード</span>
         </router-link>
-
         <router-link to="/home" class="sp-menu-item-wrap" @click="close">
           <img
             class="sp-menu-icon"
@@ -33,11 +30,9 @@
           <span>従業員一覧</span>
         </router-link>
       </nav>
-
       <header class="sp-section-header-wrap">
         <span>その他</span>
       </header>
-
       <nav class="sp-menu-list-wrap">
         <router-link
           to="/login"
@@ -50,30 +45,6 @@
             alt="ログアウトアイコン"
           />
           <span>ログアウト</span>
-        </router-link>
-
-        <router-link
-          to="/employee/register"
-          class="sp-sub-menu-item-wrap"
-          @click="close"
-        >
-          従業員登録
-        </router-link>
-
-        <router-link
-          :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
-          class="sp-sub-menu-item-wrap"
-          @click="close"
-        >
-          従業員詳細
-        </router-link>
-
-        <router-link
-          :to="{ name: 'EmployeeEdit', params: { id: 1 } }"
-          class="sp-sub-menu-item-wrap"
-          @click="close"
-        >
-          従業員編集
         </router-link>
       </nav>
     </aside>

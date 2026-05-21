@@ -20,7 +20,7 @@
       </div>
       <router-link
         v-if="authStore.isAuthenticated"
-        :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
+        to="/home"
         class="sp-profile-wrap"
       >
         <img

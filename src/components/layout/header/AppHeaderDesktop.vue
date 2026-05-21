@@ -11,7 +11,7 @@
         aria-label="メインナビ"
       >
         <router-link
-          :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
+          to="/home"
           class="pc-nav-item"
           @mouseenter="isProfeelHover = true"
           @mouseleave="isProfeelHover = false"

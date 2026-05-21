@@ -2,7 +2,6 @@
   <transition name="fade">
     <div class="pc-overlay-wrap" v-show="visible" @click="close"></div>
   </transition>
-
   <transition name="slide-right">
     <aside
       class="pc-side-menu-wrap"
@@ -27,11 +26,7 @@
           />
           <div class="pc-header-text">ログアウト</div>
         </router-link>
-        <router-link
-          :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
-          class="pc-header-item-wrap"
-          @click="close"
-        >
+        <router-link to="/home" class="pc-header-item-wrap" @click="close">
           <img
             class="pc-header-icon"
             src="/profeelBearBlueIcon.svg"
@@ -40,17 +35,14 @@
           <div class="pc-header-text">マイページ</div>
         </router-link>
       </div>
-
       <div class="pc-user-wrap">
         <div class="pc-user-name-text">{{ authStore.user?.userName }}</div>
         <span class="pc-user-suffix-text">さん</span>
       </div>
-
       <div class="pc-menu-wrap">
         <header class="pc-section-header-wrap">
           <span>マイメニュー</span>
         </header>
-
         <nav class="pc-menu-list-wrap">
           <router-link to="/home" class="pc-menu-item-wrap" @click="close">
             <img
@@ -60,7 +52,6 @@
             />
             <span>ダッシュボード</span>
           </router-link>
-
           <router-link to="/home" class="pc-menu-item-wrap" @click="close">
             <img
               class="pc-menu-icon"
@@ -68,36 +59,6 @@
               alt="従業員一覧アイコン"
             />
             <span>従業員一覧</span>
-          </router-link>
-        </nav>
-
-        <header class="pc-section-header-wrap">
-          <span>その他</span>
-        </header>
-
-        <nav class="pc-menu-list-wrap">
-          <router-link
-            to="/employee/register"
-            class="pc-sub-menu-item-wrap"
-            @click="close"
-          >
-            <span>従業員登録</span>
-          </router-link>
-
-          <router-link
-            :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
-            class="pc-sub-menu-item-wrap"
-            @click="close"
-          >
-            <span>従業員詳細</span>
-          </router-link>
-
-          <router-link
-            :to="{ name: 'EmployeeEdit', params: { id: 1 } }"
-            class="pc-sub-menu-item-wrap"
-            @click="close"
-          >
-            <span>従業員編集</span>
           </router-link>
         </nav>
       </div>
