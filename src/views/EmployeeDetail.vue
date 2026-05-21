@@ -46,7 +46,10 @@ const { employeeDetail, fetchEmployeeDetail } = useEmployeeDetail()
  * ===================== */
 /** ログインユーザーID */
 const userId = computed(() => {
-  return Number(authStore.user?.userId)
+  // return Number(authStore.user?.userId)
+  // TODO 画面遷移ができないので一旦固定値を入れてます編集したいuserIdを入れて使用してください
+  // 例：return 52 ←のIDを変えると、編集画面に遷移した際のユーザー情報が変わります
+  return 51
 })
 
 /** 住所を結合して表示用 */
