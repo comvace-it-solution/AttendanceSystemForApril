@@ -2,7 +2,6 @@
 <template>
   <main class="employee-register-page">
     <h1 class="page-title">従業員登録</h1>
-
     <!-- 登録フォーム -->
     <form class="register-form" @submit.prevent="handleRegister">
       <!-- ユーザー名 -->
@@ -13,35 +12,30 @@
         </label>
         <input v-model="form.userName" type="text" placeholder="例: 山田花子" />
       </div>
-
       <!-- メールアドレス -->
       <div class="form-group">
         <label>
           <span class="required">必須</span>
           メールアドレス
         </label>
-
         <input
           v-model="form.email"
           type="email"
           placeholder="例: contact@example.com"
         />
       </div>
-
       <!-- パスワード -->
       <div class="form-group">
         <label>
           <span class="required">必須</span>
           パスワード
         </label>
-
         <div class="input-icon-wrap">
           <input
             :type="isPasswordVisible ? 'text' : 'password'"
             v-model="form.password"
             placeholder="半角英数混合6文字"
           />
-
           <!-- パスワード表示切替 -->
           <img
             class="eye-icon"
@@ -53,21 +47,18 @@
           />
         </div>
       </div>
-
       <!-- パスワード確認 -->
       <div class="form-group">
         <label>
           <span class="required">必須</span>
           パスワード（確認用）
         </label>
-
         <div class="input-icon-wrap">
           <input
             :type="isSecondPasswordVisible ? 'text' : 'password'"
             v-model="secondPassword"
             placeholder="半角英数混合6文字"
           />
-
           <!-- パスワード表示切替 -->
           <img
             class="eye-icon"
@@ -81,7 +72,6 @@
           />
         </div>
       </div>
-
       <!-- 電話番号 -->
       <div class="form-group">
         <div class="label-row">
@@ -89,10 +79,8 @@
             <span class="required">必須</span>
             電話番号
           </label>
-
           <p class="helper-text">※ハイフン(-)は自動で入力されます。</p>
         </div>
-
         <input
           type="tel"
           v-model="form.phoneNumber"
@@ -100,14 +88,12 @@
           placeholder="例:090-0000-0000"
         />
       </div>
-
       <!-- 郵便番号 -->
       <div class="form-group">
         <label>
           <span class="required">必須</span>
           郵便番号
         </label>
-
         <div class="postal-row sp-postal-row">
           <div class="postal-row">
             <!-- 郵便番号前半 -->
@@ -117,9 +103,7 @@
               type="text"
               placeholder="000"
             />
-
             <span class="hyphen">-</span>
-
             <!-- 郵便番号後半 -->
             <input
               class="postal-second"
@@ -128,7 +112,6 @@
               placeholder="0000"
             />
           </div>
-
           <!-- 郵便番号検索 -->
           <button
             type="button"
@@ -139,14 +122,12 @@
           </button>
         </div>
       </div>
-
       <!-- 都道府県 -->
       <div class="form-group prefecture-group">
         <label>
           <span class="required">必須</span>
           都道府県
         </label>
-
         <div class="date-row">
           <select
             v-model="form.prefecture"
@@ -154,46 +135,39 @@
             class="date-select prefecture-dropdown"
           >
             <option value="">選択してください</option>
-
             <option v-for="p in prefectures" :key="p" :value="p">
               {{ p }}
             </option>
           </select>
         </div>
       </div>
-
       <!-- 住所 -->
       <div class="form-group">
         <label>
           <span class="required">必須</span>
           住所
         </label>
-
         <input
           v-model="form.streetAddress"
           type="text"
           placeholder="例: ○○区○○"
         />
       </div>
-
       <!-- 建物名 -->
       <div class="form-group">
         <label>建物名</label>
-
         <input
           v-model="form.buildingName"
           type="text"
           placeholder="例: ○○タウン 101"
         />
       </div>
-
       <!-- 生年月日 -->
       <div class="form-group">
         <label>
           <span class="required">必須</span>
           生年月日
         </label>
-
         <div class="date-row">
           <!-- 年 -->
           <select
@@ -202,14 +176,11 @@
             class="date-select year-date"
           >
             <option value="">YYYY</option>
-
             <option v-for="y in birthYears" :key="y" :value="y">
               {{ y }}
             </option>
           </select>
-
           <span>年</span>
-
           <!-- 月 -->
           <select
             v-model="birthMonth"
@@ -217,7 +188,6 @@
             class="date-select month-date"
           >
             <option value="">MM</option>
-
             <option
               v-for="m in 12"
               :key="m"
@@ -226,9 +196,7 @@
               {{ String(m).padStart(2, '0') }}
             </option>
           </select>
-
           <span>月</span>
-
           <!-- 日 -->
           <select
             v-model="birthDay"
@@ -236,7 +204,6 @@
             class="date-select day-date"
           >
             <option value="">DD</option>
-
             <option
               v-for="d in birthDays"
               :key="d"
@@ -245,18 +212,15 @@
               {{ String(d).padStart(2, '0') }}
             </option>
           </select>
-
           <span>日</span>
         </div>
       </div>
-
       <!-- 配属日 -->
       <div class="form-group">
         <label>
           <span class="required">必須</span>
           配属日
         </label>
-
         <div class="date-row">
           <!-- 年 -->
           <select
@@ -265,14 +229,11 @@
             class="date-select year-date"
           >
             <option value="">YYYY</option>
-
             <option v-for="y in assignYears" :key="y" :value="y">
               {{ y }}
             </option>
           </select>
-
           <span>年</span>
-
           <!-- 月 -->
           <select
             v-model="assignMonth"
@@ -280,7 +241,6 @@
             class="date-select month-date"
           >
             <option value="">MM</option>
-
             <option
               v-for="m in 12"
               :key="m"
@@ -289,9 +249,7 @@
               {{ String(m).padStart(2, '0') }}
             </option>
           </select>
-
           <span>月</span>
-
           <!-- 日 -->
           <select
             v-model="assignDay"
@@ -299,7 +257,6 @@
             class="date-select day-date"
           >
             <option value="">DD</option>
-
             <option
               v-for="d in assignDays"
               :key="d"
@@ -308,11 +265,9 @@
               {{ String(d).padStart(2, '0') }}
             </option>
           </select>
-
           <span>日</span>
         </div>
       </div>
-
       <!-- ボタン -->
       <div class="button-area">
         <!-- 登録 -->

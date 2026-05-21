@@ -2,7 +2,6 @@
 <template>
   <main class="employee-detail-page">
     <h1 class="page-title">従業員詳細</h1>
-
     <div class="detail-list">
       <div v-for="item in detailItems" :key="item.label" class="detail-item">
         <div class="detail-label">
@@ -14,7 +13,6 @@
         </div>
       </div>
     </div>
-
     <div class="button-area">
       <router-link
         :to="{ name: 'EmployeeEdit', params: { id: authStore.user?.userId } }"
