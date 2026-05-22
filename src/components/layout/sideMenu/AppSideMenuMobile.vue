@@ -53,7 +53,7 @@
         </router-link>
 
         <router-link
-          to="/employee/register"
+          to="/register"
           class="sp-sub-menu-item-wrap"
           @click="close"
         >

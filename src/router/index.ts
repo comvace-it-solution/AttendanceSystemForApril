@@ -33,7 +33,7 @@ const router = createRouter({
     },
     // 従業員詳細
     {
-      path: 'detail/:id',
+      path: '/detail/:id',
       name: 'EmployeeDetail',
       component: EmployeeDetail,
     },

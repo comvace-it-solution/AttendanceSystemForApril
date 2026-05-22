@@ -77,7 +77,7 @@
 
         <nav class="pc-menu-list-wrap">
           <router-link
-            to="/employee/register"
+            to="/register"
             class="pc-sub-menu-item-wrap"
             @click="close"
           >
