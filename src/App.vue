@@ -1,6 +1,4 @@
 <template>
-  <ModalTestView />
-  <EmployeeList />
   <RouterView />
   <!-- <main class="app-shell">
     <section class="hero-panel">
@@ -54,8 +52,3 @@
     </section>
   </main> -->
 </template>
-
-<script setup lang="ts">
-import ModalTestView from './views/ModalTestView.vue'
-import EmployeeList from './views/EmployeeList.vue'
-</script>

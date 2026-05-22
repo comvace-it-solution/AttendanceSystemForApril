@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 // 各画面をインポート
 // import LoginView from '@/views/LoginView.vue'
 import AttendanceDetailsView from "../views/AttendanceDetailsView.vue";
+import EmployeeList from "../views/EmployeeList.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -19,6 +20,11 @@ const router = createRouter({
         id: Number(route.params.id),
         initialName: route.query.name as string,
       }),
+    },
+    {
+      path: "/EmployeeList",
+      name: "EmployeeList",
+      component: EmployeeList,
     },
   ],
 });

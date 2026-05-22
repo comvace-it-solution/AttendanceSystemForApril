@@ -112,7 +112,7 @@
 
     <Modal v-model="errorModalVisible" :title="modalTitle" @ok="closeErrorModal" />
     <Snackbar v-model="snackbarVisible" :message="snackbarMessage" :type="snackbarType" />
-    <Dialog v-model="deleteDialogVisible" @delete="handleConfirmDelete" @cancel="handleCancelDelete" />
+    <Dialog v-model="dialogVisible" :title="dialogTitle" :confirm-text="confirmButtonText" :confirm-button-color="confirmButtonColor" @confirm="handleConfirmDelete" @cancel="handleCancelDelete" />
     <SortBottomSheet v-model="sortBottomSheetVisible" :sort-key="sortKey" :sort-order="sortOrder" @apply="handleApplySort" />
   </div>
 </template>
@@ -127,6 +127,7 @@ import { useEmployeeList } from '../composables/useEmployeeList'
 import { useEmployeeDelete } from '../composables/useEmployeeDelete'
 import { useFeedbackMessage } from '../composables/useFeedbackMessage'
 import { useRouter } from 'vue-router'
+import { useDialogMessage } from '../composables/useDialogMessage'
 
 const router = useRouter()
 
@@ -139,8 +140,6 @@ const sortOrder = ref<SortOrder>('asc')
 
 const searchKeyword = ref('')
 const appliedSearchKeyword = ref('')
-
-const deleteDialogVisible = ref(false)
 const selectedDeleteUserId = ref('')
 
 const isMobile = ref(false)
@@ -148,6 +147,14 @@ const isMobile = ref(false)
 const updateIsMobile = () => {
   isMobile.value = window.innerWidth <= 480
 }
+
+const {
+  dialogVisible,
+  dialogTitle,
+  confirmButtonText,
+  confirmButtonColor,
+  openDeleteDialog
+} = useDialogMessage()
 
 onMounted(() => {
   updateIsMobile()
@@ -278,7 +285,9 @@ const handleNameClick = (userId: string) => {
   console.log('氏名押下:', userId)
 }
 
-const handleAttendanceDetailClick = (userId: string) => {
+const handleAttendanceDetailClick = (userId: string, userName: string) => {
+  console.log('勤怠詳細押下:', userId, userName)
+
   router.push({
     name: 'AttendanceDetails',
     params: { id: userId },
@@ -287,12 +296,13 @@ const handleAttendanceDetailClick = (userId: string) => {
 }
 
 const handleDeleteClick = (userId: string) => {
+  console.log('削除ボタン押下:', userId)
   selectedDeleteUserId.value = userId
-  deleteDialogVisible.value = true
+  openDeleteDialog()
 }
 
 const handleConfirmDelete = async () => {
-  const result = await deleteEmployee(selectedDeleteUserId.value)
+  const result = await deleteEmployee(Number(selectedDeleteUserId.value).toString())
 
   if (result === 'success') {
     openDeleteSuccessSnackbar()
