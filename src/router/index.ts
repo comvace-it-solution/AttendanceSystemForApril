@@ -5,6 +5,7 @@ import AttendanceDetailsView from "../views/AttendanceDetailsView.vue";
 import EmployeeList from "../views/EmployeeList.vue";
 import EmployeeRegister from "../views/EmployeeRegister.vue";
 import EmployeeEdit from "../views/EmployeeEdit.vue";
+import EmployeeDetail from "../views/EmployeeDetail.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -39,7 +40,7 @@ const router = createRouter({
       component: EmployeeEdit,
     },
     {
-      path: "detail/:id",
+      path: "/detail/:id",
       name: "EmployeeDetail",
       component: EmployeeDetail,
     },
