@@ -1,10 +1,10 @@
 <template>
   <div class="container">
-    <el-dialog v-model="dialogVisible" :show-close="false" title="この従業員情報を削除しますか？" width="342px" height="128px" class="custom-dialog" :close-on-click-modal="false" :align-center="true">
+    <el-dialog v-model="dialogVisible" :show-close="false" :title="title" width="342px" height="128px" class="custom-dialog" :close-on-click-modal="false" :align-center="true">
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" color="#D32F2F" style="color: #FFFFFF;" @click="handleDeleteClick" class="button">
-            削除
+          <el-button type="primary" :color="confirmButtonColor" style="color: #FFFFFF;" @click="handleConfirmClick" class="button">
+            {{ confirmText }}
           </el-button>
           <el-button @click="handleCancelClick" class="cancel-button">キャンセル</el-button>
         </div>
@@ -18,11 +18,14 @@ import { computed } from 'vue'
 
 const props = defineProps<{
   modelValue: boolean
+  title: string
+  confirmText: string
+  confirmButtonColor: string
 }>()
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
-  (e: 'delete'): void
+  (e: 'confirm'): void
   (e: 'cancel'): void
 }>()
 
@@ -31,9 +34,9 @@ const dialogVisible = computed({
   set: (value: boolean) => emit('update:modelValue', value)
 })
 
-const handleDeleteClick = () => {
+const handleConfirmClick = () => {
   dialogVisible.value = false
-  emit('delete')
+  emit('confirm')
 }
 
 const handleCancelClick = () => {
