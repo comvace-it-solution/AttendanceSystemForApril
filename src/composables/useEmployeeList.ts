@@ -28,6 +28,17 @@ export function useEmployeeList() {
 
     return date.replaceAll("-", "/");
   };
+  const formatAttendanceState = (state: number | null) => {
+    if (state === 1) {
+      return "退勤";
+    }
+
+    if (state === 2) {
+      return "勤務中";
+    }
+
+    return "";
+  };
 
   // 従業員一覧情報を取得する処理
   const fetchEmployees = async () => {
@@ -49,7 +60,7 @@ export function useEmployeeList() {
           userName: user.userName ?? "",
           birthDate: formatDate(user.birthDate),
           assignedDate: formatDate(user.assignmentDate),
-          attendanceStatus: user.currentAttendanceState ?? "",
+          attendanceStatus: formatAttendanceState(user.currentAttendanceState),
         };
       });
     } catch (error: any) {

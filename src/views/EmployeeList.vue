@@ -1,5 +1,17 @@
 <template>
   <div class="employee-list-page">
+    <div class="employee-list-search-area">
+      <el-input v-model="searchKeyword" placeholder="例：従業員ID、氏名" class="employee-list-search-input" />
+
+      <el-button class="employee-list-search-button" @click="handleSearch">
+        検索
+      </el-button>
+
+      <el-button class="employee-register-button" @click="handleRegisterClick">
+        従業員登録
+      </el-button>
+    </div>
+
     <div v-if="isFetchError" class="retry-area">
       <button class="retry-button" @click="fetchEmployees">
         再試行
@@ -34,19 +46,51 @@
 
             <div>{{ employee.assignedDate }}</div>
 
-            <div>{{ employee.attendanceStatus }}</div>
+            <div>{{ employee.attendanceStatus || '退勤' }}</div>
 
             <div>
-              <el-button class="detail-button" @click="handleAttendanceDetailClick(employee.userId)">
+              <el-button class="detail-button" @click="handleAttendanceDetailClick(employee.userId, employee.userName)">
                 勤怠詳細
               </el-button>
             </div>
 
             <div>
-              <el-button v-if="employee.attendanceStatus === '退勤'" class="delete-button" @click="handleDeleteClick(employee.userId)">
+              <el-button v-if="employee.attendanceStatus === '退勤' || !employee.attendanceStatus" class="delete-button" @click="handleDeleteClick(employee.userId)">
                 削除
               </el-button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="employee-list-card-area">
+        <el-button class="mobile-sort-button" @click="handleSortClick">
+          並び替え
+        </el-button>
+
+        <div v-for="employee in displayedEmployees" :key="employee.userId" class="employee-card">
+          <div class="employee-card__info">
+            <div>従業員ID：{{ employee.userId }}</div>
+
+            <div>
+              氏名：
+              <span class="employee-name" @click="handleNameClick(employee.userId)">
+                {{ employee.userName }}
+              </span>
+            </div>
+
+            <div>生年月日：{{ employee.birthDate }}</div>
+            <div>配属日：{{ employee.assignedDate }}</div>
+            <div>現在の勤務状態：{{ employee.attendanceStatus || '退勤' }}</div>
+          </div>
+
+          <div class="employee-card__actions">
+            <el-button class="detail-button" @click="handleAttendanceDetailClick(employee.userId, employee.userName)">
+              勤怠詳細
+            </el-button>
+            <el-button v-if="employee.attendanceStatus === '退勤' || !employee.attendanceStatus" class="delete-button" @click="handleDeleteClick(employee.userId)">
+              削除
+            </el-button>
           </div>
         </div>
       </div>
@@ -56,7 +100,7 @@
           &lt; 前へ
         </button>
 
-        <button v-for="page in totalPages" :key="page" class="pagination-button" :class="{ active: currentPage === page }" @click="handlePageClick(page)">
+        <button v-for="page in displayPageNumbers" :key="page" class="pagination-button" :class="{ active: currentPage === page }" @click="handlePageClick(page)">
           {{ page }}
         </button>
 
@@ -67,26 +111,70 @@
     </div>
 
     <Modal v-model="errorModalVisible" :title="modalTitle" @ok="closeErrorModal" />
-
     <Snackbar v-model="snackbarVisible" :message="snackbarMessage" :type="snackbarType" />
+    <Dialog v-model="deleteDialogVisible" @delete="handleConfirmDelete" @cancel="handleCancelDelete" />
+    <SortBottomSheet v-model="sortBottomSheetVisible" :sort-key="sortKey" :sort-order="sortOrder" @apply="handleApplySort" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
 import Modal from '../components/modal/Modal.vue'
 import Snackbar from '../components/modal/Snackbar.vue'
+import Dialog from '../components/modal/Dialog.vue'
+import SortBottomSheet from '../components/modal/SortBottomSheet.vue'
 import { useEmployeeList } from '../composables/useEmployeeList'
 import { useEmployeeDelete } from '../composables/useEmployeeDelete'
 import { useFeedbackMessage } from '../composables/useFeedbackMessage'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+type SortKey = 'userId' | 'userName' | 'birthDate' | 'assignedDate' | 'attendanceStatus'
+type SortOrder = 'asc' | 'desc'
+
+const sortBottomSheetVisible = ref(false)
+const sortKey = ref<SortKey>('userId')
+const sortOrder = ref<SortOrder>('asc')
+
+const searchKeyword = ref('')
+const appliedSearchKeyword = ref('')
+
+const deleteDialogVisible = ref(false)
+const selectedDeleteUserId = ref('')
+
+const isMobile = ref(false)
+
+const updateIsMobile = () => {
+  isMobile.value = window.innerWidth <= 480
+}
+
+onMounted(() => {
+  updateIsMobile()
+  window.addEventListener('resize', updateIsMobile)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateIsMobile)
+})
+
+const itemsPerPage = computed(() => {
+  return isMobile.value ? 3 : 10
+})
+
+watch(isMobile, () => {
+  currentPage.value = 1
+})
+
+const currentPage = ref(1)
+
+const { deleteEmployee } = useEmployeeDelete()
 
 const {
   employees,
   isFetchError,
   fetchEmployees
 } = useEmployeeList()
-
-const { deleteEmployee } = useEmployeeDelete()
 
 const {
   errorModalVisible,
@@ -101,50 +189,114 @@ const {
   openProcessErrorSnackbar
 } = useFeedbackMessage()
 
-// 1ページに表示する件数
-const itemsPerPage = 10
-
-// 現在のページ番号
-const currentPage = ref(1)
-
-// 総ページ数
-const totalPages = computed(() => {
-  return Math.ceil(employees.value.length / itemsPerPage)
-})
-
-// 現在ページに表示する従業員情報
-const displayedEmployees = computed(() => {
-  const startIndex = (currentPage.value - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-
-  return employees.value.slice(startIndex, endIndex)
-})
-
-// 並び替えボタン押下時の処理
-// 今後、別途アクションを追加予定
-const handleSortClick = () => {
-  console.log('並び替えボタン押下')
+const handleSearch = () => {
+  appliedSearchKeyword.value = searchKeyword.value.trim()
+  currentPage.value = 1
 }
 
-// 氏名押下時の処理
-// 今後、従業員詳細画面への遷移などを追加予定
+const handleRegisterClick = () => {
+  console.log('従業員登録ボタン押下')
+}
+
+const filteredEmployees = computed(() => {
+  if (!appliedSearchKeyword.value) {
+    return employees.value
+  }
+
+  const keyword = appliedSearchKeyword.value.toLowerCase()
+
+  return employees.value.filter((employee) => {
+    return (
+      employee.userId.toLowerCase().includes(keyword) ||
+      employee.userName.toLowerCase().includes(keyword) ||
+      (employee.email ?? '').toLowerCase().includes(keyword)
+    )
+  })
+})
+
+const sortedEmployees = computed(() => {
+  return [...filteredEmployees.value].sort((a, b) => {
+    const aValue = a[sortKey.value] ?? ''
+    const bValue = b[sortKey.value] ?? ''
+
+    if (aValue < bValue) {
+      return sortOrder.value === 'asc' ? -1 : 1
+    }
+
+    if (aValue > bValue) {
+      return sortOrder.value === 'asc' ? 1 : -1
+    }
+
+    return 0
+  })
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(sortedEmployees.value.length / itemsPerPage.value)
+})
+const displayPageNumbers = computed(() => {
+  const maxDisplayPages = 5
+
+  if (totalPages.value <= maxDisplayPages) {
+    return Array.from({ length: totalPages.value }, (_, index) => index + 1)
+  }
+
+  let startPage = currentPage.value - 2
+  let endPage = currentPage.value + 2
+
+  if (startPage < 1) {
+    startPage = 1
+    endPage = maxDisplayPages
+  }
+
+  if (endPage > totalPages.value) {
+    endPage = totalPages.value
+    startPage = totalPages.value - maxDisplayPages + 1
+  }
+
+  return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index)
+})
+
+const displayedEmployees = computed(() => {
+  const startIndex = (currentPage.value - 1) * itemsPerPage.value
+  const endIndex = startIndex + itemsPerPage.value
+
+  return sortedEmployees.value.slice(startIndex, endIndex)
+})
+
+const handleSortClick = () => {
+  sortBottomSheetVisible.value = true
+}
+
+const handleApplySort = (selectedSortKey: SortKey, selectedSortOrder: SortOrder) => {
+  sortKey.value = selectedSortKey
+  sortOrder.value = selectedSortOrder
+  currentPage.value = 1
+}
+
 const handleNameClick = (userId: string) => {
   console.log('氏名押下:', userId)
 }
 
-// 勤怠詳細ボタン押下時の処理
-// 今後、勤怠詳細画面への遷移を追加予定
 const handleAttendanceDetailClick = (userId: string) => {
-  console.log('勤怠詳細押下:', userId)
+  router.push({
+    name: 'AttendanceDetails',
+    params: { id: userId },
+    query: { name: userName }
+  })
 }
 
-// 削除ボタン押下時の処理
-// 現在の勤怠状態が「退勤」の従業員のみ削除ボタンが表示される
-const handleDeleteClick = async (userId: string) => {
-  const result = await deleteEmployee(userId)
+const handleDeleteClick = (userId: string) => {
+  selectedDeleteUserId.value = userId
+  deleteDialogVisible.value = true
+}
+
+const handleConfirmDelete = async () => {
+  const result = await deleteEmployee(selectedDeleteUserId.value)
 
   if (result === 'success') {
     openDeleteSuccessSnackbar()
+    selectedDeleteUserId.value = ''
     await fetchEmployees()
   } else if (result === 'notFound') {
     openDeleteErrorModal()
@@ -155,27 +307,32 @@ const handleDeleteClick = async (userId: string) => {
   }
 }
 
-// 前へ押下時の処理
+const handleCancelDelete = () => {
+  selectedDeleteUserId.value = ''
+}
+
 const handlePrevPage = () => {
   if (currentPage.value > 1) {
     currentPage.value--
   }
 }
 
-// 次へ押下時の処理
 const handleNextPage = () => {
   if (currentPage.value < totalPages.value) {
     currentPage.value++
   }
 }
 
-// ページ番号押下時の処理
 const handlePageClick = (page: number) => {
   currentPage.value = page
 }
 </script>
 
 <style scoped lang="scss">
+button {
+  width: auto;
+}
+
 .employee-list-page {
   min-height: 100vh;
   background-color: #ffdede;
@@ -251,8 +408,8 @@ const handlePageClick = (page: number) => {
   width: 97px;
   height: 19px;
   border-radius: 5px;
-  background-color: #DE2583;
-  color: #FFFFFF;
+  background-color: #de2583;
+  color: #ffffff;
   border: none;
   padding: 0;
 }
@@ -303,5 +460,216 @@ const handlePageClick = (page: number) => {
   font-size: 64px;
   border: none;
   cursor: pointer;
+}
+
+.employee-list-search-area {
+  width: 100%;
+  height: 56px;
+  background-color: #eaf1ff;
+  display: flex;
+  align-items: center;
+  padding-left: 40px;
+  box-sizing: border-box;
+  gap: 95px;
+}
+
+.employee-list-search-input {
+  width: 750px;
+  height: 40px;
+}
+
+.employee-list-search-button {
+  width: 77px;
+  height: 38px;
+  background-color: #9aadd5;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+}
+
+.employee-register-button {
+  width: 134px;
+  height: 38px;
+  background-color: #9aadd5;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+}
+
+.employee-list-card-area {
+  display: none;
+}
+
+@media screen and (max-width: 480px) {
+  .employee-list-page {
+    width: 100%;
+    min-height: 100vh;
+    padding: 0;
+    padding-bottom: 40px;
+    background-color: #ffdede;
+    box-sizing: border-box;
+  }
+
+  .employee-list-search-area {
+    width: 100%;
+    height: 114px;
+    background-color: #eaf1ff;
+    display: grid;
+    grid-template-columns: 1fr 80px;
+    grid-template-rows: 24px 40px 40px;
+    column-gap: 8px;
+    row-gap: 4px;
+    padding: 0 10px 8px;
+    box-sizing: border-box;
+  }
+
+  .employee-list-search-area::before {
+    content: '検索';
+    grid-column: 1 / 3;
+    grid-row: 1;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000000;
+  }
+
+  .employee-list-search-input {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    height: 38px;
+  }
+
+  .employee-list-search-button {
+    grid-column: 2;
+    grid-row: 2;
+    width: 76px;
+    height: 38px;
+    background-color: #9aadd5;
+    color: #000000;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+
+  .employee-register-button {
+    grid-column: 1;
+    grid-row: 3;
+    width: 112px;
+    height: 34px;
+    background-color: #9aadd5;
+    color: #000000;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+
+  .employee-list__content {
+    display: none;
+  }
+
+  .employee-list-card-area {
+    display: block;
+    padding: 14px 20px 0;
+    box-sizing: border-box;
+  }
+
+  .mobile-sort-button {
+    display: block;
+    width: 100px;
+    height: 20px;
+    margin: 0 auto 30px;
+    background-color: #5c5c5c;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    line-height: 20px;
+    padding: 0;
+  }
+
+  .employee-card {
+    position: relative;
+    width: 100%;
+    min-height: 170px;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    padding: 18px 12px;
+    box-sizing: border-box;
+  }
+
+  .employee-card__info {
+    font-size: 16px;
+    line-height: 1.45;
+    color: #000000;
+    padding-right: 100px;
+  }
+
+  .employee-card__actions {
+    position: absolute;
+    right: 10px;
+    top: 34px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 16px;
+  }
+
+  .detail-button {
+    width: 82px;
+    height: 22px;
+    background-color: #5c5c5c;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 0;
+  }
+
+  .delete-button {
+    width: 82px;
+    height: 22px;
+    background-color: #de2583;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 0;
+  }
+
+  .pagination {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    bottom: 8px;
+    height: 18px;
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    font-size: 16px;
+    z-index: 10;
+  }
+
+  .pagination-button {
+    font-size: 16px;
+    padding: 0;
+  }
+
+  .retry-area {
+    min-height: calc(100vh - 114px);
+  }
+
+  .retry-button {
+    width: 212px;
+    height: 97px;
+    border-radius: 20px;
+    background-color: #0d2b81;
+    color: #ffffff;
+    font-size: 64px;
+    border: none;
+    cursor: pointer;
+  }
 }
 </style>

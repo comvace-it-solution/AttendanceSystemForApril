@@ -5,10 +5,12 @@
     <div style="margin-bottom: 16px;">
       <el-input v-model="deleteUserId" placeholder="削除するユーザーID" style="width: 240px; margin-right: 8px;" />
 
-      <el-button type="danger" @click="handleDelete">
+      <el-button type="danger" @click="openDeleteDialog">
         削除API実行
       </el-button>
     </div>
+
+    <Dialog v-model="deleteDialogVisible" @delete="handleDelete" @cancel="handleCancelDelete" />
 
     <Modal v-model="errorModalVisible" :title="modalTitle" @ok="closeErrorModal" />
 
@@ -18,6 +20,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import Dialog from '../components/modal/Dialog.vue'
 import Modal from '../components/modal/Modal.vue'
 import Snackbar from '../components/modal/Snackbar.vue'
 import { useEmployeeDelete } from '../composables/useEmployeeDelete'
@@ -25,6 +28,9 @@ import { useFeedbackMessage } from '../composables/useFeedbackMessage'
 
 // 画面で入力した削除対象ID
 const deleteUserId = ref('')
+
+// 削除確認ダイアログの表示/非表示
+const deleteDialogVisible = ref(false)
 
 // 削除API処理
 const { deleteEmployee } = useEmployeeDelete()
@@ -43,6 +49,14 @@ const {
   openProcessErrorSnackbar
 } = useFeedbackMessage()
 
+// 削除API実行ボタン押下時の処理
+// ここではAPIを実行せず、確認ダイアログを表示するだけ
+const openDeleteDialog = () => {
+  deleteDialogVisible.value = true
+}
+
+// 削除確認ダイアログの「削除」押下時の処理
+// ここで初めて削除APIを実行する
 const handleDelete = async () => {
   const result = await deleteEmployee(deleteUserId.value)
 
@@ -57,5 +71,10 @@ const handleDelete = async () => {
   } else {
     openProcessErrorSnackbar()
   }
+}
+
+// 削除確認ダイアログの「キャンセル」押下時の処理
+const handleCancelDelete = () => {
+  console.log('削除をキャンセルしました')
 }
 </script>
