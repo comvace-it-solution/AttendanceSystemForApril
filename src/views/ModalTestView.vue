@@ -1,20 +1,32 @@
 <template>
   <div>
-    <h2>削除処理 動作確認</h2>
+    <h2>ダイアログ 動作確認</h2>
 
     <div style="margin-bottom: 16px;">
       <el-input v-model="deleteUserId" placeholder="削除するユーザーID" style="width: 240px; margin-right: 8px;" />
 
-      <el-button type="danger" @click="openDeleteDialog">
-        削除API実行
+      <el-button type="danger" @click="handleDelete">
+        削除確認
       </el-button>
     </div>
 
-    <Dialog v-model="deleteDialogVisible" @delete="handleDelete" @cancel="handleCancelDelete" />
+    <div style="margin-bottom: 16px;">
+      <el-button type="primary" @click="handleRegister">
+        登録確認
+      </el-button>
+
+      <el-button type="primary" @click="handleEdit">
+        編集確認
+      </el-button>
+    </div>
+
+    <Dialog v-model="dialogVisible" :title="dialogTitle" :confirm-text="confirmButtonText" :confirm-button-color="confirmButtonColor" @confirm="handleConfirmDialog" @cancel="handleCancelDialog" />
 
     <Modal v-model="errorModalVisible" :title="modalTitle" @ok="closeErrorModal" />
 
     <Snackbar v-model="snackbarVisible" :message="snackbarMessage" :type="snackbarType" />
+
+    <Dialog v-model="dialogVisible" :title="dialogTitle" :confirm-text="confirmButtonText" :confirm-button-color="confirmButtonColor" @confirm="handleConfirmDialog" @cancel="handleCancelDialog" />
   </div>
 </template>
 
@@ -25,15 +37,27 @@ import Modal from '../components/modal/Modal.vue'
 import Snackbar from '../components/modal/Snackbar.vue'
 import { useEmployeeDelete } from '../composables/useEmployeeDelete'
 import { useFeedbackMessage } from '../composables/useFeedbackMessage'
+import { useDialogMessage } from '../composables/useDialogMessage'
 
 // 画面で入力した削除対象ID
 const deleteUserId = ref('')
 
-// 削除確認ダイアログの表示/非表示
-const deleteDialogVisible = ref(false)
+// 実行する処理の種類
+const currentAction = ref<'delete' | 'register' | 'edit'>('delete')
 
 // 削除API処理
 const { deleteEmployee } = useEmployeeDelete()
+
+// ダイアログ表示処理
+const {
+  dialogVisible,
+  dialogTitle,
+  confirmButtonText,
+  confirmButtonColor,
+  openDeleteDialog,
+  openRegisterDialog,
+  openEditDialog
+} = useDialogMessage()
 
 // モーダル・スナックバー表示処理
 const {
@@ -45,19 +69,42 @@ const {
   closeErrorModal,
   openDeleteErrorModal,
   openDeleteSuccessSnackbar,
+  openRegisterSuccessSnackbar,
+  openEditCompleteSnackbar,
   openCommunicationErrorSnackbar,
   openProcessErrorSnackbar
 } = useFeedbackMessage()
 
-// 削除API実行ボタン押下時の処理
-// ここではAPIを実行せず、確認ダイアログを表示するだけ
-const openDeleteDialog = () => {
-  deleteDialogVisible.value = true
+const handleDelete = () => {
+  currentAction.value = 'delete'
+  openDeleteDialog()
 }
 
-// 削除確認ダイアログの「削除」押下時の処理
-// ここで初めて削除APIを実行する
-const handleDelete = async () => {
+const handleRegister = () => {
+  currentAction.value = 'register'
+  openRegisterDialog()
+}
+
+const handleEdit = () => {
+  currentAction.value = 'edit'
+  openEditDialog()
+}
+
+const handleConfirmDialog = async () => {
+  if (currentAction.value === 'delete') {
+    await handleConfirmDelete()
+    return
+  }
+
+  if (currentAction.value === 'register') {
+    openRegisterSuccessSnackbar()
+    return
+  }
+
+  openEditCompleteSnackbar()
+}
+
+const handleConfirmDelete = async () => {
   const result = await deleteEmployee(deleteUserId.value)
 
   console.log('削除結果:', result)
@@ -73,8 +120,7 @@ const handleDelete = async () => {
   }
 }
 
-// 削除確認ダイアログの「キャンセル」押下時の処理
-const handleCancelDelete = () => {
-  console.log('削除をキャンセルしました')
+const handleCancelDialog = () => {
+  console.log('キャンセル')
 }
 </script>
