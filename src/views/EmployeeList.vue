@@ -202,7 +202,9 @@ const handleSearch = () => {
 }
 
 const handleRegisterClick = () => {
-  console.log('従業員登録ボタン押下')
+  router.push({
+    name: 'EmployeeRegister'
+  })
 }
 
 const filteredEmployees = computed(() => {
@@ -282,7 +284,10 @@ const handleApplySort = (selectedSortKey: SortKey, selectedSortOrder: SortOrder)
 }
 
 const handleNameClick = (userId: string) => {
-  console.log('氏名押下:', userId)
+  router.push({
+    name: 'EmployeeDetail',
+    params: { id: userId }
+  })
 }
 
 const handleAttendanceDetailClick = (userId: string, userName: string) => {
