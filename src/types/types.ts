@@ -1,4 +1,13 @@
 //----------------
+// AUTH
+// ---------------
+export interface User {
+  userId: string | number
+  userName: string
+}
+
+
+//----------------
 // 勤怠詳細
 // ---------------
 // 表示月情報
@@ -69,3 +78,4 @@ export const TABLE_CONFIGS: Record<ViewType, TableConfig[]> = {
     { label: '勤務時間', key: 'totalWorkingHours' },
   ]
 };
+

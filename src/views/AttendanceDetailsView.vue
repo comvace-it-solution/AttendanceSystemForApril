@@ -90,194 +90,198 @@ const displayMonth = computed(() => {
 <style lang="scss" scoped>
 @use "../styles/kanda.scss" as *;
 
-.attendance-details-header {
-  max-width: 1000px;
-  margin: 30px auto;
+.attendance-details-container {
+  bg-color: $accent-bg-color;
 
-  @include sp {
-    margin: 20px auto;
-  }
-
-  .attendance-details-title-area {
-    width: 90%;
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    margin: 0 auto 30px;
+  .attendance-details-header {
+    max-width: 1000px;
+    margin: 30px auto;
 
     @include sp {
-      flex-direction: column;
-      margin: 0 auto 12px;
+      margin: 20px auto;
     }
-    
-    .page-title {
-      white-space: nowrap;
-      margin-right: 45px;
 
-      @include sp {
-        margin-right: 0px;
-        margin-bottom: 10px;
-      }
-    }
-  
-    .user-date-area {
+    .attendance-details-title-area {
+      width: 90%;
       display: flex;
+      justify-content: left;
       align-items: center;
-      gap: 20px;
-    }
-  }
-
-  .attendance-details-select-card {
-    width: 90%;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-evenly;
-    background-color: $accent-bg-color;
-    border: 1px solid;
-    border-radius: 30px;
-    min-height: 100px;
-
-    @include sp {
-      width: 100%;
-      flex-direction: column;
-      align-items: center;
-      padding: 15px 0;
-      border: none;
-      border-radius: 0;
-      border-top: 1px solid $table-border-color;
-      border-bottom: 1px solid $table-border-color;
-    }
-
-    .display-selection-area {
-      display: flex;
-      align-items: center;
-      margin: 0 20px;
+      margin: 0 auto 30px;
 
       @include sp {
         flex-direction: column;
-        align-items: center;
-      }
-
-      .display-select-title {
-        margin-right: 20px;
-            
-        @include sp {
-          margin: 0;
-        }
+        margin: 0 auto 12px;
       }
       
-      .display-select-btn-area {
-        display: flex;
-        gap: 24px;
+      .page-title {
+        white-space: nowrap;
+        margin-right: 45px;
 
         @include sp {
-          margin: 15px 0;
-        }
-
-        .select-btn {
-          color: $accent-color;
-          border: 1px solid $accent-color;
-          background-color: $accent-bg-color;
-          font-size: $fs-body;
-          width: 70px;
-          height: 40px;
-
-          &.active {
-            background-color: $accent-color; 
-            color: $text-white;
-          }
+          margin-right: 0px;
+          margin-bottom: 10px;
         }
       }
-    } 
-
-    .display-period-area {
-      display: flex;
-      align-items: center;
-
-      @include sp {
-        width: 90%;
-        justify-content: center;
-        margin: 0 auto;
-      }
-
-      .display-period-btn-area{
+    
+      .user-date-area {
         display: flex;
         align-items: center;
-        gap: 24px;
-        margin: 0 15px;
+        gap: 20px;
       }
     }
-  }
-}
 
-.attendance-main {
-  .summary-title {
-    text-align: center;
-    margin-bottom: 30px;
+    .attendance-details-select-card {
+      width: 90%;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-evenly;
+      background-color: $accent-bg-color;
+      border: 1px solid;
+      border-radius: 30px;
+      min-height: 100px;
 
-    @include sp {
-      margin-bottom: 20px;
-    }
-  }
-
-  .spinner-area {
-    position: relative;
-    min-height: 100px; 
-  }
-
-  .message {
-    text-align: center;
-  }
-
-  .table-wrapper {
-    margin: 0 auto 50px;
-    width: 80%;
-    max-width: 750px;
-
-    .custom-table {
-      @include table-style;
-    }
-    // 日次のみのスタイル
-    &.daily-view {
       @include sp {
-        width: 90%;
-        
-        .custom-table{
-          thead,tbody{
-            font-size: $fs-small;
-          }
-        }
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        padding: 15px 0;
+        border: none;
+        border-radius: 0;
+        border-top: 1px solid $table-border-color;
+        border-bottom: 1px solid $table-border-color;
       }
-    }
-      // 週次のみのスタイル
-    &.weekly-view { 
-      max-width: 500px;
-    
-      @include sp {
-        width: 80%;
-      }
-    }
 
-    // 月次のみのスタイル
-    &.monthly-view {
-      .custom-table{
-        thead {
-          th {
-            width: 50%;
-          }
-        }
-        tbody{
-          font-size: 36px;
-          td {
-            padding: 50px 0;
-            width: 50%;
-          }
-        }
+      .display-selection-area {
+        display: flex;
+        align-items: center;
+        margin: 0 20px;
+
         @include sp {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .display-select-title {
+          margin-right: 20px;
+              
+          @include sp {
+            margin: 0;
+          }
+        }
+        
+        .display-select-btn-area {
+          display: flex;
+          gap: 24px;
+
+          @include sp {
+            margin: 15px 0;
+          }
+
+          .select-btn {
+            color: $accent-color;
+            border: 1px solid $accent-color;
+            background-color: $accent-bg-color;
+            font-size: $fs-body;
+            width: 70px;
+            height: 40px;
+
+            &.active {
+              background-color: $accent-color; 
+              color: $text-white;
+            }
+          }
+        }
+      } 
+
+      .display-period-area {
+        display: flex;
+        align-items: center;
+
+        @include sp {
+          width: 90%;
+          justify-content: center;
+          margin: 0 auto;
+        }
+
+        .display-period-btn-area{
+          display: flex;
+          align-items: center;
+          gap: 24px;
+          margin: 0 15px;
+        }
+      }
+    }
+  }
+
+  .attendance-main {
+    .summary-title {
+      text-align: center;
+      margin-bottom: 30px;
+
+      @include sp {
+        margin-bottom: 20px;
+      }
+    }
+
+    .spinner-area {
+      position: relative;
+      min-height: 100px; 
+    }
+
+    .message {
+      text-align: center;
+    }
+
+    .table-wrapper {
+      margin: 0 auto 50px;
+      width: 80%;
+      max-width: 750px;
+
+      .custom-table {
+        @include table-style;
+      }
+      // 日次のみのスタイル
+      &.daily-view {
+        @include sp {
+          width: 90%;
+          
+          .custom-table{
+            thead,tbody{
+              font-size: $fs-small;
+            }
+          }
+        }
+      }
+        // 週次のみのスタイル
+      &.weekly-view { 
+        max-width: 500px;
+      
+        @include sp {
+          width: 80%;
+        }
+      }
+
+      // 月次のみのスタイル
+      &.monthly-view {
+        .custom-table{
+          thead {
+            th {
+              width: 50%;
+            }
+          }
           tbody{
-            font-size: 24px;
+            font-size: 36px;
             td {
-              padding: 25px 0;
+              padding: 50px 0;
+              width: 50%;
+            }
+          }
+          @include sp {
+            tbody{
+              font-size: 24px;
+              td {
+                padding: 25px 0;
+              }
             }
           }
         }
