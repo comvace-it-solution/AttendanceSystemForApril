@@ -1,13 +1,13 @@
 import { ref,reactive,computed } from 'vue'
 import axios from 'axios'
 import { useAuthStore } from '../stores/auth.ts'
-// import { useFeedbackMessage } from './useFeedbackMessage.ts'
+import { useFeedbackMessage } from './useFeedbackMessage.ts'
 
 export function useAuth() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
   const INTERNAL_API_KEY = import.meta.env.VITE_INTERNAL_API_KEY
   const authStore = useAuthStore()
-  // const { openCommunicationErrorSnackbar } = useFeedbackMessage()
+  const { openCommunicationErrorSnackbar } = useFeedbackMessage()
   const form = reactive({
     email: '',
     password: ''
@@ -89,11 +89,11 @@ export function useAuth() {
           loginError.value = 'メールアドレスまたはパスワードが異なります。';
         } else {
           loginError.value = '';
-          // openCommunicationErrorSnackbar();
+          openCommunicationErrorSnackbar();
         }
       } else {
         loginError.value = '';
-        // openCommunicationErrorSnackbar(); 
+        openCommunicationErrorSnackbar(); 
       }
       
       throw error
