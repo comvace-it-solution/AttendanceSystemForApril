@@ -54,13 +54,12 @@ watch(
 <style scoped lang="scss">
 .snackbar {
   position: fixed;
-  top: 24px;
-  left: 50%;
-  z-index: 3000;
-  width: min(361px, calc(100vw - 32px));
+  right: 10%;
+  bottom: 20%;
+  width: 361px;
   min-height: 30px;
   font-size: 16px;
-  transform: translateX(-50%);
+  margin: 5.5px 84px;
   border-radius: 11px;
   display: flex;
   align-items: center;

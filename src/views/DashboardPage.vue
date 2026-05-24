@@ -1,96 +1,48 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import Snackbar from '../components/modal/Snackbar.vue'
+import { useDashboardData } from '../composables/useDashboardData'
 import { useFeedbackMessage } from '../composables/useFeedbackMessage'
-import type { AttendanceStatus, PunchAction } from '../types/attendance'
-import { executePunchAction, fetchDashboardData } from '../services/attendanceService'
-import { useAuthStore } from '../stores/auth'
+import { usePunchAction } from '../composables/usePunchAction'
+import type { AttendanceStatus } from '../types/attendance'
 import { useDashboardStore } from '../stores/dashboard'
 
-const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
 const {
   snackbarVisible,
   snackbarMessage,
   snackbarType,
-  openSuccessSnackbar,
   openErrorSnackbar,
+  openUpdateSuccessSnackbar,
+  openUpdateErrorSnackbar,
   openCommunicationErrorSnackbar,
 } = useFeedbackMessage()
-
-const currentUserId = computed(() => {
-  const userId = authStore.userId ?? authStore.user?.userId
-  const numericUserId = Number(userId)
-  return Number.isFinite(numericUserId) ? numericUserId : null
+const {
+  currentUserId,
+  displayUserName,
+  loadDashboard,
+  setWorkDate,
+} = useDashboardData()
+const { handlePunchClick, isPunchDisabled } = usePunchAction({
+  currentUserId,
+  loadDashboard,
+  onLoginMissing: () => {
+    openErrorSnackbar('ログインユーザーが取得できないため、打刻できません。')
+  },
+  onSuccess: () => {
+    openUpdateSuccessSnackbar()
+  },
+  onError: (error) => {
+    console.error('打刻更新エラー:', error)
+    openUpdateErrorSnackbar()
+  },
 })
-const displayUserName = computed(() => authStore.userName || authStore.user?.userName || 'ユーザー')
 
 const formatTime = (value: string | null) => value ?? '-'
 const getStatusClass = (status: AttendanceStatus) => dashboardStore.statusClassMap[status]
 
-const loadDashboard = async () => {
-  if (!currentUserId.value) {
-    return
-  }
-
-  dashboardStore.setAttendanceLoading(true)
-
-  try {
-    const dashboardData = await fetchDashboardData(currentUserId.value)
-    dashboardStore.setSummary(dashboardData.summary)
-    dashboardStore.setHasBreakEnded(dashboardData.hasBreakEnded)
-    dashboardStore.setAttendanceUsers(dashboardData.attendanceUsers)
-  } finally {
-    dashboardStore.setAttendanceLoading(false)
-  }
-}
-
-const handlePunchClick = async (action: PunchAction) => {
-  if (dashboardStore.isPunchLoading) {
-    return
-  }
-
-  dashboardStore.setPunchLoading(true)
-
-  try {
-    if (!currentUserId.value) {
-      await authStore.loadCurrentUser()
-    }
-
-    if (!currentUserId.value) {
-      openErrorSnackbar('ログインユーザーが取得できないため、打刻できません。')
-      return
-    }
-
-    await executePunchAction(currentUserId.value, action)
-    await loadDashboard()
-    openSuccessSnackbar('打刻を更新しました')
-  } catch (error) {
-    console.error('打刻更新エラー:', error)
-    openErrorSnackbar('打刻の更新に失敗しました')
-  } finally {
-    dashboardStore.setPunchLoading(false)
-  }
-}
-
 onMounted(async () => {
-  dashboardStore.setWorkDate(
-    new Intl.DateTimeFormat('ja-JP', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'short',
-    }).format(new Date()),
-  )
-
-  try {
-    if (!authStore.isAuthenticated) {
-      await authStore.loadCurrentUser()
-    }
-  } catch (error) {
-    console.error('ログインユーザー取得エラー:', error)
-    openErrorSnackbar('ログインユーザー情報の取得に失敗しました。')
-  }
+  setWorkDate()
 
   try {
     await loadDashboard()
@@ -103,8 +55,6 @@ onMounted(async () => {
 
 <template>
   <main class="dashboard-page">
-    <Snackbar v-model="snackbarVisible" :message="snackbarMessage" :type="snackbarType" />
-
     <div class="dashboard-shell">
       <section class="dashboard-card">
         <header class="dashboard-header">
@@ -155,7 +105,7 @@ onMounted(async () => {
               class="punch-button"
               :class="button.className"
               size="large"
-              :disabled="button.disabled"
+              :disabled="button.disabled || isPunchDisabled"
               @click="handlePunchClick(button.action)"
             >
               {{ button.label }}
@@ -250,6 +200,8 @@ onMounted(async () => {
         </section>
       </section>
     </div>
+
+    <Snackbar v-model="snackbarVisible" :message="snackbarMessage" :type="snackbarType" />
   </main>
 </template>
 
