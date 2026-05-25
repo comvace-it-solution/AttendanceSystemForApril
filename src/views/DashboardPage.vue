@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import Snackbar from '../components/modal/Snackbar.vue'
 import { useDashboardData } from '../composables/useDashboardData'
 import { useFeedbackMessage } from '../composables/useFeedbackMessage'
@@ -40,13 +40,29 @@ const { handlePunchClick, isPunchDisabled } = usePunchAction({
 
 const formatTime = (value: string | null) => value ?? '-'
 const getStatusClass = (status: AttendanceStatus) => dashboardStore.statusClassMap[status]
+const hasAttendanceLoadError = ref(false)
+const attendanceUsersForDisplay = computed(() =>
+  hasAttendanceLoadError.value ? [] : dashboardStore.attendanceUsers,
+)
+const attendanceEmptyTitle = computed(() =>
+  hasAttendanceLoadError.value
+    ? '勤怠情報を取得できませんでした。'
+    : '表示できる勤怠情報がありません。',
+)
+const attendanceEmptyDescription = computed(() =>
+  hasAttendanceLoadError.value
+    ? '通信状況を確認し、時間をおいて再度お試しください。'
+    : '本日の勤怠データが存在しません。',
+)
 
 onMounted(async () => {
   setWorkDate()
 
   try {
+    hasAttendanceLoadError.value = false
     await loadDashboard()
   } catch (error) {
+    hasAttendanceLoadError.value = true
     console.error('ダッシュボード取得エラー:', error)
     openCommunicationErrorSnackbar()
   }
@@ -105,7 +121,7 @@ onMounted(async () => {
               class="punch-button"
               :class="button.className"
               size="large"
-              :disabled="button.disabled || isPunchDisabled"
+              :disabled="button.disabled || isPunchDisabled || hasAttendanceLoadError"
               @click="handlePunchClick(button.action)"
             >
               {{ button.label }}
@@ -120,9 +136,8 @@ onMounted(async () => {
 
           <div class="employee-table-wrap">
             <el-table
-              :data="dashboardStore.attendanceUsers"
+              :data="attendanceUsersForDisplay"
               class="employee-table"
-              empty-text="表示できる従業員データがありません。"
               table-layout="fixed"
               v-loading="dashboardStore.isAttendanceLoading"
             >
@@ -154,6 +169,14 @@ onMounted(async () => {
                   {{ formatTime(row.clockOutTime) }}
                 </template>
               </el-table-column>
+              <template #empty>
+                <div class="attendance-empty-message">
+                  <p class="attendance-empty-message__title">{{ attendanceEmptyTitle }}</p>
+                  <p class="attendance-empty-message__description">
+                    {{ attendanceEmptyDescription }}
+                  </p>
+                </div>
+              </template>
             </el-table>
           </div>
 
@@ -162,13 +185,16 @@ onMounted(async () => {
               読み込み中...
             </div>
             <div
-              v-else-if="dashboardStore.attendanceUsers.length === 0"
+              v-else-if="attendanceUsersForDisplay.length === 0"
               class="employee-card employee-card--empty"
             >
-              表示できる従業員データがありません。
+              <p class="attendance-empty-message__title">{{ attendanceEmptyTitle }}</p>
+              <p class="attendance-empty-message__description">
+                {{ attendanceEmptyDescription }}
+              </p>
             </div>
             <article
-              v-for="user in dashboardStore.attendanceUsers"
+              v-for="user in attendanceUsersForDisplay"
               v-else
               :key="`bottom-card-${user.userId}`"
               class="employee-card"
@@ -431,6 +457,31 @@ onMounted(async () => {
 .employee-table .el-table__cell:first-child .cell {
   text-align: left;
   font-weight: 700;
+}
+
+.attendance-empty-message {
+  display: flex;
+  min-height: 88px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.attendance-empty-message__title {
+  margin: 0;
+  color: var(--dashboard-text);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.attendance-empty-message__description {
+  margin: 2px 0 0;
+  color: var(--dashboard-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.5;
 }
 
 .status-text {
