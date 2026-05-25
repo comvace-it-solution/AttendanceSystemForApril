@@ -3,9 +3,9 @@ import { createRouter, createWebHistory } from "vue-router";
 // import LoginView from '@/views/LoginView.vue'
 import AttendanceDetailsView from "../views/AttendanceDetailsView.vue";
 import EmployeeList from "../views/EmployeeList.vue";
-import EmployeeRegister from "../views/EmployeeRegister.vue";
-import EmployeeEdit from "../views/EmployeeEdit.vue";
-import EmployeeDetail from "../views/EmployeeDetail.vue";
+// import EmployeeRegister from "../views/EmployeeRegister.vue";
+// import EmployeeEdit from "../views/EmployeeEdit.vue";
+// import EmployeeDetail from "../views/EmployeeDetail.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -29,21 +29,21 @@ const router = createRouter({
       name: "EmployeeList",
       component: EmployeeList,
     },
-    {
-      path: "/register",
-      name: "EmployeeRegister",
-      component: EmployeeRegister,
-    },
-    {
-      path: "/edit/:id",
-      name: "EmployeeEdit",
-      component: EmployeeEdit,
-    },
-    {
-      path: "/detail/:id",
-      name: "EmployeeDetail",
-      component: EmployeeDetail,
-    },
+    // {
+    //   path: "/register",
+    //   name: "EmployeeRegister",
+    //   component: EmployeeRegister,
+    // },
+    // {
+    //   path: "/edit/:id",
+    //   name: "EmployeeEdit",
+    //   component: EmployeeEdit,
+    // },
+    // {
+    //   path: "/detail/:id",
+    //   name: "EmployeeDetail",
+    //   component: EmployeeDetail,
+    // },
   ],
 });
 

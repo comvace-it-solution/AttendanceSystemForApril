@@ -1,7 +1,7 @@
 <template>
   <div class="employee-list-page">
     <div class="employee-list-search-area">
-      <el-input v-model="searchKeyword" placeholder="例：従業員ID、氏名" class="employee-list-search-input" />
+      <el-input v-model="searchKeyword" placeholder="例：従業員ID、氏名、生年月日、配属日" class="employee-list-search-input" />
 
       <el-button class="employee-list-search-button" @click="handleSearch">
         検索
@@ -131,7 +131,7 @@ import { useDialogMessage } from '../composables/useDialogMessage'
 
 const router = useRouter()
 
-type SortKey = 'userId' | 'userName' | 'birthDate' | 'assignedDate' | 'attendanceStatus'
+type SortKey = 'userId' | 'userName' | 'birthDate' | 'assignedDate' | 'currentAttendanceState'
 type SortOrder = 'asc' | 'desc'
 
 const sortBottomSheetVisible = ref(false)
@@ -218,15 +218,25 @@ const filteredEmployees = computed(() => {
     return (
       employee.userId.toLowerCase().includes(keyword) ||
       employee.userName.toLowerCase().includes(keyword) ||
-      (employee.email ?? '').toLowerCase().includes(keyword)
+      (employee.email ?? '').toLowerCase().includes(keyword) ||
+      (employee.birthDate ?? '').toLowerCase().includes(keyword) ||
+      (employee.assignedDate ?? '').toLowerCase().includes(keyword)
     )
   })
 })
 
 const sortedEmployees = computed(() => {
   return [...filteredEmployees.value].sort((a, b) => {
-    const aValue = a[sortKey.value] ?? ''
-    const bValue = b[sortKey.value] ?? ''
+    const getSortValue = (employee: any) => {
+      if (sortKey.value === 'currentAttendanceState') {
+        return employee.currentAttendanceState === 2 ? 1 : 0
+      }
+
+      return employee[sortKey.value] ?? ''
+    }
+
+    const aValue = getSortValue(a)
+    const bValue = getSortValue(b)
 
     if (aValue < bValue) {
       return sortOrder.value === 'asc' ? -1 : 1
