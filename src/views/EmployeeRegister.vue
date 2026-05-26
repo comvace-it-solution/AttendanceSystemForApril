@@ -24,7 +24,7 @@
         </label>
         <input
           v-model="form.email"
-          type="email"
+          type="text"
           placeholder="例: contact@example.com"
         />
         <!-- エラーメッセージ -->
@@ -179,6 +179,7 @@
           v-model="form.streetAddress"
           type="text"
           placeholder="例: ○○区○○"
+          @input="convertToFullWidth('streetAddress')"
         />
         <!-- エラーメッセージ -->
         <p v-if="errors.streetAddress" class="error-message">
@@ -192,7 +193,12 @@
           v-model="form.buildingName"
           type="text"
           placeholder="例: ○○タウン 101"
+          @input="convertToFullWidth('buildingName')"
         />
+        <!-- エラーメッセージ -->
+        <p v-if="errors.buildingName" class="error-message">
+          {{ errors.buildingName }}
+        </p>
       </div>
       <!-- 生年月日 -->
       <div class="form-group">
@@ -235,7 +241,7 @@
       <div class="form-group">
         <label>
           <span class="required">必須</span>
-          生年月日
+          配属日
         </label>
         <div class="date-row">
           <template v-for="item in assignDateSelects" :key="item.type">
@@ -279,7 +285,9 @@
         <!-- 登録 -->
         <button type="submit" class="submit-button">上記の内容で登録</button>
         <!-- キャンセル -->
-        <button type="button" class="cancel-button">キャンセル</button>
+        <button type="button" class="cancel-button" @click="clearForm">
+          キャンセル
+        </button>
       </div>
     </form>
   </main>
@@ -292,12 +300,14 @@
 import { ref, computed, watch } from 'vue'
 import { useEmployeeRegister } from '../composables/useEmployeeRegister'
 import { useZipCode } from '../composables/useZipCode'
+import { useRouter } from 'vue-router'
 
 /** ========================
  * Composables
  * ===================== */
 const { searchAddressByPostalCode } = useZipCode()
 const { form, onRegister } = useEmployeeRegister()
+const router = useRouter()
 
 /** ========================
  * Reactive
@@ -404,6 +414,69 @@ const prefectures = [
   '沖縄県',
 ]
 
+/** 入力値クリア */
+const clearForm = () => {
+  /** クリア前 */
+  console.log('クリア前', {
+    userName: form.userName,
+    email: form.email,
+    password: form.password,
+    phoneNumber: form.phoneNumber,
+    postalCodeFirst: postalCodeFirst.value,
+    postalCodeSecond: postalCodeSecond.value,
+    prefecture: form.prefecture,
+    streetAddress: form.streetAddress,
+    buildingName: form.buildingName,
+  })
+
+  /** フォーム */
+  form.userName = ''
+  form.email = ''
+  form.password = ''
+  form.phoneNumber = ''
+  form.postalCode = ''
+  form.prefecture = ''
+  form.streetAddress = ''
+  form.buildingName = ''
+  form.birthDate = ''
+  form.assignmentDate = ''
+
+  /** 確認用パスワード */
+  secondPassword.value = ''
+
+  /** 郵便番号 */
+  postalCodeFirst.value = ''
+  postalCodeSecond.value = ''
+
+  /** 生年月日 */
+  birthYear.value = ''
+  birthMonth.value = ''
+  birthDay.value = ''
+
+  /** 配属日 */
+  assignYear.value = ''
+  assignMonth.value = ''
+  assignDay.value = ''
+
+  /** エラー */
+  clearErrors()
+
+  /** クリア後 */
+  console.log('クリア後', {
+    userName: form.userName,
+    email: form.email,
+    password: form.password,
+    phoneNumber: form.phoneNumber,
+    postalCodeFirst: postalCodeFirst.value,
+    postalCodeSecond: postalCodeSecond.value,
+    prefecture: form.prefecture,
+    streetAddress: form.streetAddress,
+    buildingName: form.buildingName,
+  })
+
+  /** 画面遷移 */
+  router.push({ name: 'Home' })
+}
 /** ========================
  * Computed
  * ===================== */
@@ -508,6 +581,13 @@ watch([assignYear, assignMonth], () => {
 /** ========================
  * Formatters
  * ===================== */
+/** 全角変換 */
+const convertToFullWidth = (key: 'streetAddress' | 'buildingName') => {
+  form[key] = form[key]
+    .normalize('NFKC')
+    .replace(/[!-~]/g, (s) => String.fromCharCode(s.charCodeAt(0) + 0xfee0))
+    .replace(/ /g, '　')
+}
 /**
  * 電話番号フォーマット
  * 全角→半角変換
@@ -535,14 +615,15 @@ const formatPhone = () => {
  * ===================== */
 /** 郵便番号検索 */
 const onSearchPostalCode = async () => {
-  const postalCode = postalCodeFirst.value + postalCodeSecond.value
-  if (postalCode.length !== 7) {
-    console.log('郵便番号は7桁で入力してください')
+  errors.value.postalCode = ''
+  /** 郵便番号バリデーションNG時は処理終了 */
+  if (!validatePostalCode()) {
     return
   }
+  const postalCode = postalCodeFirst.value + postalCodeSecond.value
   const address = await searchAddressByPostalCode(postalCode)
   if (!address) {
-    console.log('住所が見つかりませんでした')
+    setError('postalCode', '正しい郵便番号を入力してください。')
     return
   }
   /** 都道府県設定 */
@@ -569,6 +650,27 @@ const clearErrors = () => {
     assignmentDate: '',
     buildingName: '',
   }
+}
+/** 郵便番号バリデーション */
+const validatePostalCode = () => {
+  if (!postalCodeFirst.value && !postalCodeSecond.value) {
+    setError('postalCode', '郵便番号の入力は必須です。')
+    return false
+  } else if (
+    !/^\d+$/.test(postalCodeFirst.value) ||
+    !/^\d+$/.test(postalCodeSecond.value)
+  ) {
+    setError('postalCode', '郵便番号は半角数字で入力してください。')
+    return false
+  } else if (
+    postalCodeFirst.value.length !== 3 ||
+    postalCodeSecond.value.length !== 4
+  ) {
+    setError('postalCode', '郵便番号は上3桁・下4桁で入力してください。')
+    return false
+  }
+
+  return true
 }
 /** バリデーション */
 const validateForm = () => {
@@ -606,6 +708,7 @@ const validateForm = () => {
     )
     isValid = false
   } else if (form.password !== secondPassword.value) {
+    setError('password', 'パスワードとパスワード（確認用）が一致していません。')
     setError(
       'secondPassword',
       'パスワードとパスワード（確認用）が一致していません。',
@@ -651,6 +754,8 @@ const validateForm = () => {
       }
     }
   }
+  // TODO 従業員一覧画面マージ後、登録済みメールアドレスチェック追加
+
   /** 電話番号 */
   const phoneNumber = form.phoneNumber.replace(/-/g, '')
   if (!phoneNumber) {
@@ -659,28 +764,15 @@ const validateForm = () => {
   } else if (!/^\d{11}$/.test(phoneNumber)) {
     setError('phoneNumber', '電話番号を正しく入力してください。')
     isValid = false
-  } else if (!/^(090|080|070)/.test(phoneNumber)) {
-    setError('phoneNumber', '携帯電話番号を入力してください。')
-    isValid = false
   } else if (/^(\d)\1+$/.test(phoneNumber)) {
     setError('phoneNumber', '正しい電話番号を入力してください。')
     isValid = false
+  } else if (!/^(090|080|070)/.test(phoneNumber)) {
+    setError('phoneNumber', '携帯電話番号を入力してください。')
+    isValid = false
   }
   /** 郵便番号 */
-  if (!postalCodeFirst.value || !postalCodeSecond.value) {
-    setError('postalCode', '郵便番号の入力は必須です。')
-    isValid = false
-  } else if (
-    postalCodeFirst.value.length !== 3 ||
-    postalCodeSecond.value.length !== 4
-  ) {
-    setError('postalCode', '郵便番号は上3桁・下4桁で入力してください。')
-    isValid = false
-  } else if (
-    !/^\d+$/.test(postalCodeFirst.value) ||
-    !/^\d+$/.test(postalCodeSecond.value)
-  ) {
-    setError('postalCode', '郵便番号は半角数字で入力してください。')
+  if (!validatePostalCode()) {
     isValid = false
   }
   /** 都道府県 */
@@ -756,8 +848,12 @@ const handleRegister = async () => {
    * 114 + 0033 → 1140033
    */
   form.postalCode = postalCodeFirst.value + postalCodeSecond.value
+  console.log('登録時の値「郵便番号」：', form.postalCode)
+
   /** 電話番号ハイフン除去 */
   form.phoneNumber = form.phoneNumber.replace(/-/g, '')
+  console.log('登録時の値「電話番号」：', form.phoneNumber)
+
   /**
    * 生年月日整形
    * YYYY-MM-DD
@@ -766,6 +862,8 @@ const handleRegister = async () => {
     birthYear.value && birthMonth.value && birthDay.value
       ? `${birthYear.value}-${birthMonth.value}-${birthDay.value}`
       : ''
+  console.log('登録時の値「生年月日」：', form.birthDate)
+
   /**
    * 配属日整形
    * YYYY-MM-DD
@@ -774,6 +872,8 @@ const handleRegister = async () => {
     assignYear.value && assignMonth.value && assignDay.value
       ? `${assignYear.value}-${assignMonth.value}-${assignDay.value}`
       : ''
+  console.log('登録時の値「配属日」：', form.assignmentDate)
+
   /** 登録API送信内容 */
   console.log('登録API送信内容', {
     userName: form.userName,

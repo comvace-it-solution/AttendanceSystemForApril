@@ -52,7 +52,7 @@
           <span>ログアウト</span>
         </router-link>
 
-        <router-link
+        <!-- <router-link
           to="/register"
           class="sp-sub-menu-item-wrap"
           @click="close"
@@ -74,7 +74,7 @@
           @click="close"
         >
           従業員編集
-        </router-link>
+        </router-link> -->
       </nav>
     </aside>
   </div>

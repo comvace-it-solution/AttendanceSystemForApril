@@ -71,9 +71,9 @@
           </router-link>
         </nav>
 
-        <header class="pc-section-header-wrap">
+        <!-- <header class="pc-section-header-wrap">
           <span>その他</span>
-        </header>
+        </header> -->
 
         <nav class="pc-menu-list-wrap">
           <router-link
@@ -84,21 +84,21 @@
             <span>従業員登録</span>
           </router-link>
 
-          <router-link
+          <!-- <router-link
             :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
             class="pc-sub-menu-item-wrap"
             @click="close"
           >
             <span>従業員詳細</span>
-          </router-link>
+          </router-link> -->
 
-          <router-link
+          <!-- <router-link
             :to="{ name: 'EmployeeEdit', params: { id: 1 } }"
             class="pc-sub-menu-item-wrap"
             @click="close"
           >
             <span>従業員編集</span>
-          </router-link>
+          </router-link> -->
         </nav>
       </div>
     </aside>
@@ -207,21 +207,25 @@ const onLogout = () => {
   display: flex;
   align-items: center;
   width: 100%;
-  height: 50px;
+  min-height: 50px;
   background: #de2583;
   color: #fff;
   font-weight: 700;
   padding: 18px;
+  flex-wrap: wrap;
 }
 
 .pc-user-name-text {
   margin-right: 8px;
   font-size: 16px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .pc-user-suffix-text {
   margin-top: 3px;
   font-size: 12px;
+  flex-shrink: 0;
 }
 
 .pc-menu-wrap {

@@ -208,7 +208,7 @@ onMounted(async () => {
 /* SP対応（max-width: 480px） */
 @media (max-width: 480px) {
   .employee-detail-page {
-    padding: 20px 12px 40px;
+    padding: 20px 16px 40px;
   }
   .page-title {
     font-size: 16px;
@@ -218,10 +218,9 @@ onMounted(async () => {
     width: 100%;
   }
   .detail-item {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 12px;
+    padding: 10px;
     margin-bottom: 20px;
+    min-height: 40px;
   }
   .detail-label {
     width: auto;
