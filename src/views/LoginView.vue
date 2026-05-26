@@ -3,7 +3,7 @@ import { useAuth } from '../composables/useAuth.ts'
 import { useRouter } from 'vue-router'
 import { Message, Lock } from '@element-plus/icons-vue'
 import { useFeedbackMessage } from '../composables/useFeedbackMessage.ts'
-import Snackbar from '@/components/modal/Snackbar.vue'
+import Snackbar from '../components/modal/Snackbar.vue'
 
 const { form, emailError, passwordError, loginError, validateEmail, validatePassword, isLoginDisabled, onLogin } = useAuth()
 const router = useRouter()
@@ -85,6 +85,7 @@ const {
   justify-content: center;
   width: 100%;
   min-height: 100vh;
+  background-color: $accent-bg-color;
 
   @include sp {
   flex-direction: column;
