@@ -16,6 +16,7 @@ const snackbarMessage = ref("");
 
 // スナックバーの種類
 const snackbarType = ref<SnackbarType>("success");
+
 export function useFeedbackMessage() {
   // エラーモーダルを表示する内部処理
   const openErrorModal = (title: string) => {
@@ -105,6 +106,8 @@ export function useFeedbackMessage() {
     snackbarType,
     closeErrorModal,
     closeSnackbar,
+    openSuccessSnackbar,
+    openErrorSnackbar,
     openDeleteErrorModal,
     openRegisterErrorModal,
     openEditErrorModal,

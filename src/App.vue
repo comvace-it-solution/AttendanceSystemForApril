@@ -49,6 +49,12 @@ const checkSupabaseRest = async () => {
   }
 }
 
+defineExpose({
+  checkSupabaseRest,
+  incrementCounter,
+  restStatusType,
+  supabaseProjectRef,
+})
 </script>
 
 <template>
