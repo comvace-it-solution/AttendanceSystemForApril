@@ -1,5 +1,6 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
+// import axios, { AxiosError } from "axios";
 
 type Employee = {
   userId: string;
@@ -42,6 +43,7 @@ export function useEmployeeList() {
 
   // 従業員一覧情報を取得する処理
   const fetchEmployees = async () => {
+    console.log("従業員一覧取得開始");
     try {
       isFetchError.value = false;
 
@@ -49,11 +51,29 @@ export function useEmployeeList() {
         headers,
       });
 
+      // 従業員情報取得失敗用コード
+      // const error = new AxiosError("Unauthorized", "401");
+      // error.response = {
+      //   data: {
+      //     message: "認証エラー",
+      //   },
+      //   status: 401,
+      //   statusText: "Unauthorized",
+      //   headers: {},
+      //   config: {} as any,
+      // };
+      // throw error;
+      // const response = await axios.get(`${SUPABASE_URL}/functions/v1/users`, {
+      //   headers,
+      // });
+
       console.log("従業員一覧取得成功:", response.data);
 
+      // 従業員取得件数0用コード
+      // const users: any[] = [];
+      // employees.value = [];
       // APIレスポンス形式は response.data.data.users 固定
       const users = response.data.data.users;
-
       employees.value = users.map((user: any) => {
         return {
           userId: String(user.id).padStart(6, "0"),

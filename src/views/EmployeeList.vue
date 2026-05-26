@@ -218,7 +218,6 @@ const filteredEmployees = computed(() => {
     return (
       employee.userId.toLowerCase().includes(keyword) ||
       employee.userName.toLowerCase().includes(keyword) ||
-      (employee.email ?? '').toLowerCase().includes(keyword) ||
       (employee.birthDate ?? '').toLowerCase().includes(keyword) ||
       (employee.assignedDate ?? '').toLowerCase().includes(keyword)
     )

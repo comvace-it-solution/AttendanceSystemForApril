@@ -1,5 +1,4 @@
 import axios from "axios";
-
 type DeleteResult =
   | "success"
   | "notFound"
@@ -14,6 +13,25 @@ export function useEmployeeDelete() {
     "Content-Type": "application/json",
     "x-api-key": INTERNAL_API_KEY,
   };
+
+  //従業員削除失敗用関数
+  // import axios, { AxiosError } from "axios";
+  // const deleteEmployee = async (userId: string): Promise<DeleteResult> => {
+  //   try {
+  //     const error = new AxiosError("Unauthorized", "401");
+  //     error.response = {
+  //       data: {
+  //         message: "認証エラー",
+  //       },
+  //       status: 404,
+  //       statusText: "Unauthorized",
+  //       headers: {},
+  //       config: {} as any,
+  //     };
+  //     throw error;
+  //     await axios.delete(`${SUPABASE_URL}/functions/v1/users/${userId}`, {
+  //       headers,
+  //     });
 
   // 従業員削除APIを実行し、結果の種類を返す処理
   const deleteEmployee = async (userId: string): Promise<DeleteResult> => {
