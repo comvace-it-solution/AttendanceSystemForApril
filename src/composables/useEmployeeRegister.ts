@@ -16,7 +16,11 @@ export function useEmployeeRegister() {
   const INTERNAL_API_KEY = import.meta.env.VITE_INTERNAL_API_KEY
 
   /** 通信エラーSnackbar */
-  const { openCommunicationErrorSnackbar } = useFeedbackMessage()
+  const {
+    openCommunicationErrorSnackbar,
+    openRegisterErrorModal,
+    openProcessErrorSnackbar,
+  } = useFeedbackMessage()
 
   /** 登録フォーム */
   const form = reactive({
@@ -56,6 +60,15 @@ export function useEmployeeRegister() {
     registerError.value = ''
 
     try {
+      // テスト用あとで消す
+      // throw {
+      //   response: {
+      //     status: 409,
+      //     data: {
+      //       message: 'email はすでに登録されています。',
+      //     },
+      //   },
+      // }
       /** API実行 */
       const response = await axios.post(
         `${API_BASE_URL}/users`,
@@ -84,23 +97,21 @@ export function useEmployeeRegister() {
       console.log('登録APIエラー status', error.response?.status)
       console.log('登録APIエラー data', error.response?.data)
       console.log('登録APIエラー message', error.message)
-
       /** ステータスコード */
       const status = error.response?.status
 
-      /**
-       * 4xxエラー
-       * 入力エラー表示
-       */
-      if (status !== undefined && status >= 400 && status < 500) {
-        registerError.value = '入力内容に誤りがあります。'
+      /** メールアドレスチェックの為 409エラー 画面に渡す */
+      if (status === 409) {
+        throw error
+      }
+      if (status === 500) {
+        /** 500エラー 登録失敗モーダル表示 */
+        openRegisterErrorModal()
+      } else if (status !== undefined && status >= 400 && status < 500) {
+        /** 400系エラー スナックバー表示 */
+        openProcessErrorSnackbar()
       } else {
-        /**
-         * 通信エラー
-         * Snackbar表示
-         */
-        registerError.value = ''
-
+        /** 通信エラー */
         openCommunicationErrorSnackbar()
       }
 

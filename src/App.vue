@@ -3,8 +3,13 @@ import { computed, ref } from 'vue'
 import { useCounterStore } from './stores/counter'
 import { checkSupabaseRestApi } from './services/supabaseHealth'
 import AppHeader from './components/layout/header/AppHeader.vue'
+import Snackbar from './components/modal/Snackbar.vue'
+import { useFeedbackMessage } from './composables/useFeedbackMessage'
+
+// import ModalTestView from './views/ModalTestView.vue'
 
 const counterStore = useCounterStore()
+const { snackbarVisible, snackbarMessage, snackbarType } = useFeedbackMessage()
 
 type Status = 'idle' | 'success' | 'error'
 
@@ -56,6 +61,12 @@ const checkSupabaseRest = async () => {
 <template>
   <AppHeader />
   <div style="height: var(--app-header-height)"></div>
+  <Snackbar
+    v-model="snackbarVisible"
+    :message="snackbarMessage"
+    :type="snackbarType"
+  />
+  <!-- <ModalTestView /> -->
   <RouterView />
   <!-- <main class="app-shell">
     <section class="hero-panel">

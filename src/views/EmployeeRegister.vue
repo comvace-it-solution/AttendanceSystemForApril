@@ -301,12 +301,15 @@ import { ref, computed, watch } from 'vue'
 import { useEmployeeRegister } from '../composables/useEmployeeRegister'
 import { useZipCode } from '../composables/useZipCode'
 import { useRouter } from 'vue-router'
+import { useFeedbackMessage } from '../composables/useFeedbackMessage'
 
 /** ========================
  * Composables
  * ===================== */
 const { searchAddressByPostalCode } = useZipCode()
 const { form, onRegister } = useEmployeeRegister()
+const { openRegisterSuccessSnackbar } = useFeedbackMessage()
+
 const router = useRouter()
 
 /** ========================
@@ -475,6 +478,7 @@ const clearForm = () => {
   })
 
   /** 画面遷移 */
+  // TODO 従業員一覧画面マージ後、従業員一覧画面へ遷移するよう修正
   router.push({ name: 'Home' })
 }
 /** ========================
@@ -754,8 +758,6 @@ const validateForm = () => {
       }
     }
   }
-  // TODO 従業員一覧画面マージ後、登録済みメールアドレスチェック追加
-
   /** 電話番号 */
   const phoneNumber = form.phoneNumber.replace(/-/g, '')
   if (!phoneNumber) {
@@ -887,8 +889,22 @@ const handleRegister = async () => {
     birthDate: form.birthDate,
     assignmentDate: form.assignmentDate,
   })
-  /** API実行 */
-  await onRegister()
+  try {
+    /** API実行 */
+    await onRegister()
+    /** 画面遷移 */
+    await router.push({ name: 'Home' })
+    /** 登録成功スナックバー表示 */
+    openRegisterSuccessSnackbar()
+  } catch (error: any) {
+    /** API結果 */
+    const message = error.response?.data?.message
+    const status = error.response?.status
+    /** メールアドレス重複チェック */
+    if (status === 409 && message === 'email はすでに登録されています。') {
+      setError('email', '入力したメールアドレスはすでに登録されています。')
+    }
+  }
 }
 </script>
 
