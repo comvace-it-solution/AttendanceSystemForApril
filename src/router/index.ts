@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// ログイン画面をインポート
+// 各画面をインポート
 import LoginView from '@/views/LoginView.vue'
 import HomeView from '@/views/HomeView.vue'
+import AttendanceDetailsView from '../views/AttendanceDetailsView.vue'
+import ModalTestView from '../views/ModalTestView.vue'
 import EmployeeRegister from '@/views/EmployeeRegister.vue'
 import EmployeeEdit from '@/views/EmployeeEdit.vue'
 import EmployeeDetail from '@/views/EmployeeDetail.vue'
@@ -18,6 +20,20 @@ const router = createRouter({
       path: '/home',
       name: 'Home',
       component: HomeView,
+    },
+    {
+      path: '/attendanceDetails/:id',
+      name: 'AttendanceDetails',
+      component: AttendanceDetailsView,
+      props: (route) => ({
+        id: Number(route.params.id),
+        initialName: route.query.name as string,
+      }),
+    },
+    {
+      path: '/modalTest',
+      name: 'ModalTest',
+      component: ModalTestView,
     },
     // 従業員登録
     {
