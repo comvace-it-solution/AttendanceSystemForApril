@@ -7,6 +7,7 @@ type Employee = {
   userName: string;
   birthDate: string;
   assignedDate: string;
+  currentAttendanceState: number | null;
   attendanceStatus: string;
 };
 
@@ -80,6 +81,7 @@ export function useEmployeeList() {
           userName: user.userName ?? "",
           birthDate: formatDate(user.birthDate),
           assignedDate: formatDate(user.assignmentDate),
+          currentAttendanceState: user.currentAttendanceState,
           attendanceStatus: formatAttendanceState(user.currentAttendanceState),
         };
       });

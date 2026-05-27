@@ -228,7 +228,7 @@ const sortedEmployees = computed(() => {
   return [...filteredEmployees.value].sort((a, b) => {
     const getSortValue = (employee: any) => {
       if (sortKey.value === 'currentAttendanceState') {
-        return employee.currentAttendanceState === 2 ? 1 : 0
+        return employee.currentAttendanceState ?? 1
       }
 
       return employee[sortKey.value] ?? ''

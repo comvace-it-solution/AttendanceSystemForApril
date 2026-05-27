@@ -31,7 +31,7 @@
         </label>
 
         <label>
-          <input v-model="selectedSortKey" type="radio" value="attendanceStatus" />
+          <input v-model="selectedSortKey" type="radio" value="currentAttendanceState" />
           勤務状態
         </label>
       </div>
@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-type SortKey = 'userId' | 'userName' | 'birthDate' | 'assignedDate' | 'attendanceStatus'
+type SortKey = 'userId' | 'userName' | 'birthDate' | 'assignedDate' | 'currentAttendanceState'
 type SortOrder = 'asc' | 'desc'
 
 const props = defineProps<{
