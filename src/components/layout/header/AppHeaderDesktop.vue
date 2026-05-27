@@ -25,7 +25,12 @@
             "
             alt="プロフィールアイコン"
           />
-          <div>{{ authStore.user?.userName }}</div>
+          <div
+            class="pc-user-name"
+            :style="getUserNameStyle(authStore.user?.userName)"
+          >
+            {{ authStore.user?.userName }}
+          </div>
         </router-link>
         <div
           class="pc-nav-item"
@@ -74,6 +79,25 @@ const isProfeelHover = ref(false)
 
 /** メニューアイコンのホバー状態を管理 */
 const isMenuHover = ref(false)
+
+/**
+ * ログイン者名文字サイズ制御
+ * 18px基準 / 最小7px
+ */
+const getUserNameStyle = (userName?: string) => {
+  if (!userName) {
+    return {}
+  }
+  /** 基本18px */
+  let fontSize = 18
+  /** 文字数に応じて縮小 */
+  if (userName.length > 10) {
+    fontSize = 18 - (userName.length - 10) * 0.3
+  }
+  return {
+    fontSize: `${Math.max(fontSize, 7)}px`,
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -123,17 +147,21 @@ const isMenuHover = ref(false)
 
 .pc-nav-item {
   background: #0d2b81;
+  border: 6px solid transparent;
   box-shadow: -1px 0 0 0 #fff;
   color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 200px;
   height: 100%;
   cursor: pointer;
   font-weight: 700;
   position: relative;
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+  box-sizing: border-box;
 }
 
 .pc-nav-item:hover {
@@ -144,10 +172,13 @@ const isMenuHover = ref(false)
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 200px;
   height: 100%;
   cursor: pointer;
   font-weight: 700;
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+  box-sizing: border-box;
 }
 
 .pc-profile-img {
@@ -158,5 +189,15 @@ const isMenuHover = ref(false)
 .pc-menu-img {
   width: 48px;
   height: 48px;
+}
+
+.pc-user-name {
+  width: 100%;
+  padding: 0 8px;
+  text-align: center;
+  line-height: 1.2;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 </style>

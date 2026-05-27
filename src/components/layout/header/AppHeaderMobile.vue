@@ -22,13 +22,19 @@
         v-if="authStore.isAuthenticated"
         to="/home"
         class="sp-profile-wrap"
+        @click="closeSide"
       >
         <img
           class="sp-profeel-icon"
           src="/profeelBearWhiteIcon.svg"
           alt="プロフィールアイコン"
         />
-        <div>{{ authStore.user?.userName }}</div>
+        <div
+          class="sp-user-name"
+          :style="getSpUserNameStyle(authStore.user?.userName)"
+        >
+          {{ authStore.user?.userName }}
+        </div>
       </router-link>
     </div>
     <AppSideMenuMobile :visible="sideVisible" @close="sideVisible = false" />
@@ -45,6 +51,22 @@ const authStore = useAuthStore()
 const sideVisible = ref(false)
 const toggleSide = () => {
   sideVisible.value = !sideVisible.value
+}
+const closeSide = () => {
+  sideVisible.value = false
+}
+/** SPログイン者名文字サイズ */
+const getSpUserNameStyle = (userName?: string) => {
+  if (!userName) {
+    return {}
+  }
+
+  const fontSize =
+    userName.length > 10 ? 10 - (userName.length - 10) * 0.15 : 10
+
+  return {
+    fontSize: `${Math.max(fontSize, 6)}px`,
+  }
 }
 </script>
 
@@ -174,12 +196,22 @@ const toggleSide = () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100px;
+  max-width: 100px;
   min-width: 100px;
   height: 30px;
   cursor: pointer;
   position: relative;
-  font-size: 10px;
   font-weight: 700;
+}
+
+.sp-user-name {
+  width: 100%;
+  overflow: hidden;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.1;
+  text-align: center;
 }
 
 .sp-profeel-icon {

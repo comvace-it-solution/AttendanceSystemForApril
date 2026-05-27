@@ -44,7 +44,7 @@
           <span>マイメニュー</span>
         </header>
         <nav class="pc-menu-list-wrap">
-          <router-link to="/home" class="pc-menu-item-wrap" @click="close">
+          <router-link to="/dashboard" class="pc-menu-item-wrap" @click="close">
             <img
               class="pc-menu-icon"
               src="/dashBordPinkIcon.svg"
@@ -52,7 +52,12 @@
             />
             <span>ダッシュボード</span>
           </router-link>
-          <router-link to="/home" class="pc-menu-item-wrap" @click="close">
+
+          <router-link
+            to="/EmployeeList"
+            class="pc-menu-item-wrap"
+            @click="close"
+          >
             <img
               class="pc-menu-icon"
               src="/employeeListPinkIcon.svg"
@@ -168,21 +173,25 @@ const onLogout = () => {
   display: flex;
   align-items: center;
   width: 100%;
-  height: 50px;
+  min-height: 50px;
   background: #de2583;
   color: #fff;
   font-weight: 700;
   padding: 18px;
+  flex-wrap: wrap;
 }
 
 .pc-user-name-text {
   margin-right: 8px;
   font-size: 16px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .pc-user-suffix-text {
   margin-top: 3px;
   font-size: 12px;
+  flex-shrink: 0;
 }
 
 .pc-menu-wrap {
