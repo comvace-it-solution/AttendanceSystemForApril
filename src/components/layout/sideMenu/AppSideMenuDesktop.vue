@@ -76,13 +76,13 @@
         </header> -->
 
         <nav class="pc-menu-list-wrap">
-          <router-link
+          <!-- <router-link
             to="/register"
             class="pc-sub-menu-item-wrap"
             @click="close"
           >
             <span>従業員登録</span>
-          </router-link>
+          </router-link> -->
 
           <!-- <router-link
             :to="{ name: 'EmployeeDetail', params: { id: 1 } }"

@@ -208,7 +208,7 @@ onMounted(async () => {
 /* SP対応（max-width: 480px） */
 @media (max-width: 480px) {
   .employee-detail-page {
-    padding: 20px 16px 40px;
+    padding: 30px 45px 40px;
   }
   .page-title {
     font-size: 16px;
@@ -218,24 +218,25 @@ onMounted(async () => {
     width: 100%;
   }
   .detail-item {
-    padding: 10px;
+    padding: 8px;
     margin-bottom: 20px;
     min-height: 40px;
+    border: 1.5px solid #de2583;
+    border-radius: 6px;
   }
   .detail-label {
     width: auto;
-    font-size: 12px;
-    margin-bottom: 4px;
+    font-size: 10px;
   }
   .detail-value {
-    font-size: 13px;
+    font-size: 10px;
   }
   .button-area {
     margin-top: 40px;
   }
   .edit-button {
-    width: 100%;
-    height: 44px;
+    width: 160px;
+    height: 40px;
     font-size: 14px;
   }
 }
