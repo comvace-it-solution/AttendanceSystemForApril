@@ -1,4 +1,4 @@
-<!-- 従業員登録： EmployeeRegister.vue -->
+<!-- 従業員登録： EmployeeRegisterView.vue -->
 <template>
   <main class="employee-register-page">
     <h1 class="page-title">従業員登録</h1>
