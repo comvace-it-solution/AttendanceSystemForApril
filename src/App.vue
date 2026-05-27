@@ -5,11 +5,16 @@ import { checkSupabaseRestApi } from './services/supabaseHealth'
 import AppHeader from './components/layout/header/AppHeader.vue'
 import Snackbar from './components/modal/Snackbar.vue'
 import { useFeedbackMessage } from './composables/useFeedbackMessage'
-
-// import ModalTestView from './views/ModalTestView.vue'
+import Modal from './components/modal/Modal.vue'
 
 const counterStore = useCounterStore()
-const { snackbarVisible, snackbarMessage, snackbarType } = useFeedbackMessage()
+const {
+  snackbarVisible,
+  snackbarMessage,
+  snackbarType,
+  errorModalVisible,
+  modalTitle,
+} = useFeedbackMessage()
 
 type Status = 'idle' | 'success' | 'error'
 
@@ -66,7 +71,7 @@ const checkSupabaseRest = async () => {
     :message="snackbarMessage"
     :type="snackbarType"
   />
-  <!-- <ModalTestView /> -->
+  <Modal v-model="errorModalVisible" :title="modalTitle" />
   <RouterView />
   <!-- <main class="app-shell">
     <section class="hero-panel">

@@ -15,7 +15,7 @@
       </header>
 
       <nav class="sp-menu-list-wrap" @click="close">
-        <router-link to="/home" class="sp-menu-item-wrap" @click="close">
+        <router-link to="/dashboard" class="sp-menu-item-wrap" @click="close">
           <img
             class="sp-menu-icon"
             src="/dashBordPinkIcon.svg"
@@ -24,7 +24,11 @@
           <span>ダッシュボード</span>
         </router-link>
 
-        <router-link to="/home" class="sp-menu-item-wrap" @click="close">
+        <router-link
+          to="/EmployeeList"
+          class="sp-menu-item-wrap"
+          @click="close"
+        >
           <img
             class="sp-menu-icon"
             src="/employeeListPinkIcon.svg"

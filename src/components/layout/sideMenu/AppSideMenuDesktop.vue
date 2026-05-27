@@ -52,7 +52,7 @@
         </header>
 
         <nav class="pc-menu-list-wrap">
-          <router-link to="/home" class="pc-menu-item-wrap" @click="close">
+          <router-link to="/dashboard" class="pc-menu-item-wrap" @click="close">
             <img
               class="pc-menu-icon"
               src="/dashBordPinkIcon.svg"
@@ -61,7 +61,11 @@
             <span>ダッシュボード</span>
           </router-link>
 
-          <router-link to="/home" class="pc-menu-item-wrap" @click="close">
+          <router-link
+            to="/EmployeeList"
+            class="pc-menu-item-wrap"
+            @click="close"
+          >
             <img
               class="pc-menu-icon"
               src="/employeeListPinkIcon.svg"
@@ -71,34 +75,14 @@
           </router-link>
         </nav>
 
-        <!-- <header class="pc-section-header-wrap">
-          <span>その他</span>
-        </header> -->
-
         <nav class="pc-menu-list-wrap">
-          <!-- <router-link
+          <router-link
             to="/register"
             class="pc-sub-menu-item-wrap"
             @click="close"
           >
             <span>従業員登録</span>
-          </router-link> -->
-
-          <!-- <router-link
-            :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
-            class="pc-sub-menu-item-wrap"
-            @click="close"
-          >
-            <span>従業員詳細</span>
-          </router-link> -->
-
-          <!-- <router-link
-            :to="{ name: 'EmployeeEdit', params: { id: 1 } }"
-            class="pc-sub-menu-item-wrap"
-            @click="close"
-          >
-            <span>従業員編集</span>
-          </router-link> -->
+          </router-link>
         </nav>
       </div>
     </aside>

@@ -478,8 +478,7 @@ const clearForm = () => {
   })
 
   /** 画面遷移 */
-  // TODO 従業員一覧画面マージ後、従業員一覧画面へ遷移するよう修正
-  router.push({ name: 'Home' })
+  router.push({ name: 'EmployeeList' })
 }
 /** ========================
  * Computed
@@ -620,20 +619,30 @@ const formatPhone = () => {
 /** 郵便番号検索 */
 const onSearchPostalCode = async () => {
   errors.value.postalCode = ''
+
   /** 郵便番号バリデーションNG時は処理終了 */
   if (!validatePostalCode()) {
     return
   }
-  const postalCode = postalCodeFirst.value + postalCodeSecond.value
-  const address = await searchAddressByPostalCode(postalCode)
-  if (!address) {
-    setError('postalCode', '正しい郵便番号を入力してください。')
-    return
+
+  try {
+    const postalCode = postalCodeFirst.value + postalCodeSecond.value
+
+    const address = await searchAddressByPostalCode(postalCode)
+
+    if (!address) {
+      setError('postalCode', '正しい郵便番号を入力してください。')
+      return
+    }
+
+    /** 都道府県設定 */
+    form.prefecture = address.prefecture
+
+    /** 市区町村・町名設定 */
+    form.streetAddress = `${address.city}${address.town}`
+  } catch (error) {
+    setError('postalCode', '郵便番号検索に失敗しました。')
   }
-  /** 都道府県設定 */
-  form.prefecture = address.prefecture
-  /** 市区町村・町名設定 */
-  form.streetAddress = `${address.city}${address.town}`
 }
 /** エラーメッセージ設定 */
 const setError = (key: keyof typeof errors.value, message: string) => {
@@ -893,7 +902,7 @@ const handleRegister = async () => {
     /** API実行 */
     await onRegister()
     /** 画面遷移 */
-    await router.push({ name: 'Home' })
+    await router.push({ name: 'EmployeeList' })
     /** 登録成功スナックバー表示 */
     openRegisterSuccessSnackbar()
   } catch (error: any) {
