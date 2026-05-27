@@ -20,7 +20,7 @@
       </div>
       <router-link
         v-if="authStore.isAuthenticated"
-        to="/home"
+        :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
         class="sp-profile-wrap"
         @click="closeSide"
       >

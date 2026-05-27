@@ -26,7 +26,11 @@
           />
           <div class="pc-header-text">ログアウト</div>
         </router-link>
-        <router-link to="/home" class="pc-header-item-wrap" @click="close">
+        <router-link
+          :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
+          class="pc-header-item-wrap"
+          @click="close"
+        >
           <img
             class="pc-header-icon"
             src="/profeelBearBlueIcon.svg"
