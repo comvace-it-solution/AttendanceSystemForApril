@@ -1,16 +1,20 @@
-<!-- 従業員登録： EmployeeRegister.vue -->
+<!-- 従業員編集： EmployeeEdit.vue -->
 <template>
   <main class="employee-register-page">
-    <h1 class="page-title">従業員登録</h1>
+    <h1 class="page-title">従業員編集</h1>
     <!-- 登録フォーム -->
-    <form class="register-form" @submit.prevent="handleRegister">
+    <form class="register-form" @submit.prevent="handleUpdate">
       <!-- ユーザー名 -->
       <div class="form-group">
         <label>
           <span class="required">必須</span>
           ユーザー名
         </label>
-        <input v-model="form.userName" type="text" placeholder="例: 山田花子" />
+        <input
+          v-model="editForm.userName"
+          type="text"
+          placeholder="例: 山田花子"
+        />
         <!-- エラーメッセージ -->
         <p v-if="errors.userName" class="error-message">
           {{ errors.userName }}
@@ -23,69 +27,13 @@
           メールアドレス
         </label>
         <input
-          v-model="form.email"
+          v-model="editForm.email"
           type="email"
           placeholder="例: contact@example.com"
         />
         <!-- エラーメッセージ -->
         <p v-if="errors.email" class="error-message">
           {{ errors.email }}
-        </p>
-      </div>
-      <!-- パスワード -->
-      <div class="form-group">
-        <label>
-          <span class="required">必須</span>
-          パスワード
-        </label>
-        <div class="input-icon-wrap">
-          <input
-            :type="isPasswordVisible ? 'text' : 'password'"
-            v-model="form.password"
-            placeholder="半角英数混合6文字"
-          />
-          <!-- パスワード表示切替 -->
-          <img
-            class="eye-icon"
-            :src="
-              isPasswordVisible ? '/passwordOpen.svg' : '/passwordClose.svg'
-            "
-            alt="パスワード表示切替アイコン"
-            @click="isPasswordVisible = !isPasswordVisible"
-          />
-        </div>
-        <!-- エラーメッセージ -->
-        <p v-if="errors.password" class="error-message">
-          {{ errors.password }}
-        </p>
-      </div>
-      <!-- パスワード確認 -->
-      <div class="form-group">
-        <label>
-          <span class="required">必須</span>
-          パスワード（確認用）
-        </label>
-        <div class="input-icon-wrap">
-          <input
-            :type="isSecondPasswordVisible ? 'text' : 'password'"
-            v-model="secondPassword"
-            placeholder="半角英数混合6文字"
-          />
-          <!-- パスワード表示切替 -->
-          <img
-            class="eye-icon"
-            :src="
-              isSecondPasswordVisible
-                ? '/passwordOpen.svg'
-                : '/passwordClose.svg'
-            "
-            alt="パスワード表示切替アイコン"
-            @click="isSecondPasswordVisible = !isSecondPasswordVisible"
-          />
-        </div>
-        <!-- エラーメッセージ -->
-        <p v-if="errors.secondPassword" class="error-message">
-          {{ errors.secondPassword }}
         </p>
       </div>
       <!-- 電話番号 -->
@@ -99,8 +47,7 @@
         </div>
         <input
           type="tel"
-          v-model="form.phoneNumber"
-          @input="formatPhone"
+          v-model="editForm.phoneNumber"
           placeholder="例:090-0000-0000"
         />
         <!-- エラーメッセージ -->
@@ -154,8 +101,8 @@
         </label>
         <div class="date-row">
           <select
-            v-model="form.prefecture"
-            :class="{ selected: form.prefecture }"
+            v-model="editForm.prefecture"
+            :class="{ selected: editForm.prefecture }"
             class="date-select prefecture-dropdown"
           >
             <option value="">選択してください</option>
@@ -176,7 +123,7 @@
           住所
         </label>
         <input
-          v-model="form.streetAddress"
+          v-model="editForm.streetAddress"
           type="text"
           placeholder="例: ○○区○○"
         />
@@ -189,7 +136,7 @@
       <div class="form-group">
         <label>建物名</label>
         <input
-          v-model="form.buildingName"
+          v-model="editForm.buildingName"
           type="text"
           placeholder="例: ○○タウン 101"
         />
@@ -210,9 +157,7 @@
                 { selected: item.model.value },
               ]"
             >
-              <option value="">
-                {{ item.placeholder }}
-              </option>
+              <option value="">{{ item.placeholder }}</option>
               <option
                 v-for="option in item.options"
                 :key="option"
@@ -221,9 +166,7 @@
                 {{ option }}
               </option>
             </select>
-            <span>
-              {{ item.label }}
-            </span>
+            <span>{{ item.label }}</span>
           </template>
         </div>
         <!-- エラーメッセージ -->
@@ -231,11 +174,12 @@
           {{ errors.birthDate }}
         </p>
       </div>
+
       <!-- 配属日 -->
       <div class="form-group">
         <label>
           <span class="required">必須</span>
-          生年月日
+          配属日
         </label>
         <div class="date-row">
           <template v-for="item in assignDateSelects" :key="item.type">
@@ -247,9 +191,7 @@
                 { selected: item.model.value },
               ]"
             >
-              <option value="">
-                {{ item.placeholder }}
-              </option>
+              <option value="">{{ item.placeholder }}</option>
               <option
                 v-for="option in item.options"
                 :key="option"
@@ -258,15 +200,7 @@
                 {{ option }}
               </option>
             </select>
-            <span>
-              {{
-                item.type === 'year'
-                  ? '年'
-                  : item.type === 'month'
-                    ? '月'
-                    : '日'
-              }}
-            </span>
+            <span>{{ item.label }}</span>
           </template>
         </div>
         <!-- エラーメッセージ -->
@@ -274,6 +208,72 @@
           {{ errors.assignmentDate }}
         </p>
       </div>
+      <div class="password-change-area">
+        <p class="password-change-title">
+          パスワードを変更する場合チェックしてください
+        </p>
+        <label class="password-check-button">
+          <input type="checkbox" v-model="isPasswordChange" />
+          <span>パスワードを変更する</span>
+        </label>
+      </div>
+      <!-- パスワード変更時のみ表示 -->
+      <template v-if="isPasswordChange">
+        <!-- パスワード -->
+        <div class="password-group">
+          <label>
+            <span class="required">必須</span>
+            パスワード
+          </label>
+          <div class="input-icon-wrap">
+            <input
+              :type="isPasswordVisible ? 'text' : 'password'"
+              v-model="editForm.password"
+              placeholder="半角英数混合6文字"
+            />
+            <img
+              class="eye-icon"
+              :src="
+                isPasswordVisible ? '/passwordOpen.svg' : '/passwordClose.svg'
+              "
+              alt="パスワード表示切替アイコン"
+              @click="isPasswordVisible = !isPasswordVisible"
+            />
+          </div>
+          <!-- エラーメッセージ -->
+          <p v-if="errors.password" class="error-message">
+            {{ errors.password }}
+          </p>
+        </div>
+        <!-- パスワード確認 -->
+        <div class="password-group">
+          <label>
+            <span class="required">必須</span>
+            パスワード（確認用）
+          </label>
+          <div class="input-icon-wrap">
+            <input
+              :type="isSecondPasswordVisible ? 'text' : 'password'"
+              v-model="secondPassword"
+              placeholder="半角英数混合6文字"
+            />
+            <img
+              class="eye-icon"
+              :src="
+                isSecondPasswordVisible
+                  ? '/passwordOpen.svg'
+                  : '/passwordClose.svg'
+              "
+              alt="パスワード表示切替アイコン"
+              @click="isSecondPasswordVisible = !isSecondPasswordVisible"
+            />
+          </div>
+          <!-- エラーメッセージ -->
+          <p v-if="errors.secondPassword" class="error-message">
+            {{ errors.secondPassword }}
+          </p>
+        </div>
+      </template>
       <!-- ボタン -->
       <div class="button-area">
         <!-- 登録 -->
@@ -289,19 +289,43 @@
 /** ========================
  * Import
  * ===================== */
-import { ref, computed, watch } from 'vue'
-import { useEmployeeRegister } from '../composables/useEmployeeRegister'
+import { ref, toRef, computed, watch, onMounted, reactive } from 'vue'
 import { useZipCode } from '../composables/useZipCode'
+import { useRoute } from 'vue-router'
+import { useEmployeeDetail } from '../composables/useEmployeeDetail'
+import { useEmployeeEdit } from '../composables/useEmployeeEdit'
+
+/** ========================
+ * Router
+ * ===================== */
+const route = useRoute()
 
 /** ========================
  * Composables
  * ===================== */
 const { searchAddressByPostalCode } = useZipCode()
-const { form, onRegister } = useEmployeeRegister()
+const { employeeDetail, fetchEmployeeDetail } = useEmployeeDetail()
+const { updateEmployee } = useEmployeeEdit()
 
 /** ========================
  * Reactive
  * ===================== */
+/** 編集フォーム */
+const editForm = reactive({
+  userName: '',
+  email: '',
+  phoneNumber: '',
+  prefecture: '',
+  streetAddress: '',
+  buildingName: '',
+  birthYear: '',
+  birthMonth: '',
+  birthDay: '',
+  assignmentYear: '',
+  assignmentMonth: '',
+  assignmentDay: '',
+  password: '',
+})
 
 /** ========================
  * Ref
@@ -312,10 +336,6 @@ const isPasswordVisible = ref(false)
 const isSecondPasswordVisible = ref(false)
 /** 確認用パスワード */
 const secondPassword = ref('')
-/** 郵便番号前半3桁 */
-const postalCodeFirst = ref('')
-/** 郵便番号後半4桁 */
-const postalCodeSecond = ref('')
 /** 生年月日 年 */
 const birthYear = ref('')
 /** 生年月日 月 */
@@ -328,6 +348,14 @@ const assignYear = ref('')
 const assignMonth = ref('')
 /** 配属日 日 */
 const assignDay = ref('')
+/** 郵便番号 前半 */
+const postalCodeFirst = ref('')
+/** 郵便番号 後半 */
+const postalCodeSecond = ref('')
+/** パスワード変更有無 */
+const isPasswordChange = ref(false)
+/** 初期表示完了フラグ */
+const isInitialized = ref(false)
 
 /** エラーメッセージ */
 const errors = ref({
@@ -433,16 +461,15 @@ const assignDays = computed(() => {
 const birthDateSelects = computed(() => [
   {
     type: 'year',
-    model: birthYear,
+    model: toRef(editForm, 'birthYear'),
     options: birthYears,
     placeholder: 'YYYY',
     className: 'year-date',
     label: '年',
   },
-
   {
     type: 'month',
-    model: birthMonth,
+    model: toRef(editForm, 'birthMonth'),
     options: Array.from({ length: 12 }, (_, i) =>
       String(i + 1).padStart(2, '0'),
     ),
@@ -450,10 +477,9 @@ const birthDateSelects = computed(() => [
     className: 'month-date',
     label: '月',
   },
-
   {
     type: 'day',
-    model: birthDay,
+    model: toRef(editForm, 'birthDay'),
     options: Array.from({ length: birthDays.value }, (_, i) =>
       String(i + 1).padStart(2, '0'),
     ),
@@ -462,34 +488,36 @@ const birthDateSelects = computed(() => [
     label: '日',
   },
 ])
+
 /** 配属日セレクト一覧 */
 const assignDateSelects = computed(() => [
   {
     type: 'year',
-    model: assignYear,
+    model: toRef(editForm, 'assignmentYear'),
     options: assignYears,
     placeholder: 'YYYY',
     className: 'year-date',
+    label: '年',
   },
-
   {
     type: 'month',
-    model: assignMonth,
+    model: toRef(editForm, 'assignmentMonth'),
     options: Array.from({ length: 12 }, (_, i) =>
       String(i + 1).padStart(2, '0'),
     ),
     placeholder: 'MM',
     className: 'month-date',
+    label: '月',
   },
-
   {
     type: 'day',
-    model: assignDay,
+    model: toRef(editForm, 'assignmentDay'),
     options: Array.from({ length: assignDays.value }, (_, i) =>
       String(i + 1).padStart(2, '0'),
     ),
     placeholder: 'DD',
     className: 'day-date',
+    label: '日',
   },
 ])
 
@@ -497,37 +525,51 @@ const assignDateSelects = computed(() => [
  * Watch
  * ===================== */
 /** 生年月日変更時、日をリセット */
-watch([birthYear, birthMonth], () => {
-  birthDay.value = ''
-})
+watch(
+  () => [editForm.birthYear, editForm.birthMonth],
+  () => {
+    if (!isInitialized.value) {
+      return
+    }
+
+    editForm.birthDay = ''
+  },
+)
 /** 配属日変更時、日をリセット */
-watch([assignYear, assignMonth], () => {
-  assignDay.value = ''
-})
+watch(
+  () => [editForm.assignmentYear, editForm.assignmentMonth],
+  () => {
+    if (!isInitialized.value) {
+      return
+    }
+
+    editForm.assignmentDay = ''
+  },
+)
 
 /** ========================
  * Formatters
  * ===================== */
-/**
- * 電話番号フォーマット
- * 全角→半角変換
- * ハイフン自動付与
- */
-const formatPhone = () => {
-  let value = form.phoneNumber
-  /** 全角数字を半角変換 */
-  value = value.replace(/[０-９]/g, (s) =>
-    String.fromCharCode(s.charCodeAt(0) - 0xfee0),
-  )
-  /** 数字以外除去 */
-  value = value.replace(/\D/g, '')
-  /** ハイフン付与 */
-  if (value.length > 3 && value.length <= 7) {
-    value = value.replace(/(\d{3})(\d+)/, '$1-$2')
-  } else if (value.length > 7) {
-    value = value.replace(/(\d{3})(\d{4})(\d+)/, '$1-$2-$3')
+/** 日付を年月日に分割 */
+const splitDate = (date: string) => {
+  const [year, month, day] = date.split('-')
+
+  return {
+    year,
+    month,
+    day,
   }
-  form.phoneNumber = value
+}
+/** 電話番号をハイフン付きに変換 */
+const formatPhone = (phoneNumber: string) => {
+  return phoneNumber.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')
+}
+/** 郵便番号を分割 */
+const splitPostalCode = (postalCode: string) => {
+  return {
+    first: postalCode.slice(0, 3),
+    second: postalCode.slice(3, 7),
+  }
 }
 
 /** ========================
@@ -546,9 +588,9 @@ const onSearchPostalCode = async () => {
     return
   }
   /** 都道府県設定 */
-  form.prefecture = address.prefecture
+  editForm.prefecture = address.prefecture
   /** 市区町村・町名設定 */
-  form.streetAddress = `${address.city}${address.town}`
+  editForm.streetAddress = `${address.city}${address.town}`
 }
 /** エラーメッセージ設定 */
 const setError = (key: keyof typeof errors.value, message: string) => {
@@ -575,58 +617,28 @@ const validateForm = () => {
   clearErrors()
   let isValid = true
   /** ユーザー名 */
-  if (!form.userName) {
+  if (!editForm.userName) {
     setError('userName', 'ユーザー名の入力は必須です。')
     isValid = false
-  } else if (form.userName.length >= 51) {
+  } else if (editForm.userName.length >= 51) {
     setError('userName', 'ユーザー名は50文字以内で入力してください。')
     isValid = false
   }
-  /** パスワード */
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6}$/
-
-  if (!form.password) {
-    setError('password', 'パスワードの入力は必須です。')
-    isValid = false
-  } else if (!passwordRegex.test(form.password)) {
-    setError(
-      'password',
-      'パスワードは半角英字と半角数字の両方を含む6文字で入力してください。',
-    )
-    isValid = false
-  }
-  /** パスワード確認 */
-  if (!secondPassword.value) {
-    setError('secondPassword', 'パスワード（確認用）の入力は必須です。')
-    isValid = false
-  } else if (!passwordRegex.test(secondPassword.value)) {
-    setError(
-      'secondPassword',
-      'パスワード（確認用）は半角英字と半角数字の両方を含む6文字で入力してください。',
-    )
-    isValid = false
-  } else if (form.password !== secondPassword.value) {
-    setError(
-      'secondPassword',
-      'パスワードとパスワード（確認用）が一致していません。',
-    )
-    isValid = false
-  }
   /** メールアドレス */
-  if (!form.email) {
+  if (!editForm.email) {
     setError('email', 'メールアドレスの入力は必須です。')
     isValid = false
-  } else if (/\s/.test(form.email)) {
+  } else if (/\s/.test(editForm.email)) {
     setError('email', 'メールアドレスは空白を含めずに入力してください。')
     isValid = false
-  } else if (!form.email.includes('@')) {
+  } else if (!editForm.email.includes('@')) {
     setError('email', 'メールアドレスに「@」を含めて入力してください。')
     isValid = false
-  } else if ((form.email.match(/@/g) || []).length >= 2) {
+  } else if ((editForm.email.match(/@/g) || []).length >= 2) {
     setError('email', 'メールアドレスに「@」は1つだけ入力してください。')
     isValid = false
   } else {
-    const [localPart, domainPart] = form.email.split('@')
+    const [localPart, domainPart] = editForm.email.split('@')
     if (!localPart) {
       setError('email', 'メールアドレスの「@」の前に文字を入力してください。')
       isValid = false
@@ -652,14 +664,14 @@ const validateForm = () => {
     }
   }
   /** 電話番号 */
-  const phoneNumber = form.phoneNumber.replace(/-/g, '')
+  const phoneNumber = editForm.phoneNumber.replace(/-/g, '')
   if (!phoneNumber) {
     setError('phoneNumber', '電話番号の入力は必須です。')
     isValid = false
   } else if (!/^\d{11}$/.test(phoneNumber)) {
-    setError('phoneNumber', '電話番号を正しく入力してください。')
+    setError('phoneNumber', '正しい電話番号を入力してください。')
     isValid = false
-  } else if (!/^(090|080|070)/.test(phoneNumber)) {
+  } else if (!/^(060|070|080|090)/.test(phoneNumber)) {
     setError('phoneNumber', '携帯電話番号を入力してください。')
     isValid = false
   } else if (/^(\d)\1+$/.test(phoneNumber)) {
@@ -684,42 +696,46 @@ const validateForm = () => {
     isValid = false
   }
   /** 都道府県 */
-  if (!form.prefecture) {
+  if (!editForm.prefecture) {
     setError('prefecture', '都道府県を選択してください。')
     isValid = false
   }
   /** 住所 */
-  if (!form.streetAddress) {
+  if (!editForm.streetAddress) {
     setError('streetAddress', '住所の入力は必須です。')
     isValid = false
-  } else if (form.streetAddress.length > 255) {
+  } else if (editForm.streetAddress.length > 255) {
     setError('streetAddress', '住所は255文字以内で入力してください。')
     isValid = false
   }
   /** 建物名 */
-  if (form.buildingName.length > 255) {
+  if (editForm.buildingName.length > 255) {
     setError('buildingName', '建物名は255文字以内で入力してください。')
     isValid = false
   }
   /** 生年月日 */
-  if (!birthYear.value || !birthMonth.value || !birthDay.value) {
+  if (!editForm.birthYear || !editForm.birthMonth || !editForm.birthDay) {
     setError('birthDate', '生年月日の入力は必須です。')
     isValid = false
   } else {
     const birthDate = new Date(
-      `${birthYear.value}-${birthMonth.value}-${birthDay.value}`,
+      `${editForm.birthYear}-${editForm.birthMonth}-${editForm.birthDay}`,
     )
     const today = new Date()
-    /** 生年月日が未来日 */
+
     if (birthDate > today) {
       setError('birthDate', '未来の日付は選択できません。')
       isValid = false
     }
-    /** 配属日との前後関係 */
-    if (assignYear.value && assignMonth.value && assignDay.value) {
+    if (
+      editForm.assignmentYear &&
+      editForm.assignmentMonth &&
+      editForm.assignmentDay
+    ) {
       const assignmentDate = new Date(
-        `${assignYear.value}-${assignMonth.value}-${assignDay.value}`,
+        `${editForm.assignmentYear}-${editForm.assignmentMonth}-${editForm.assignmentDay}`,
       )
+
       if (birthDate >= assignmentDate) {
         setError('birthDate', '生年月日に配属日以降の日付は指定できません。')
         isValid = false
@@ -727,69 +743,141 @@ const validateForm = () => {
     }
   }
   /** 配属日 */
-  if (!assignYear.value || !assignMonth.value || !assignDay.value) {
+  if (
+    !editForm.assignmentYear ||
+    !editForm.assignmentMonth ||
+    !editForm.assignmentDay
+  ) {
     setError('assignmentDate', '配属日の入力は必須です。')
     isValid = false
-  } else if (birthYear.value && birthMonth.value && birthDay.value) {
+  } else if (editForm.birthYear && editForm.birthMonth && editForm.birthDay) {
     const birthDate = new Date(
-      `${birthYear.value}-${birthMonth.value}-${birthDay.value}`,
+      `${editForm.birthYear}-${editForm.birthMonth}-${editForm.birthDay}`,
     )
     const assignmentDate = new Date(
-      `${assignYear.value}-${assignMonth.value}-${assignDay.value}`,
+      `${editForm.assignmentYear}-${editForm.assignmentMonth}-${editForm.assignmentDay}`,
     )
     if (assignmentDate <= birthDate) {
       setError('assignmentDate', '配属日に生年月日以前の日付は指定できません。')
       isValid = false
     }
   }
+  /** パスワード変更時のみ */
+  if (isPasswordChange.value) {
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6}$/
+
+    if (!editForm.password) {
+      setError('password', 'パスワードの入力は必須です。')
+      isValid = false
+    } else if (!passwordRegex.test(editForm.password)) {
+      setError(
+        'password',
+        'パスワードは半角英字と半角数字の両方を含む6文字で入力してください。',
+      )
+      isValid = false
+    } else if (editForm.password !== secondPassword.value) {
+      setError(
+        'password',
+        'パスワードとパスワード（確認用）が一致していません。',
+      )
+      isValid = false
+    }
+    if (!secondPassword.value) {
+      setError('secondPassword', 'パスワード（確認用）の入力は必須です。')
+      isValid = false
+    } else if (!passwordRegex.test(secondPassword.value)) {
+      setError(
+        'secondPassword',
+        'パスワード（確認用）は半角英字と半角数字の両方を含む6文字で入力してください。',
+      )
+      isValid = false
+    } else if (editForm.password !== secondPassword.value) {
+      setError(
+        'secondPassword',
+        'パスワードとパスワード（確認用）が一致していません。',
+      )
+      isValid = false
+    }
+  }
   return isValid
 }
-
-/** 登録処理 */
-const handleRegister = async () => {
+/** 更新処理 */
+const handleUpdate = async () => {
   /** バリデーションNG時は処理終了 */
   if (!validateForm()) {
     return
   }
-  /**
-   * 郵便番号結合
-   * 114 + 0033 → 1140033
-   */
-  form.postalCode = postalCodeFirst.value + postalCodeSecond.value
-  /** 電話番号ハイフン除去 */
-  form.phoneNumber = form.phoneNumber.replace(/-/g, '')
-  /**
-   * 生年月日整形
-   * YYYY-MM-DD
-   */
-  form.birthDate =
-    birthYear.value && birthMonth.value && birthDay.value
-      ? `${birthYear.value}-${birthMonth.value}-${birthDay.value}`
-      : ''
-  /**
-   * 配属日整形
-   * YYYY-MM-DD
-   */
-  form.assignmentDate =
-    assignYear.value && assignMonth.value && assignDay.value
-      ? `${assignYear.value}-${assignMonth.value}-${assignDay.value}`
-      : ''
-  /** 登録API送信内容 */
-  console.log('登録API送信内容', {
-    userName: form.userName,
-    password: form.password,
-    email: form.email,
-    phoneNumber: form.phoneNumber,
-    postalCode: form.postalCode,
-    prefecture: form.prefecture,
-    streetAddress: form.streetAddress,
-    buildingName: form.buildingName,
-    birthDate: form.birthDate,
-    assignmentDate: form.assignmentDate,
-  })
-  /** API実行 */
-  await onRegister()
+  /** ログインユーザーID */
+  const userId = Number(route.params.id)
+
+  /** API送信用データ */
+  const requestBody = {
+    /** ユーザー名 */
+    userName: editForm.userName,
+    /** パスワード変更時のみ送信 */
+    password: isPasswordChange.value ? editForm.password : undefined,
+    /** メールアドレス */
+    email: editForm.email,
+    /** ハイフン除去 */
+    phoneNumber: editForm.phoneNumber.replace(/-/g, ''),
+    /** 郵便番号結合 */
+    postalCode: postalCodeFirst.value + postalCodeSecond.value,
+    /** 都道府県 */
+    prefecture: editForm.prefecture,
+    /** 市区町村・町名 */
+    streetAddress: editForm.streetAddress,
+    /** 建物名 */
+    buildingName: editForm.buildingName,
+    /** 生年月日変換 */
+    birthDate: `${editForm.birthYear}-${editForm.birthMonth}-${editForm.birthDay}`,
+    /** 配属日変換 */
+    assignmentDate: `${editForm.assignmentYear}-${editForm.assignmentMonth}-${editForm.assignmentDay}`,
+  }
+
+  /** 従業員更新API実行 */
+  await updateEmployee(userId, requestBody, isPasswordChange.value)
 }
+
+/** ========================
+ * Lifecycle
+ * ===================== */
+/** 初期表示時 */
+onMounted(async () => {
+  /** ログインユーザーID */
+  const userId = Number(route.params.id)
+  /** 従業員詳細取得 */
+  await fetchEmployeeDetail(userId)
+  /** 詳細データなし */
+  if (!employeeDetail.value) {
+    return
+  }
+  /** 生年月日分割 */
+  const birthDate = splitDate(employeeDetail.value.birthDate)
+  /** 配属日分割 */
+  const assignmentDate = splitDate(employeeDetail.value.assignmentDate)
+  /** 郵便番号分割 */
+  const postalCode = splitPostalCode(employeeDetail.value.postalCode)
+  /** フォーム初期値設定 */
+  editForm.userName = employeeDetail.value.userName
+  editForm.email = employeeDetail.value.email
+  /** 電話番号整形 */
+  editForm.phoneNumber = formatPhone(employeeDetail.value.phoneNumber)
+  /** 郵便番号設定 */
+  postalCodeFirst.value = postalCode.first
+  postalCodeSecond.value = postalCode.second
+  /** 住所設定 */
+  editForm.prefecture = employeeDetail.value.prefecture
+  editForm.streetAddress = employeeDetail.value.streetAddress
+  editForm.buildingName = employeeDetail.value.buildingName
+  /** 生年月日設定 */
+  editForm.birthYear = birthDate.year
+  editForm.birthMonth = birthDate.month
+  editForm.birthDay = birthDate.day
+  /** 配属日設定 */
+  editForm.assignmentYear = assignmentDate.year
+  editForm.assignmentMonth = assignmentDate.month
+  editForm.assignmentDay = assignmentDate.day
+})
 </script>
 
 <style scoped>
@@ -1002,6 +1090,40 @@ input::placeholder {
   color: #de2583;
   border: 2px solid #de2583;
 }
+.password-group {
+  margin-top: 25px;
+}
+.password-change-area {
+  margin-top: 50px;
+}
+
+.password-change-title {
+  border-left: 6px solid #de2583;
+  padding-left: 10px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.password-check-button {
+  width: 155px;
+  height: 40px;
+  margin-top: 25px;
+  border: 1px solid #ddd;
+  background: #f8f8f8;
+  color: #777;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.password-check-button input {
+  width: auto;
+  height: auto;
+}
+input[type='checkbox'] {
+  accent-color: #de2583;
+}
 .error-message {
   margin-top: 2px;
   color: #ff3b30;
@@ -1118,6 +1240,15 @@ input::placeholder {
     width: 50%;
     height: 36px;
     font-size: 9px;
+  }
+  /* パスワード変更エリア */
+  .password-change-title {
+    font-size: 13px;
+  }
+
+  .password-check-button {
+    width: 100%;
+    height: 36px;
   }
   .error-message {
     font-size: 8px;

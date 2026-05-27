@@ -40,7 +40,7 @@ export function useZipCode() {
         town: location.town,
       }
     } catch (error) {
-      console.error('郵便番号検索APIエラー', error)
+      console.error('郵便番号検索に失敗しました。', error)
 
       throw error
     }
