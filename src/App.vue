@@ -2,10 +2,10 @@
 import { computed, ref } from 'vue'
 import { useCounterStore } from './stores/counter'
 import { checkSupabaseRestApi } from './services/supabaseHealth'
-import AppHeader from './components/layout/header/AppHeader.vue'
-import Snackbar from './components/modal/Snackbar.vue'
 import { useFeedbackMessage } from './composables/useFeedbackMessage'
-import Modal from './components/modal/Modal.vue'
+import AppHeader from '@/components/layout/header/AppHeader.vue'
+import Snackbar from '@/components/modal/Snackbar.vue'
+import Modal from '@/components/modal/Modal.vue'
 
 const counterStore = useCounterStore()
 const {
@@ -64,6 +64,7 @@ const checkSupabaseRest = async () => {
 </script>
 
 <template>
+  <AppHeader />
   <div style="height: var(--app-header-height)"></div>
   <Snackbar
     v-model="snackbarVisible"
