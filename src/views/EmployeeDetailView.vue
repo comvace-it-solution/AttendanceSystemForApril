@@ -15,7 +15,7 @@
     </div>
     <div class="button-area">
       <router-link
-        :to="{ name: 'EmployeeEdit', params: { id: authStore.user?.userId } }"
+        :to="{ name: 'EmployeeEdit', params: { id: route.params.id } }"
         class="edit-button"
         >編集する
       </router-link>
@@ -30,11 +30,13 @@
 import { computed, onMounted } from 'vue'
 import { useEmployeeDetail } from '../composables/useEmployeeDetail'
 import { useAuthStore } from '../stores/auth'
+import { useRoute } from 'vue-router'
 
 /** ========================
  * Store
  * ===================== */
 const authStore = useAuthStore()
+const route = useRoute()
 
 /** ========================
  * Composables
@@ -44,11 +46,6 @@ const { employeeDetail, fetchEmployeeDetail } = useEmployeeDetail()
 /** ========================
  * Computed
  * ===================== */
-/** ログインユーザーID */
-const userId = computed(() => {
-  return Number(authStore.user?.userId)
-})
-
 /** 住所を結合して表示用 */
 const fullAddress = computed(() => {
   if (!employeeDetail.value) return ''
@@ -140,7 +137,8 @@ const formatPostalCode = (postalCode?: string) => {
  * ===================== */
 /** 初期表示時 */
 onMounted(async () => {
-  await fetchEmployeeDetail(userId.value)
+  const userId = Number(route.params.id)
+  await fetchEmployeeDetail(userId)
 })
 </script>
 

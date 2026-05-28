@@ -2,7 +2,6 @@
   <transition name="fade">
     <div class="pc-overlay-wrap" v-show="visible" @click="close"></div>
   </transition>
-
   <transition name="slide-right">
     <aside
       class="pc-side-menu-wrap"
@@ -28,7 +27,8 @@
           <div class="pc-header-text">ログアウト</div>
         </router-link>
         <router-link
-          :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
+          v-if="userId"
+          :to="{ name: 'EmployeeDetail', params: { id: userId } }"
           class="pc-header-item-wrap"
           @click="close"
         >
@@ -40,17 +40,14 @@
           <div class="pc-header-text">マイページ</div>
         </router-link>
       </div>
-
       <div class="pc-user-wrap">
         <div class="pc-user-name-text">{{ authStore.user?.userName }}</div>
         <span class="pc-user-suffix-text">さん</span>
       </div>
-
       <div class="pc-menu-wrap">
         <header class="pc-section-header-wrap">
           <span>マイメニュー</span>
         </header>
-
         <nav class="pc-menu-list-wrap">
           <router-link to="/dashboard" class="pc-menu-item-wrap" @click="close">
             <img
@@ -60,7 +57,6 @@
             />
             <span>ダッシュボード</span>
           </router-link>
-
           <router-link
             to="/EmployeeList"
             class="pc-menu-item-wrap"
@@ -74,25 +70,18 @@
             <span>従業員一覧</span>
           </router-link>
         </nav>
-
-        <nav class="pc-menu-list-wrap">
-          <router-link
-            to="/register"
-            class="pc-sub-menu-item-wrap"
-            @click="close"
-          >
-            <span>従業員登録</span>
-          </router-link>
-        </nav>
       </div>
     </aside>
   </transition>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useAuthStore } from '../../../stores/auth'
 
 const authStore = useAuthStore()
+
+const userId = computed(() => authStore.user?.userId ?? '')
 
 const props = defineProps<{ visible: boolean }>()
 
