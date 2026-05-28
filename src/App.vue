@@ -2,8 +2,19 @@
 import { computed, ref } from 'vue'
 import { useCounterStore } from './stores/counter'
 import { checkSupabaseRestApi } from './services/supabaseHealth'
+import { useFeedbackMessage } from './composables/useFeedbackMessage'
+import AppHeader from '@/components/layout/header/AppHeader.vue'
+import Snackbar from '@/components/modal/Snackbar.vue'
+import Modal from '@/components/modal/Modal.vue'
 
 const counterStore = useCounterStore()
+const {
+  snackbarVisible,
+  snackbarMessage,
+  snackbarType,
+  errorModalVisible,
+  modalTitle,
+} = useFeedbackMessage()
 
 type Status = 'idle' | 'success' | 'error'
 
@@ -43,7 +54,9 @@ const checkSupabaseRest = async () => {
   } catch (error) {
     restStatus.value = 'error'
     restMessage.value =
-      error instanceof Error ? error.message : 'Supabase への接続確認に失敗しました。'
+      error instanceof Error
+        ? error.message
+        : 'Supabase への接続確認に失敗しました。'
   } finally {
     isCheckingRest.value = false
   }
@@ -58,6 +71,14 @@ defineExpose({
 </script>
 
 <template>
+  <AppHeader />
+  <div style="height: var(--app-header-height)"></div>
+  <Snackbar
+    v-model="snackbarVisible"
+    :message="snackbarMessage"
+    :type="snackbarType"
+  />
+  <Modal v-model="errorModalVisible" :title="modalTitle" />
   <RouterView />
   <!-- <main class="app-shell">
     <section class="hero-panel">

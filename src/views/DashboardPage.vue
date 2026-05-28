@@ -17,12 +17,8 @@ const {
   openUpdateErrorSnackbar,
   openCommunicationErrorSnackbar,
 } = useFeedbackMessage()
-const {
-  currentUserId,
-  displayUserName,
-  loadDashboard,
-  setWorkDate,
-} = useDashboardData()
+const { currentUserId, displayUserName, loadDashboard, setWorkDate } =
+  useDashboardData()
 const { handlePunchClick, isPunchDisabled } = usePunchAction({
   currentUserId,
   loadDashboard,
@@ -39,7 +35,8 @@ const { handlePunchClick, isPunchDisabled } = usePunchAction({
 })
 
 const formatTime = (value: string | null) => value ?? '-'
-const getStatusClass = (status: AttendanceStatus) => dashboardStore.statusClassMap[status]
+const getStatusClass = (status: AttendanceStatus) =>
+  dashboardStore.statusClassMap[status]
 const hasAttendanceLoadError = ref(false)
 const attendanceUsersForDisplay = computed(() =>
   hasAttendanceLoadError.value ? [] : dashboardStore.attendanceUsers,
@@ -78,14 +75,19 @@ onMounted(async () => {
             <p class="dashboard-kicker">Attendance Dashboard</p>
             <h1>{{ dashboardStore.dashboardTitle }}</h1>
             <p class="dashboard-description">
-              {{ displayUserName }}さんの勤務状況と従業員の現在状態を確認できます。
+              {{
+                displayUserName
+              }}さんの勤務状況と従業員の現在状態を確認できます。
             </p>
           </div>
 
           <div class="date-chip">{{ dashboardStore.workDate }}</div>
         </header>
 
-        <section class="dashboard-section summary-section" aria-labelledby="summary-title">
+        <section
+          class="dashboard-section summary-section"
+          aria-labelledby="summary-title"
+        >
           <div class="section-heading">
             <p class="dashboard-kicker">Today</p>
             <h2 id="summary-title">{{ dashboardStore.summaryTitle }}</h2>
@@ -105,10 +107,12 @@ onMounted(async () => {
               </div>
             </article>
           </div>
-
         </section>
 
-        <section class="dashboard-section punch-section" aria-labelledby="punch-title">
+        <section
+          class="dashboard-section punch-section"
+          aria-labelledby="punch-title"
+        >
           <div class="section-heading">
             <p class="dashboard-kicker">Punch</p>
             <h2 id="punch-title">{{ dashboardStore.punchTitle }}</h2>
@@ -121,7 +125,9 @@ onMounted(async () => {
               class="punch-button"
               :class="button.className"
               size="large"
-              :disabled="button.disabled || isPunchDisabled || hasAttendanceLoadError"
+              :disabled="
+                button.disabled || isPunchDisabled || hasAttendanceLoadError
+              "
               @click="handlePunchClick(button.action)"
             >
               {{ button.label }}
@@ -131,7 +137,9 @@ onMounted(async () => {
 
         <section class="employee-section" aria-labelledby="employee-title">
           <div class="list-heading">
-            <h2 id="employee-title">{{ dashboardStore.attendanceListTitle }}</h2>
+            <h2 id="employee-title">
+              {{ dashboardStore.attendanceListTitle }}
+            </h2>
           </div>
 
           <div class="employee-table-wrap">
@@ -171,7 +179,9 @@ onMounted(async () => {
               </el-table-column>
               <template #empty>
                 <div class="attendance-empty-message">
-                  <p class="attendance-empty-message__title">{{ attendanceEmptyTitle }}</p>
+                  <p class="attendance-empty-message__title">
+                    {{ attendanceEmptyTitle }}
+                  </p>
                   <p class="attendance-empty-message__description">
                     {{ attendanceEmptyDescription }}
                   </p>
@@ -181,14 +191,19 @@ onMounted(async () => {
           </div>
 
           <div class="employee-card-list employee-card-list--bottom">
-            <div v-if="dashboardStore.isAttendanceLoading" class="employee-card employee-card--empty">
+            <div
+              v-if="dashboardStore.isAttendanceLoading"
+              class="employee-card employee-card--empty"
+            >
               読み込み中...
             </div>
             <div
               v-else-if="attendanceUsersForDisplay.length === 0"
               class="employee-card employee-card--empty"
             >
-              <p class="attendance-empty-message__title">{{ attendanceEmptyTitle }}</p>
+              <p class="attendance-empty-message__title">
+                {{ attendanceEmptyTitle }}
+              </p>
               <p class="attendance-empty-message__description">
                 {{ attendanceEmptyDescription }}
               </p>
@@ -200,7 +215,10 @@ onMounted(async () => {
               class="employee-card"
             >
               <h3 class="employee-card__name">{{ user.userName }}</h3>
-              <p class="employee-card__status" :class="getStatusClass(user.status)">
+              <p
+                class="employee-card__status"
+                :class="getStatusClass(user.status)"
+              >
                 {{ user.status }}
               </p>
               <dl class="employee-card__details">
@@ -227,7 +245,11 @@ onMounted(async () => {
       </section>
     </div>
 
-    <Snackbar v-model="snackbarVisible" :message="snackbarMessage" :type="snackbarType" />
+    <Snackbar
+      v-model="snackbarVisible"
+      :message="snackbarMessage"
+      :type="snackbarType"
+    />
   </main>
 </template>
 
