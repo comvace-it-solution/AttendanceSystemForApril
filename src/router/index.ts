@@ -5,7 +5,7 @@ import DashboardPage from '@/views/DashboardPage.vue'
 import AttendanceDetailsView from '@/views/AttendanceDetailsView.vue'
 import EmployeeList from '@/views/EmployeeList.vue'
 // import EmployeeRegisterView from '@/views/EmployeeRegisterView.vue'
-// import EmployeeEditView from '@/views/EmployeeEditView.vue'
+import EmployeeEditView from '@/views/EmployeeEditView.vue'
 import EmployeeDetailView from '@/views/EmployeeDetailView.vue'
 // import ModalTestView from '../views/ModalTestView.vue'
 
@@ -47,11 +47,11 @@ const router = createRouter({
     //   component: EmployeeRegisterView,
     // },
     // 従業員編集
-    // {
-    //   path: '/edit/:id',
-    //   name: 'EmployeeEdit',
-    //   component: EmployeeEditView,
-    // },
+    {
+      path: '/edit/:id',
+      name: 'EmployeeEdit',
+      component: EmployeeEditView,
+    },
     // 従業員詳細
     {
       path: '/detail/:id',

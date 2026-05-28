@@ -56,7 +56,6 @@
             />
             <span>ダッシュボード</span>
           </router-link>
-
           <router-link
             to="/EmployeeList"
             class="pc-menu-item-wrap"
