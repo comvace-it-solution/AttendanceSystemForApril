@@ -1,20 +1,30 @@
 <script setup lang="ts">
 import { DArrowLeft, DArrowRight } from '@element-plus/icons-vue'
-import { useAttendance } from '../composables/useAttendance';
+import { useAttendance } from '../composables/useAttendance'
 import { computed } from 'vue'
 
 const props = defineProps<{
-  id: number;
-  initialName: string;
-}>();
+  id: number
+  initialName: string
+}>()
 
-const { userId, userName, targetMonth, changeMonth,currentView, setView, currentConfig, currentTableData, isLoading, error } = useAttendance(props);
+const {
+  userId,
+  userName,
+  targetMonth,
+  changeMonth,
+  currentView,
+  setView,
+  currentConfig,
+  currentTableData,
+  isLoading,
+  error,
+} = useAttendance(props)
 
 const displayMonth = computed(() => {
-  const [y, m] = targetMonth.value.split('-');
-  return `${y}年${m}月`;
-});
-
+  const [y, m] = targetMonth.value.split('-')
+  return `${y}年${m}月`
+})
 </script>
 
 <template>
@@ -34,20 +44,45 @@ const displayMonth = computed(() => {
             <p>表示形式</p>
           </div>
           <div class="display-select-btn-area">
-            <button type="button" class="select-btn" :class="{ active: currentView === 'daily' }" @click="setView('daily')">日次</button>
-            <button type="button" class="select-btn" :class="{ active: currentView === 'weekly' }" @click="setView('weekly')">週次</button>
-            <button type="button" class="select-btn" :class="{ active: currentView === 'monthly' }" @click="setView('monthly')">月次</button>
+            <button
+              type="button"
+              class="select-btn"
+              :class="{ active: currentView === 'daily' }"
+              @click="setView('daily')"
+            >
+              日次
+            </button>
+            <button
+              type="button"
+              class="select-btn"
+              :class="{ active: currentView === 'weekly' }"
+              @click="setView('weekly')"
+            >
+              週次
+            </button>
+            <button
+              type="button"
+              class="select-btn"
+              :class="{ active: currentView === 'monthly' }"
+              @click="setView('monthly')"
+            >
+              月次
+            </button>
           </div>
         </div>
-        
+
         <div class="display-period-area">
           <div class="display-period-title">
             <p>対象期間</p>
           </div>
           <div class="display-period-btn-area">
-            <el-icon class="cursor-pointer" @click="changeMonth(-1)"><DArrowLeft /></el-icon>
+            <el-icon class="cursor-pointer" @click="changeMonth(-1)">
+              <DArrowLeft />
+            </el-icon>
             <p>{{ displayMonth }}</p>
-            <el-icon class="cursor-pointer" @click="changeMonth(1)"><DArrowRight /></el-icon>
+            <el-icon class="cursor-pointer" @click="changeMonth(1)">
+              <DArrowRight />
+            </el-icon>
           </div>
         </div>
       </div>
@@ -55,11 +90,21 @@ const displayMonth = computed(() => {
 
     <div class="attendance-main">
       <h2 class="summary-title">勤怠サマリ</h2>
-      <div v-loading="isLoading" element-loading-background="rgba(0, 0, 0, 0)" class="spinner-area">
+      <div
+        v-loading="isLoading"
+        element-loading-background="rgba(0, 0, 0, 0)"
+        class="spinner-area"
+      >
         <div v-if="!isLoading && error" class="message">
-          <p>勤怠一覧の取得に失敗しました。<br>しばらく経ってから、再度お試しください。</p>
+          <p>
+            勤怠一覧の取得に失敗しました。<br />しばらく経ってから、再度お試しください。
+          </p>
         </div>
-        <div v-else-if="!isLoading && !error"  class="table-wrapper" :class="`${currentView}-view`">
+        <div
+          v-else-if="!isLoading && !error"
+          class="table-wrapper"
+          :class="`${currentView}-view`"
+        >
           <table class="custom-table">
             <thead>
               <tr>
@@ -75,10 +120,10 @@ const displayMonth = computed(() => {
                 </td>
               </tr>
               <tr v-if="currentTableData.length === 0">
-              <td :colspan="currentConfig.length" style="text-align: center;">
-                データがありません
-              </td>
-            </tr>
+                <td :colspan="currentConfig.length" style="text-align: center">
+                  データがありません
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -88,7 +133,7 @@ const displayMonth = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-@use "../styles/kanda.scss" as *;
+@use '../styles/kanda.scss' as *;
 
 .attendance-details-container {
   bg-color: $accent-bg-color;
@@ -112,7 +157,7 @@ const displayMonth = computed(() => {
         flex-direction: column;
         margin: 0 auto 12px;
       }
-      
+
       .page-title {
         white-space: nowrap;
         margin-right: 45px;
@@ -122,7 +167,7 @@ const displayMonth = computed(() => {
           margin-bottom: 10px;
         }
       }
-    
+
       .user-date-area {
         display: flex;
         align-items: center;
@@ -163,12 +208,12 @@ const displayMonth = computed(() => {
 
         .display-select-title {
           margin-right: 20px;
-              
+
           @include sp {
             margin: 0;
           }
         }
-        
+
         .display-select-btn-area {
           display: flex;
           gap: 24px;
@@ -186,12 +231,12 @@ const displayMonth = computed(() => {
             height: 40px;
 
             &.active {
-              background-color: $accent-color; 
+              background-color: $accent-color;
               color: $text-white;
             }
           }
         }
-      } 
+      }
 
       .display-period-area {
         display: flex;
@@ -203,7 +248,7 @@ const displayMonth = computed(() => {
           margin: 0 auto;
         }
 
-        .display-period-btn-area{
+        .display-period-btn-area {
           display: flex;
           align-items: center;
           gap: 24px;
@@ -212,76 +257,83 @@ const displayMonth = computed(() => {
       }
     }
   }
+}
 
-  .attendance-main {
-    .summary-title {
-      text-align: center;
-      margin-bottom: 30px;
+.attendance-main {
+  .summary-title {
+    text-align: center;
+    margin-bottom: 30px;
+
+    @include sp {
+      margin-bottom: 20px;
+    }
+  }
+
+  .spinner-area {
+    position: relative;
+    min-height: 100px;
+  }
+
+  .message {
+    text-align: center;
+  }
+
+  .table-wrapper {
+    margin: 0 auto 50px;
+    width: 80%;
+    max-width: 750px;
+
+    .custom-table {
+      @include table-style;
+    }
+
+    // 日次のみのスタイル
+    &.daily-view {
+      @include sp {
+        width: 90%;
+
+        .custom-table {
+          thead,
+          tbody {
+            font-size: $fs-small;
+          }
+        }
+      }
+    }
+
+    // 週次のみのスタイル
+    &.weekly-view {
+      max-width: 500px;
 
       @include sp {
-        margin-bottom: 20px;
+        width: 80%;
       }
     }
 
-    .spinner-area {
-      position: relative;
-      min-height: 100px; 
-    }
-
-    .message {
-      text-align: center;
-    }
-
-    .table-wrapper {
-      margin: 0 auto 50px;
-      width: 80%;
-      max-width: 750px;
-
+    // 月次のみのスタイル
+    &.monthly-view {
       .custom-table {
-        @include table-style;
-      }
-      // 日次のみのスタイル
-      &.daily-view {
-        @include sp {
-          width: 90%;
-          
-          .custom-table{
-            thead,tbody{
-              font-size: $fs-small;
-            }
+        thead {
+          th {
+            width: 50%;
           }
         }
-      }
-        // 週次のみのスタイル
-      &.weekly-view { 
-        max-width: 500px;
-      
-        @include sp {
-          width: 80%;
-        }
-      }
 
-      // 月次のみのスタイル
-      &.monthly-view {
-        .custom-table{
-          thead {
-            th {
-              width: 50%;
-            }
+        tbody {
+          font-size: 36px;
+
+          td {
+            padding: 50px 0;
+            width: 50%;
           }
-          tbody{
-            font-size: 36px;
+        }
+
+        @include sp {
+          tbody {
+            font-size: 24px;
+
             td {
-              padding: 50px 0;
-              width: 50%;
-            }
-          }
-          @include sp {
-            tbody{
-              font-size: 24px;
-              td {
-                padding: 25px 0;
-              }
+              padding: 25px 0;
             }
           }
         }
