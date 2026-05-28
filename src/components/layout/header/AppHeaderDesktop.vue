@@ -11,7 +11,8 @@
         aria-label="メインナビ"
       >
         <router-link
-          :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
+          v-if="userId"
+          :to="{ name: 'EmployeeDetail', params: { id: userId } }"
           class="pc-nav-item"
           @mouseenter="isProfeelHover = true"
           @mouseleave="isProfeelHover = false"
@@ -54,12 +55,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import AppSideMenuDesktop from '../sideMenu/AppSideMenuDesktop.vue'
 import { useAuthStore } from '../../../stores/auth'
 
 const authStore = useAuthStore()
+const userId = computed(() => authStore.user?.userId ?? '')
 
 /** サイドメニューの表示・非表示*/
 const sideVisible = ref(false),

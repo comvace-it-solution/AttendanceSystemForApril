@@ -844,9 +844,7 @@ const handleUpdate = async () => {
 /** 初期表示時 */
 onMounted(async () => {
   /** ログインユーザーID */
-  // const userId = Number(route.params.id)
-  // TODO 画面遷移ができないので一旦固定値を入れてます編集したいuserIdを入れて使用してください
-  const userId = 51
+  const userId = Number(route.params.id)
   /** 従業員詳細取得 */
   await fetchEmployeeDetail(userId)
   /** 詳細データなし */
