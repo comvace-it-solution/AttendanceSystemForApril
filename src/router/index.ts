@@ -2,12 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 // 各画面をインポート
 import LoginView from '@/views/LoginView.vue'
 import DashboardPage from '@/views/DashboardPage.vue'
-import AttendanceDetailsView from '@/views/AttendanceDetailsView.vue'
+// import AttendanceDetailsView from '@/views/AttendanceDetailsView.vue'
 import EmployeeList from '@/views/EmployeeList.vue'
 // import EmployeeRegisterView from '@/views/EmployeeRegisterView.vue'
 // import EmployeeEditView from '@/views/EmployeeEditView.vue'
 import EmployeeDetailView from '@/views/EmployeeDetailView.vue'
-import ModalTestView from '../views/ModalTestView.vue'
+// import ModalTestView from '../views/ModalTestView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -25,15 +25,15 @@ const router = createRouter({
       component: DashboardPage,
     },
     // 勤怠詳細
-    {
-      path: '/attendanceDetails/:id',
-      name: 'AttendanceDetails',
-      component: AttendanceDetailsView,
-      props: (route) => ({
-        id: Number(route.params.id),
-        initialName: route.query.name as string,
-      }),
-    },
+    // {
+    //   path: '/attendanceDetails/:id',
+    //   name: 'AttendanceDetails',
+    //   component: AttendanceDetailsView,
+    //   props: (route) => ({
+    //     id: Number(route.params.id),
+    //     initialName: route.query.name as string,
+    //   }),
+    // },
     // 従業員一覧
     {
       path: '/EmployeeList',
@@ -59,11 +59,11 @@ const router = createRouter({
       component: EmployeeDetailView,
     },
     // モーダルテスト
-    {
-      path: '/modalTest',
-      name: 'ModalTest',
-      component: ModalTestView,
-    },
+    // {
+    //   path: '/modalTest',
+    //   name: 'ModalTest',
+    //   component: ModalTestView,
+    // },
   ],
 })
 
