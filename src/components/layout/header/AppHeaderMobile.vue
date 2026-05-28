@@ -19,8 +19,8 @@
         <img class="sp-logo" src="/logo.svg" alt="ロゴ" />
       </div>
       <router-link
-        v-if="authStore.isAuthenticated"
-        :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
+        v-if="userId"
+        :to="{ name: 'EmployeeDetail', params: { id: userId } }"
         class="sp-profile-wrap"
         @click="closeSide"
       >
@@ -42,11 +42,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import AppSideMenuMobile from '../sideMenu/AppSideMenuMobile.vue'
 import { useAuthStore } from '../../../stores/auth'
 
 const authStore = useAuthStore()
+
+const userId = computed(() => authStore.user?.userId ?? '')
 
 const sideVisible = ref(false)
 const toggleSide = () => {
