@@ -76,13 +76,13 @@ const displayMonth = computed(() => {
             <p>対象期間</p>
           </div>
           <div class="display-period-btn-area">
-            <el-icon class="cursor-pointer" @click="changeMonth(-1)">
-              <DArrowLeft />
-            </el-icon>
+            <el-icon class="cursor-pointer" @click="changeMonth(-1)"
+              ><DArrowLeft
+            /></el-icon>
             <p>{{ displayMonth }}</p>
-            <el-icon class="cursor-pointer" @click="changeMonth(1)">
-              <DArrowRight />
-            </el-icon>
+            <el-icon class="cursor-pointer" @click="changeMonth(1)"
+              ><DArrowRight
+            /></el-icon>
           </div>
         </div>
       </div>
@@ -257,83 +257,77 @@ const displayMonth = computed(() => {
       }
     }
   }
-}
 
-.attendance-main {
-  .summary-title {
-    text-align: center;
-    margin-bottom: 30px;
+  .attendance-main {
+    .summary-title {
+      text-align: center;
+      margin-bottom: 30px;
 
-    @include sp {
-      margin-bottom: 20px;
-    }
-  }
-
-  .spinner-area {
-    position: relative;
-    min-height: 100px;
-  }
-
-  .message {
-    text-align: center;
-  }
-
-  .table-wrapper {
-    margin: 0 auto 50px;
-    width: 80%;
-    max-width: 750px;
-
-    .custom-table {
-      @include table-style;
-    }
-
-    // 日次のみのスタイル
-    &.daily-view {
       @include sp {
-        width: 90%;
-
-        .custom-table {
-          thead,
-          tbody {
-            font-size: $fs-small;
-          }
-        }
+        margin-bottom: 20px;
       }
     }
 
-    // 週次のみのスタイル
-    &.weekly-view {
-      max-width: 500px;
-
-      @include sp {
-        width: 80%;
-      }
+    .spinner-area {
+      position: relative;
+      min-height: 100px;
     }
 
-    // 月次のみのスタイル
-    &.monthly-view {
+    .message {
+      text-align: center;
+    }
+
+    .table-wrapper {
+      margin: 0 auto 50px;
+      width: 80%;
+      max-width: 750px;
+
       .custom-table {
-        thead {
-          th {
-            width: 50%;
+        @include table-style;
+      }
+      // 日次のみのスタイル
+      &.daily-view {
+        @include sp {
+          width: 90%;
+
+          .custom-table {
+            thead,
+            tbody {
+              font-size: $fs-small;
+            }
           }
         }
-
-        tbody {
-          font-size: 36px;
-
-          td {
-            padding: 50px 0;
-            width: 50%;
-          }
-        }
+      }
+      // 週次のみのスタイル
+      &.weekly-view {
+        max-width: 500px;
 
         @include sp {
-          tbody {
-            font-size: 24px;
+          width: 80%;
+        }
+      }
 
+      // 月次のみのスタイル
+      &.monthly-view {
+        .custom-table {
+          thead {
+            th {
+              width: 50%;
+            }
+          }
+          tbody {
+            font-size: 36px;
             td {
-              padding: 25px 0;
+              padding: 50px 0;
+              width: 50%;
+            }
+          }
+          @include sp {
+            tbody {
+              font-size: 24px;
+              td {
+                padding: 25px 0;
+              }
             }
           }
         }
