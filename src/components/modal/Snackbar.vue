@@ -21,7 +21,7 @@ type Props = {
 const props = withDefaults(defineProps<Props>(), {
   message: '',
   duration: 4000,
-  type: 'success'
+  type: 'success',
 })
 
 const emit = defineEmits<{
@@ -30,7 +30,7 @@ const emit = defineEmits<{
 
 const snackbarVisible = computed({
   get: () => props.modelValue,
-  set: (value: boolean) => emit('update:modelValue', value)
+  set: (value: boolean) => emit('update:modelValue', value),
 })
 
 const snackbarClass = computed(() => {
@@ -47,7 +47,7 @@ watch(
         snackbarVisible.value = false
       }, props.duration)
     }
-  }
+  },
 )
 </script>
 
@@ -76,12 +76,12 @@ watch(
 }
 
 .snackbar--error {
-  border: 1px solid #F5A9A9;
-  background: #FDECEA;
+  border: 1px solid #f5a9a9;
+  background: #fdecea;
 }
 
 .snackbar--error .snackbar__message {
-  color: #C62828;
+  color: #c62828;
 }
 
 .snackbar__message {

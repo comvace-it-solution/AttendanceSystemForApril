@@ -5,8 +5,10 @@ import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
 import './styles/reset.css'
-// import './styles/main.scss'
 import './styles/kanda.scss'
+// import './styles/main.scss'
+import './styles/ogata.scss'
+import './styles/ijichi.scss'
 
 const app = createApp(App)
 

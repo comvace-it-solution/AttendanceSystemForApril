@@ -1,0 +1,26 @@
+/*==========================
+CommonStyles
+==========================*/
+:root{
+    --header:#33362F;
+    --bg:#FFF9F4;
+    --panel:#ffffff;
+    --ink:#000000;
+    --shadow: 0 8px 28px rgba(0,0,0,.08);
+    --font-sans:"NotoSansJP","NotoSans",ui-sans-serif,system-ui,-apple-system,
+    "SegoeUI",Roboto,"HelveticaNeue",Arial,Meiryo,sans-serif;
+    --container-w:1440px;
+}
+
+html,body{
+    height:100%;
+    overflow-x:hidden;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-sans);
+    font-size:clamp(14px,1.5vw,20px);
+    font-weight:400;
+}
+
+
+
