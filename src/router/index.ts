@@ -41,17 +41,17 @@ const router = createRouter({
       component: EmployeeList,
     },
     // 従業員登録
-    // {
-    //   path: '/register',
-    //   name: 'EmployeeRegister',
-    //   component: EmployeeRegisterView,
-    // },
+    {
+      path: '/register',
+      name: 'EmployeeRegister',
+      component: EmployeeRegisterView,
+    },
     // 従業員編集
-    // {
-    //   path: '/edit/:id',
-    //   name: 'EmployeeEdit',
-    //   component: EmployeeEditView,
-    // },
+    {
+      path: '/edit/:id',
+      name: 'EmployeeEdit',
+      component: EmployeeEditView,
+    },
     // 従業員詳細
     {
       path: "/detail/:id",

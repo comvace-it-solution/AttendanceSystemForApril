@@ -21,7 +21,6 @@
           />
           <span>ダッシュボード</span>
         </router-link>
-
         <router-link
           to="/EmployeeList"
           class="sp-menu-item-wrap"

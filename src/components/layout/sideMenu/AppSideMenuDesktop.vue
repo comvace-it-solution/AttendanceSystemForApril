@@ -27,7 +27,8 @@
           <div class="pc-header-text">ログアウト</div>
         </router-link>
         <router-link
-          :to="{ name: 'EmployeeDetail', params: { id: 1 } }"
+          v-if="userId"
+          :to="{ name: 'EmployeeDetail', params: { id: userId } }"
           class="pc-header-item-wrap"
           @click="close"
         >
@@ -56,7 +57,6 @@
             />
             <span>ダッシュボード</span>
           </router-link>
-
           <router-link
             to="/EmployeeList"
             class="pc-menu-item-wrap"
@@ -76,9 +76,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useAuthStore } from '../../../stores/auth'
 
 const authStore = useAuthStore()
+
+const userId = computed(() => authStore.user?.userId ?? '')
 
 const props = defineProps<{ visible: boolean }>()
 
