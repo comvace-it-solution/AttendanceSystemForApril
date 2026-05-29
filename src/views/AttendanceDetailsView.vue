@@ -285,6 +285,7 @@ const displayMonth = computed(() => {
       .custom-table {
         @include table-style;
       }
+
       // 日次のみのスタイル
       &.daily-view {
         @include sp {
@@ -317,14 +318,17 @@ const displayMonth = computed(() => {
           }
           tbody {
             font-size: 36px;
+
             td {
               padding: 50px 0;
               width: 50%;
             }
           }
+
           @include sp {
             tbody {
               font-size: 24px;
+
               td {
                 padding: 25px 0;
               }
