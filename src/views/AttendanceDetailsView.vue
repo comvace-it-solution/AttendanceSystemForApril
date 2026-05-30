@@ -136,11 +136,14 @@ const displayMonth = computed(() => {
 @use '../styles/kanda.scss' as *;
 
 .attendance-details-container {
-  bg-color: $accent-bg-color;
+  background-color: $bg-color;
+  padding: 30px 0;
+  min-height: calc(100vh - 100px);
+  color: $text-color;
 
   .attendance-details-header {
     max-width: 1000px;
-    margin: 30px auto;
+    margin: 0px auto 30px;
 
     @include sp {
       margin: 20px auto;
