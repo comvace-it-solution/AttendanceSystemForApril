@@ -31,7 +31,7 @@ const router = createRouter({
       component: AttendanceDetailsView,
       props: (route) => ({
         id: Number(route.params.id),
-        initialName: route.query.name as string,
+        initialName: (window.history.state?.name) as string || '',
       }),
     },
     // 従業員一覧
