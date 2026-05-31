@@ -28,7 +28,7 @@
         </label>
         <input
           v-model="editForm.email"
-          type="email"
+          type="text"
           placeholder="例: contact@example.com"
         />
         <!-- エラーメッセージ -->
