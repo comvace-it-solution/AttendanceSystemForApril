@@ -798,13 +798,13 @@ const validateForm = () => {
     setError('phoneNumber', '電話番号の入力は必須です。')
     isValid = false
   } else if (!/^\d{11}$/.test(phoneNumber)) {
-    setError('phoneNumber', '正しい電話番号を入力してください。')
-    isValid = false
-  } else if (!/^(060|070|080|090)/.test(phoneNumber)) {
-    setError('phoneNumber', '携帯電話番号を入力してください。')
+    setError('phoneNumber', '電話番号を正しく入力してください。')
     isValid = false
   } else if (/^(\d)\1+$/.test(phoneNumber)) {
     setError('phoneNumber', '正しい電話番号を入力してください。')
+    isValid = false
+  } else if (!/^(090|080|070)/.test(phoneNumber)) {
+    setError('phoneNumber', '携帯電話番号を入力してください。')
     isValid = false
   }
   /** 郵便番号 */
