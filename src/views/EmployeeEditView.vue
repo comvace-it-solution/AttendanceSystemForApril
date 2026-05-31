@@ -142,6 +142,10 @@
           placeholder="例: ○○タウン 101"
           @input="convertToFullWidth('buildingName')"
         />
+        <!-- エラーメッセージ -->
+        <p v-if="errors.buildingName" class="error-message">
+          {{ errors.buildingName }}
+        </p>
       </div>
       <!-- 生年月日 -->
       <div class="form-group">
