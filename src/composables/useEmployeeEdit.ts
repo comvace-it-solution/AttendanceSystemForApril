@@ -30,7 +30,11 @@ export function useEmployeeEdit() {
   const INTERNAL_API_KEY = import.meta.env.VITE_INTERNAL_API_KEY
 
   /** 通信エラーSnackbar */
-  const { openCommunicationErrorSnackbar } = useFeedbackMessage()
+  const {
+    openCommunicationErrorSnackbar,
+    openEditErrorModal,
+    openProcessErrorSnackbar,
+  } = useFeedbackMessage()
 
   /** 編集エラーメッセージ */
   const editError = ref('')
@@ -86,11 +90,21 @@ export function useEmployeeEdit() {
       console.log('従業員編集APIエラー status', error.response?.status)
       console.log('従業員編集APIエラー data', error.response?.data)
 
-      /** 4xxエラー */
-      if (error.response?.status >= 400 && error.response?.status < 500) {
-        editError.value = '入力内容に誤りがあります。'
+      /** ステータスコード */
+      const status = error.response?.status
+
+      /** メールアドレスチェックの為 409エラー 画面に渡す */
+      if (status === 409) {
+        throw error
+      }
+      if (status === 500) {
+        /** 500エラー 登録失敗モーダル表示 */
+        openEditErrorModal()
+      } else if (status !== undefined && status >= 400 && status < 500) {
+        /** 400系エラー スナックバー表示 */
+        openProcessErrorSnackbar()
       } else {
-        /** 通信エラーSnackbar */
+        /** 通信エラー */
         openCommunicationErrorSnackbar()
       }
 
