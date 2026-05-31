@@ -140,6 +140,7 @@
           v-model="editForm.buildingName"
           type="text"
           placeholder="例: ○○タウン 101"
+          @input="convertToFullWidth('buildingName')"
         />
       </div>
       <!-- 生年月日 -->
@@ -882,6 +883,7 @@ onMounted(async () => {
   editForm.streetAddress = employeeDetail.value.streetAddress
   convertToFullWidth('streetAddress')
   editForm.buildingName = employeeDetail.value.buildingName
+  convertToFullWidth('buildingName')
   /** 生年月日設定 */
   editForm.birthYear = birthDate.year
   editForm.birthMonth = birthDate.month
