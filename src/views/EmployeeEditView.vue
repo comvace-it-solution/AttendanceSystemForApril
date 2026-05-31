@@ -590,20 +590,29 @@ const splitPostalCode = (postalCode: string) => {
  * ===================== */
 /** 郵便番号検索 */
 const onSearchPostalCode = async () => {
-  const postalCode = postalCodeFirst.value + postalCodeSecond.value
-  if (postalCode.length !== 7) {
-    console.log('郵便番号は7桁で入力してください')
+  errors.value.postalCode = ''
+
+  /** 郵便番号バリデーションNG時は処理終了 */
+  if (!validatePostalCode()) {
     return
   }
-  const address = await searchAddressByPostalCode(postalCode)
-  if (!address) {
-    console.log('住所が見つかりませんでした')
-    return
+
+  try {
+    const postalCode = postalCodeFirst.value + postalCodeSecond.value
+
+    const address = await searchAddressByPostalCode(postalCode)
+
+    if (!address) {
+      setError('postalCode', '正しい郵便番号を入力してください。')
+      return
+    }
+    /** 都道府県設定 */
+    editForm.prefecture = address.prefecture
+    /** 市区町村・町名設定 */
+    editForm.streetAddress = `${address.city}${address.town}`
+  } catch (error) {
+    setError('postalCode', '郵便番号検索に失敗しました。')
   }
-  /** 都道府県設定 */
-  editForm.prefecture = address.prefecture
-  /** 市区町村・町名設定 */
-  editForm.streetAddress = `${address.city}${address.town}`
 }
 /** エラーメッセージ設定 */
 const setError = (key: keyof typeof errors.value, message: string) => {
@@ -624,6 +633,27 @@ const clearErrors = () => {
     assignmentDate: '',
     buildingName: '',
   }
+}
+/** 郵便番号バリデーション */
+const validatePostalCode = () => {
+  if (!postalCodeFirst.value && !postalCodeSecond.value) {
+    setError('postalCode', '郵便番号の入力は必須です。')
+    return false
+  } else if (
+    !/^\d+$/.test(postalCodeFirst.value) ||
+    !/^\d+$/.test(postalCodeSecond.value)
+  ) {
+    setError('postalCode', '郵便番号は半角数字で入力してください。')
+    return false
+  } else if (
+    postalCodeFirst.value.length !== 3 ||
+    postalCodeSecond.value.length !== 4
+  ) {
+    setError('postalCode', '郵便番号は上3桁・下4桁で入力してください。')
+    return false
+  }
+
+  return true
 }
 /** バリデーション */
 const validateForm = () => {
@@ -692,20 +722,7 @@ const validateForm = () => {
     isValid = false
   }
   /** 郵便番号 */
-  if (!postalCodeFirst.value || !postalCodeSecond.value) {
-    setError('postalCode', '郵便番号の入力は必須です。')
-    isValid = false
-  } else if (
-    postalCodeFirst.value.length !== 3 ||
-    postalCodeSecond.value.length !== 4
-  ) {
-    setError('postalCode', '郵便番号は上3桁・下4桁で入力してください。')
-    isValid = false
-  } else if (
-    !/^\d+$/.test(postalCodeFirst.value) ||
-    !/^\d+$/.test(postalCodeSecond.value)
-  ) {
-    setError('postalCode', '郵便番号は半角数字で入力してください。')
+  if (!validatePostalCode()) {
     isValid = false
   }
   /** 都道府県 */
