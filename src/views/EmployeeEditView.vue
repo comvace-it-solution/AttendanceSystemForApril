@@ -126,6 +126,7 @@
           v-model="editForm.streetAddress"
           type="text"
           placeholder="例: ○○区○○"
+          @input="convertToFullWidth('streetAddress')"
         />
         <!-- エラーメッセージ -->
         <p v-if="errors.streetAddress" class="error-message">
@@ -554,6 +555,13 @@ watch(
 /** ========================
  * Formatters
  * ===================== */
+/** 全角変換 */
+const convertToFullWidth = (key: 'streetAddress' | 'buildingName') => {
+  editForm[key] = editForm[key]
+    .normalize('NFKC')
+    .replace(/[!-~]/g, (s) => String.fromCharCode(s.charCodeAt(0) + 0xfee0))
+    .replace(/ /g, '　')
+}
 /** 日付を年月日に分割 */
 const splitDate = (date: string) => {
   const [year, month, day] = date.split('-')
@@ -872,6 +880,7 @@ onMounted(async () => {
   /** 住所設定 */
   editForm.prefecture = employeeDetail.value.prefecture
   editForm.streetAddress = employeeDetail.value.streetAddress
+  convertToFullWidth('streetAddress')
   editForm.buildingName = employeeDetail.value.buildingName
   /** 生年月日設定 */
   editForm.birthYear = birthDate.year
