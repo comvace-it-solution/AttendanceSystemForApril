@@ -285,7 +285,9 @@
         <!-- 変更 -->
         <button type="submit" class="submit-button">上記の内容で変更</button>
         <!-- キャンセル -->
-        <button type="button" class="cancel-button">キャンセル</button>
+        <button type="button" class="cancel-button" @click="clearForm">
+          キャンセル
+        </button>
       </div>
     </form>
   </main>
@@ -321,18 +323,31 @@ const { openEditCompleteSnackbar } = useFeedbackMessage()
  * ===================== */
 /** 編集フォーム */
 const editForm = reactive({
+  /** ユーザー名 */
   userName: '',
+  /** メールアドレス */
   email: '',
+  /** 電話番号 */
   phoneNumber: '',
+  /** 都道府県 */
   prefecture: '',
+  /** 住所 */
   streetAddress: '',
+  /** 建物名 */
   buildingName: '',
+  /** 生年月日 年 */
   birthYear: '',
+  /** 生年月日 月 */
   birthMonth: '',
+  /** 生年月日 日 */
   birthDay: '',
+  /** 配属日 年 */
   assignmentYear: '',
+  /** 配属日 月 */
   assignmentMonth: '',
+  /** 配属日 日 */
   assignmentDay: '',
+  /** パスワード */
   password: '',
 })
 
@@ -443,6 +458,72 @@ const prefectures = [
   '沖縄県',
 ]
 
+/** 入力値クリア */
+const clearForm = () => {
+  /** クリア前 */
+  console.log('クリア前', {
+    userName: editForm.userName,
+    email: editForm.email,
+    password: editForm.password,
+    secondPassword: secondPassword.value,
+    phoneNumber: editForm.phoneNumber,
+    postalCodeFirst: postalCodeFirst.value,
+    postalCodeSecond: postalCodeSecond.value,
+    prefecture: editForm.prefecture,
+    streetAddress: editForm.streetAddress,
+    buildingName: editForm.buildingName,
+  })
+
+  /** フォーム */
+  editForm.userName = ''
+  editForm.email = ''
+  editForm.password = ''
+  editForm.phoneNumber = ''
+  editForm.prefecture = ''
+  editForm.streetAddress = ''
+  editForm.buildingName = ''
+  editForm.birthYear = ''
+  editForm.birthMonth = ''
+  editForm.birthDay = ''
+  editForm.assignmentYear = ''
+  editForm.assignmentMonth = ''
+  editForm.assignmentDay = ''
+
+  /** 確認用パスワード */
+  secondPassword.value = ''
+
+  /** 郵便番号 */
+  postalCodeFirst.value = ''
+  postalCodeSecond.value = ''
+
+  /** 生年月日 */
+  birthYear.value = ''
+  birthMonth.value = ''
+  birthDay.value = ''
+
+  /** 配属日 */
+  assignYear.value = ''
+  assignMonth.value = ''
+  assignDay.value = ''
+
+  /** エラー */
+  clearErrors()
+
+  /** クリア後 */
+  console.log('クリア後', {
+    userName: editForm.userName,
+    email: editForm.email,
+    password: editForm.password,
+    phoneNumber: editForm.phoneNumber,
+    postalCodeFirst: postalCodeFirst.value,
+    postalCodeSecond: postalCodeSecond.value,
+    prefecture: editForm.prefecture,
+    streetAddress: editForm.streetAddress,
+    buildingName: editForm.buildingName,
+  })
+  /** 画面遷移 */
+  router.push({ name: 'EmployeeList' })
+}
 /** ========================
  * Computed
  * ===================== */
