@@ -282,7 +282,7 @@
       </template>
       <!-- ボタン -->
       <div class="button-area">
-        <!-- 登録 -->
+        <!-- 変更 -->
         <button type="submit" class="submit-button">上記の内容で変更</button>
         <!-- キャンセル -->
         <button type="button" class="cancel-button">キャンセル</button>
@@ -297,7 +297,8 @@
  * ===================== */
 import { ref, toRef, computed, watch, onMounted, reactive } from 'vue'
 import { useZipCode } from '../composables/useZipCode'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useFeedbackMessage } from '../composables/useFeedbackMessage'
 import { useEmployeeDetail } from '../composables/useEmployeeDetail'
 import { useEmployeeEdit } from '../composables/useEmployeeEdit'
 
@@ -305,6 +306,7 @@ import { useEmployeeEdit } from '../composables/useEmployeeEdit'
  * Router
  * ===================== */
 const route = useRoute()
+const router = useRouter()
 
 /** ========================
  * Composables
@@ -312,6 +314,7 @@ const route = useRoute()
 const { searchAddressByPostalCode } = useZipCode()
 const { employeeDetail, fetchEmployeeDetail } = useEmployeeDetail()
 const { updateEmployee } = useEmployeeEdit()
+const { openEditCompleteSnackbar } = useFeedbackMessage()
 
 /** ========================
  * Reactive
@@ -866,6 +869,10 @@ const handleUpdate = async () => {
 
   /** 従業員更新API実行 */
   await updateEmployee(userId, requestBody, isPasswordChange.value)
+  /** 画面遷移 */
+  await router.push({ name: 'EmployeeList' })
+  /** 編集完了スナックバー表示 */
+  openEditCompleteSnackbar()
 }
 
 /** ========================
@@ -882,33 +889,33 @@ onMounted(async () => {
     return
   }
   /** 生年月日分割 */
-  const birthDate = splitDate(employeeDetail.value.birthDate)
+  const birthDate = splitDate(employeeDetail.value.birthDate) ?? ''
   /** 配属日分割 */
-  const assignmentDate = splitDate(employeeDetail.value.assignmentDate)
+  const assignmentDate = splitDate(employeeDetail.value.assignmentDate) ?? ''
   /** 郵便番号分割 */
-  const postalCode = splitPostalCode(employeeDetail.value.postalCode)
+  const postalCode = splitPostalCode(employeeDetail.value.postalCode) ?? ''
   /** フォーム初期値設定 */
-  editForm.userName = employeeDetail.value.userName
-  editForm.email = employeeDetail.value.email
+  editForm.userName = employeeDetail.value.userName ?? ''
+  editForm.email = employeeDetail.value.email ?? ''
   /** 電話番号整形 */
-  editForm.phoneNumber = formatPhone(employeeDetail.value.phoneNumber)
+  editForm.phoneNumber = formatPhone(employeeDetail.value.phoneNumber) ?? ''
   /** 郵便番号設定 */
-  postalCodeFirst.value = postalCode.first
-  postalCodeSecond.value = postalCode.second
+  postalCodeFirst.value = postalCode.first ?? ''
+  postalCodeSecond.value = postalCode.second ?? ''
   /** 住所設定 */
-  editForm.prefecture = employeeDetail.value.prefecture
-  editForm.streetAddress = employeeDetail.value.streetAddress
+  editForm.prefecture = employeeDetail.value.prefecture ?? ''
+  editForm.streetAddress = employeeDetail.value.streetAddress ?? ''
   convertToFullWidth('streetAddress')
-  editForm.buildingName = employeeDetail.value.buildingName
+  editForm.buildingName = employeeDetail.value.buildingName ?? ''
   convertToFullWidth('buildingName')
   /** 生年月日設定 */
-  editForm.birthYear = birthDate.year
-  editForm.birthMonth = birthDate.month
-  editForm.birthDay = birthDate.day
+  editForm.birthYear = birthDate.year ?? ''
+  editForm.birthMonth = birthDate.month ?? ''
+  editForm.birthDay = birthDate.day ?? ''
   /** 配属日設定 */
-  editForm.assignmentYear = assignmentDate.year
-  editForm.assignmentMonth = assignmentDate.month
-  editForm.assignmentDay = assignmentDate.day
+  editForm.assignmentYear = assignmentDate.year ?? ''
+  editForm.assignmentMonth = assignmentDate.month ?? ''
+  editForm.assignmentDay = assignmentDate.day ?? ''
 })
 </script>
 
