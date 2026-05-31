@@ -213,7 +213,11 @@
           パスワードを変更する場合チェックしてください
         </p>
         <label class="password-check-button">
-          <input type="checkbox" v-model="isPasswordChange" />
+          <input
+            class="password-check-button_checkbox"
+            type="checkbox"
+            v-model="isPasswordChange"
+          />
           <span>パスワードを変更する</span>
         </label>
       </div>
@@ -1116,6 +1120,7 @@ input::placeholder {
   justify-content: center;
   gap: 6px;
   font-size: 11px;
+  border-radius: 3px;
 }
 .password-check-button input {
   width: auto;
@@ -1151,9 +1156,9 @@ input[type='checkbox'] {
   }
 
   label {
-    margin-bottom: 2px;
+    margin-bottom: 4px;
     font-size: 10px;
-    gap: 4px;
+    gap: 5px;
   }
 
   .helper-text {
@@ -1162,13 +1167,14 @@ input[type='checkbox'] {
   }
 
   .required {
-    font-size: 8px;
-    padding: 1px 5px;
+    font-size: 7px;
+    padding: 1px 4px;
   }
 
   input,
   select {
-    height: 36px;
+    border: 1.5px solid #bbb;
+    height: 34px;
     font-size: 10px;
   }
 
@@ -1199,8 +1205,9 @@ input[type='checkbox'] {
   }
 
   .date-select {
-    height: 36px;
+    height: 34px;
     font-size: 10px;
+    border: 1.5px solid #bbb;
   }
 
   .prefecture-dropdown {
@@ -1243,13 +1250,22 @@ input[type='checkbox'] {
   }
   /* パスワード変更エリア */
   .password-change-title {
-    font-size: 13px;
+    font-size: 10px;
   }
 
   .password-check-button {
-    width: 100%;
-    height: 36px;
+    width: 120px;
+    height: 32px;
+    font-size: 9px;
+    gap: 4px;
+    border-radius: 2px;
   }
+  input[type='checkbox'] {
+    width: 10px;
+    height: 10px;
+    margin: 0px;
+  }
+
   .error-message {
     font-size: 8px;
   }
