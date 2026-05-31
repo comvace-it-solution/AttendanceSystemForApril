@@ -281,7 +281,7 @@
       <!-- ボタン -->
       <div class="button-area">
         <!-- 登録 -->
-        <button type="submit" class="submit-button">上記の内容で登録</button>
+        <button type="submit" class="submit-button">上記の内容で変更</button>
         <!-- キャンセル -->
         <button type="button" class="cancel-button">キャンセル</button>
       </div>
