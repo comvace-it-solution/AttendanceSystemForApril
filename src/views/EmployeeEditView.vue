@@ -365,6 +365,8 @@ const postalCodeSecond = ref('')
 const isPasswordChange = ref(false)
 /** 初期表示完了フラグ */
 const isInitialized = ref(false)
+/** API取得時のメールアドレス */
+const beforeEditEmail = ref('')
 
 /** エラーメッセージ */
 const errors = ref({
@@ -866,13 +868,26 @@ const handleUpdate = async () => {
     /** 配属日変換 */
     assignmentDate: `${editForm.assignmentYear}-${editForm.assignmentMonth}-${editForm.assignmentDay}`,
   }
-
-  /** 従業員更新API実行 */
-  await updateEmployee(userId, requestBody, isPasswordChange.value)
-  /** 画面遷移 */
-  await router.push({ name: 'EmployeeList' })
-  /** 編集完了スナックバー表示 */
-  openEditCompleteSnackbar()
+  try {
+    /** 従業員更新API実行 */
+    await updateEmployee(userId, requestBody, isPasswordChange.value)
+    /** 画面遷移 */
+    await router.push({ name: 'EmployeeList' })
+    /** 編集完了スナックバー表示 */
+    openEditCompleteSnackbar()
+  } catch (error: any) {
+    /** API結果 */
+    const message = error.response?.data?.message
+    const status = error.response?.status
+    /** メールアドレス重複チェック */
+    if (
+      beforeEditEmail.value !== editForm.email &&
+      status === 409 &&
+      message === 'email はすでに登録されています。'
+    ) {
+      setError('email', '入力したメールアドレスはすでに登録されています。')
+    }
+  }
 }
 
 /** ========================
@@ -897,6 +912,8 @@ onMounted(async () => {
   /** フォーム初期値設定 */
   editForm.userName = employeeDetail.value.userName ?? ''
   editForm.email = employeeDetail.value.email ?? ''
+  /** 比較用に取得時のメールアドレスを保持 */
+  beforeEditEmail.value = employeeDetail.value.email ?? ''
   /** 電話番号整形 */
   editForm.phoneNumber = formatPhone(employeeDetail.value.phoneNumber) ?? ''
   /** 郵便番号設定 */

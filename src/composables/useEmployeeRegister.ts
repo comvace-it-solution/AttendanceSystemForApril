@@ -60,10 +60,10 @@ export function useEmployeeRegister() {
     registerError.value = ''
 
     try {
-      // テスト用あとで消す
+      // // テスト用あとで消す
       // throw {
       //   response: {
-      //     status: 409,
+      //     status: 400,
       //     data: {
       //       message: 'email はすでに登録されています。',
       //     },

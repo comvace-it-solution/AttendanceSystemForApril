@@ -72,6 +72,15 @@ export function useEmployeeEdit() {
         }
 
     try {
+      // // テスト用あとで消す
+      // throw {
+      //   response: {
+      //     status: 400,
+      //     data: {
+      //       message: 'aaaaaaaaa',
+      //     },
+      //   },
+      // }
       /** API実行 */
       const response = await axios.put(
         `${API_BASE_URL}/users/${userId}`,
