@@ -1134,8 +1134,8 @@ input::placeholder {
   font-weight: 700;
 }
 
-/* SP対応（max-width: 480px） */
-@media (max-width: 480px) {
+/* SP対応（max-width: 600px） */
+@media (max-width: 600px) {
   .employee-register-page {
     padding: 40px 10% 40px;
   }

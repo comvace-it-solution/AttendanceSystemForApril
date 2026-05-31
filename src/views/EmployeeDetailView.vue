@@ -203,8 +203,8 @@ onMounted(async () => {
   cursor: pointer;
 }
 
-/* SP対応（max-width: 480px） */
-@media (max-width: 480px) {
+/* SP対応（max-width: 600px） */
+@media (max-width: 600px) {
   .employee-detail-page {
     padding: 30px 45px 40px;
   }
