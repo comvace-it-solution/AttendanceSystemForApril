@@ -305,7 +305,7 @@ const handleAttendanceDetailClick = (userId: string, userName: string) => {
   router.push({
     name: 'AttendanceDetails',
     params: { id: userId },
-    state: { name: userName }
+    query: { name: userName }
   })
 }
 
