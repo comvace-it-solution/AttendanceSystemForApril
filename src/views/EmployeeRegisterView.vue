@@ -669,20 +669,21 @@ const validatePostalCode = () => {
   if (!postalCodeFirst.value && !postalCodeSecond.value) {
     setError('postalCode', '郵便番号の入力は必須です。')
     return false
-  } else if (
-    !/^\d+$/.test(postalCodeFirst.value) ||
-    !/^\d+$/.test(postalCodeSecond.value)
+  }
+  if (
+    (postalCodeFirst.value && !/^\d+$/.test(postalCodeFirst.value)) ||
+    (postalCodeSecond.value && !/^\d+$/.test(postalCodeSecond.value))
   ) {
     setError('postalCode', '郵便番号は半角数字で入力してください。')
     return false
-  } else if (
+  }
+  if (
     postalCodeFirst.value.length !== 3 ||
     postalCodeSecond.value.length !== 4
   ) {
     setError('postalCode', '郵便番号は上3桁・下4桁で入力してください。')
     return false
   }
-
   return true
 }
 /** バリデーション */
