@@ -3,7 +3,7 @@
   <header class="pc-header">
     <div class="pc-header-wrap">
       <div class="pc-brand-wrap">
-        <img class="pc-logo" src="/logo.svg" alt="ロゴ" />
+        <img class="pc-logo" :src="logo" alt="ロゴ" />
       </div>
       <nav
         v-if="authStore.isAuthenticated"
@@ -19,11 +19,7 @@
         >
           <img
             class="pc-profile-img"
-            :src="
-              isProfeelHover
-                ? '/profeelBearBlueIcon.svg'
-                : '/profeelBearWhiteIcon.svg'
-            "
+            :src="isProfeelHover ? profeelBearBlueIcon : profeelBearWhiteIcon"
             alt="プロフィールアイコン"
           />
           <div
@@ -41,9 +37,7 @@
         >
           <img
             class="pc-menu-img"
-            :src="
-              isMenuHover ? '/menuIceBlueIcon.svg' : '/menuIceWhiteIcon.svg'
-            "
+            :src="isMenuHover ? menuIceBlueIcon : menuIceWhiteIcon"
             alt="メニューアイコン"
           />
           <div>MENU</div>
@@ -59,6 +53,11 @@ import { ref, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import AppSideMenuDesktop from '../sideMenu/AppSideMenuDesktop.vue'
 import { useAuthStore } from '../../../stores/auth'
+import profeelBearBlueIcon from '@/assets/profeelBearBlueIcon.svg'
+import profeelBearWhiteIcon from '@/assets/profeelBearWhiteIcon.svg'
+import menuIceBlueIcon from '@/assets/menuIceBlueIcon.svg'
+import menuIceWhiteIcon from '@/assets/menuIceWhiteIcon.svg'
+import logo from '@/assets/logo.svg'
 
 const authStore = useAuthStore()
 const userId = computed(() => authStore.user?.userId ?? '')

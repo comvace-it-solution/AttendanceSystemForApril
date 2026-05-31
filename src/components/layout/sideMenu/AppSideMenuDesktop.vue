@@ -21,7 +21,7 @@
         <router-link to="/login" class="pc-header-item-wrap" @click="onLogout">
           <img
             class="pc-header-icon"
-            src="/logoutBlueIcon.svg"
+            :src="logoutBlueIcon"
             alt="ログアウトアイコン"
           />
           <div class="pc-header-text">ログアウト</div>
@@ -34,7 +34,7 @@
         >
           <img
             class="pc-header-icon"
-            src="/profeelBearBlueIcon.svg"
+            :src="profeelBearBlueIcon"
             alt="マイページアイコン"
           />
           <div class="pc-header-text">マイページ</div>
@@ -52,7 +52,7 @@
           <router-link to="/dashboard" class="pc-menu-item-wrap" @click="close">
             <img
               class="pc-menu-icon"
-              src="/dashBordPinkIcon.svg"
+              :src="dashBordPinkIcon"
               alt="ダッシュボードアイコン"
             />
             <span>ダッシュボード</span>
@@ -64,7 +64,7 @@
           >
             <img
               class="pc-menu-icon"
-              src="/employeeListPinkIcon.svg"
+              :src="employeeListPinkIcon"
               alt="従業員一覧アイコン"
             />
             <span>従業員一覧</span>
@@ -78,6 +78,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAuthStore } from '../../../stores/auth'
+import logoutBlueIcon from '@/assets/logoutBlueIcon.svg'
+import profeelBearBlueIcon from '@/assets/profeelBearBlueIcon.svg'
+import dashBordPinkIcon from '@/assets/dashBordPinkIcon.svg'
+import employeeListPinkIcon from '@/assets/employeeListPinkIcon.svg'
 
 const authStore = useAuthStore()
 

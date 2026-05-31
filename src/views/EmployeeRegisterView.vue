@@ -47,9 +47,7 @@
           <!-- パスワード表示切替 -->
           <img
             class="eye-icon"
-            :src="
-              isPasswordVisible ? '/passwordOpen.svg' : '/passwordClose.svg'
-            "
+            :src="isPasswordVisible ? passwordOpenIcon : passwordCloseIcon"
             alt="パスワード表示切替アイコン"
             @click="isPasswordVisible = !isPasswordVisible"
           />
@@ -75,9 +73,7 @@
           <img
             class="eye-icon"
             :src="
-              isSecondPasswordVisible
-                ? '/passwordOpen.svg'
-                : '/passwordClose.svg'
+              isSecondPasswordVisible ? passwordOpenIcon : passwordCloseIcon
             "
             alt="パスワード表示切替アイコン"
             @click="isSecondPasswordVisible = !isSecondPasswordVisible"
@@ -302,6 +298,8 @@ import { useEmployeeRegister } from '../composables/useEmployeeRegister'
 import { useZipCode } from '../composables/useZipCode'
 import { useRouter } from 'vue-router'
 import { useFeedbackMessage } from '../composables/useFeedbackMessage'
+import passwordOpenIcon from '@/assets/passwordOpen.svg'
+import passwordCloseIcon from '@/assets/passwordClose.svg'
 
 /** ========================
  * Composables

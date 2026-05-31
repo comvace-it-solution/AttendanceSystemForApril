@@ -16,7 +16,7 @@
         </button>
       </div>
       <div class="sp-logo-wrap">
-        <img class="sp-logo" src="/logo.svg" alt="ロゴ" />
+        <img class="sp-logo" :src="logo" alt="ロゴ" />
       </div>
       <router-link
         v-if="userId"
@@ -26,7 +26,7 @@
       >
         <img
           class="sp-profeel-icon"
-          src="/profeelBearWhiteIcon.svg"
+          :src="profeelBearWhiteIcon"
           alt="プロフィールアイコン"
         />
         <div
@@ -45,6 +45,8 @@
 import { ref, computed } from 'vue'
 import AppSideMenuMobile from '../sideMenu/AppSideMenuMobile.vue'
 import { useAuthStore } from '../../../stores/auth'
+import logo from '@/assets/logo.svg'
+import profeelBearWhiteIcon from '@/assets/profeelBearWhiteIcon.svg'
 
 const authStore = useAuthStore()
 

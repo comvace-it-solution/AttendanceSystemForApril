@@ -1,5 +1,4 @@
 <!-- サイドメニューコンポーネント モバイル用： AppSideMenuMobile.vue -->
-
 <template>
   <div>
     <div class="sp-overlay-wrap" v-show="visible" @click="close"></div>
@@ -16,7 +15,7 @@
         <router-link to="/dashboard" class="sp-menu-item-wrap" @click="close">
           <img
             class="sp-menu-icon"
-            src="/dashBordPinkIcon.svg"
+            :src="dashBordPinkIcon"
             alt="ダッシュボードアイコン"
           />
           <span>ダッシュボード</span>
@@ -28,7 +27,7 @@
         >
           <img
             class="sp-menu-icon"
-            src="/employeeListPinkIcon.svg"
+            :src="employeeListPinkIcon"
             alt="従業員一覧アイコン"
           />
           <span>従業員一覧</span>
@@ -45,7 +44,7 @@
         >
           <img
             class="sp-menu-icon"
-            src="/logoutBlueIcon.svg"
+            :src="logoutBlueIcon"
             alt="ログアウトアイコン"
           />
           <span>ログアウト</span>
@@ -57,6 +56,9 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '../../../stores/auth'
+import dashBordPinkIcon from '@/assets/dashBordPinkIcon.svg'
+import employeeListPinkIcon from '@/assets/employeeListPinkIcon.svg'
+import logoutBlueIcon from '@/assets/logoutBlueIcon.svg'
 
 const authStore = useAuthStore()
 const props = defineProps<{ visible: boolean }>()
