@@ -28,7 +28,7 @@
         </label>
         <input
           v-model="editForm.email"
-          type="email"
+          type="text"
           placeholder="例: contact@example.com"
         />
         <!-- エラーメッセージ -->
@@ -126,6 +126,7 @@
           v-model="editForm.streetAddress"
           type="text"
           placeholder="例: ○○区○○"
+          @input="convertToFullWidth('streetAddress')"
         />
         <!-- エラーメッセージ -->
         <p v-if="errors.streetAddress" class="error-message">
@@ -139,6 +140,7 @@
           v-model="editForm.buildingName"
           type="text"
           placeholder="例: ○○タウン 101"
+          @input="convertToFullWidth('buildingName')"
         />
       </div>
       <!-- 生年月日 -->
@@ -213,7 +215,11 @@
           パスワードを変更する場合チェックしてください
         </p>
         <label class="password-check-button">
-          <input type="checkbox" v-model="isPasswordChange" />
+          <input
+            class="password-check-button_checkbox"
+            type="checkbox"
+            v-model="isPasswordChange"
+          />
           <span>パスワードを変更する</span>
         </label>
       </div>
@@ -276,10 +282,12 @@
       </template>
       <!-- ボタン -->
       <div class="button-area">
-        <!-- 登録 -->
-        <button type="submit" class="submit-button">上記の内容で登録</button>
+        <!-- 変更 -->
+        <button type="submit" class="submit-button">上記の内容で変更</button>
         <!-- キャンセル -->
-        <button type="button" class="cancel-button">キャンセル</button>
+        <button type="button" class="cancel-button" @click="clearForm">
+          キャンセル
+        </button>
       </div>
     </form>
   </main>
@@ -291,7 +299,8 @@
  * ===================== */
 import { ref, toRef, computed, watch, onMounted, reactive } from 'vue'
 import { useZipCode } from '../composables/useZipCode'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useFeedbackMessage } from '../composables/useFeedbackMessage'
 import { useEmployeeDetail } from '../composables/useEmployeeDetail'
 import { useEmployeeEdit } from '../composables/useEmployeeEdit'
 
@@ -299,6 +308,7 @@ import { useEmployeeEdit } from '../composables/useEmployeeEdit'
  * Router
  * ===================== */
 const route = useRoute()
+const router = useRouter()
 
 /** ========================
  * Composables
@@ -306,24 +316,38 @@ const route = useRoute()
 const { searchAddressByPostalCode } = useZipCode()
 const { employeeDetail, fetchEmployeeDetail } = useEmployeeDetail()
 const { updateEmployee } = useEmployeeEdit()
+const { openEditCompleteSnackbar } = useFeedbackMessage()
 
 /** ========================
  * Reactive
  * ===================== */
 /** 編集フォーム */
 const editForm = reactive({
+  /** ユーザー名 */
   userName: '',
+  /** メールアドレス */
   email: '',
+  /** 電話番号 */
   phoneNumber: '',
+  /** 都道府県 */
   prefecture: '',
+  /** 住所 */
   streetAddress: '',
+  /** 建物名 */
   buildingName: '',
+  /** 生年月日 年 */
   birthYear: '',
+  /** 生年月日 月 */
   birthMonth: '',
+  /** 生年月日 日 */
   birthDay: '',
+  /** 配属日 年 */
   assignmentYear: '',
+  /** 配属日 月 */
   assignmentMonth: '',
+  /** 配属日 日 */
   assignmentDay: '',
+  /** パスワード */
   password: '',
 })
 
@@ -356,6 +380,8 @@ const postalCodeSecond = ref('')
 const isPasswordChange = ref(false)
 /** 初期表示完了フラグ */
 const isInitialized = ref(false)
+/** API取得時のメールアドレス */
+const beforeEditEmail = ref('')
 
 /** エラーメッセージ */
 const errors = ref({
@@ -432,6 +458,72 @@ const prefectures = [
   '沖縄県',
 ]
 
+/** 入力値クリア */
+const clearForm = () => {
+  /** クリア前 */
+  console.log('クリア前', {
+    userName: editForm.userName,
+    email: editForm.email,
+    password: editForm.password,
+    secondPassword: secondPassword.value,
+    phoneNumber: editForm.phoneNumber,
+    postalCodeFirst: postalCodeFirst.value,
+    postalCodeSecond: postalCodeSecond.value,
+    prefecture: editForm.prefecture,
+    streetAddress: editForm.streetAddress,
+    buildingName: editForm.buildingName,
+  })
+
+  /** フォーム */
+  editForm.userName = ''
+  editForm.email = ''
+  editForm.password = ''
+  editForm.phoneNumber = ''
+  editForm.prefecture = ''
+  editForm.streetAddress = ''
+  editForm.buildingName = ''
+  editForm.birthYear = ''
+  editForm.birthMonth = ''
+  editForm.birthDay = ''
+  editForm.assignmentYear = ''
+  editForm.assignmentMonth = ''
+  editForm.assignmentDay = ''
+
+  /** 確認用パスワード */
+  secondPassword.value = ''
+
+  /** 郵便番号 */
+  postalCodeFirst.value = ''
+  postalCodeSecond.value = ''
+
+  /** 生年月日 */
+  birthYear.value = ''
+  birthMonth.value = ''
+  birthDay.value = ''
+
+  /** 配属日 */
+  assignYear.value = ''
+  assignMonth.value = ''
+  assignDay.value = ''
+
+  /** エラー */
+  clearErrors()
+
+  /** クリア後 */
+  console.log('クリア後', {
+    userName: editForm.userName,
+    email: editForm.email,
+    password: editForm.password,
+    phoneNumber: editForm.phoneNumber,
+    postalCodeFirst: postalCodeFirst.value,
+    postalCodeSecond: postalCodeSecond.value,
+    prefecture: editForm.prefecture,
+    streetAddress: editForm.streetAddress,
+    buildingName: editForm.buildingName,
+  })
+  /** 画面遷移 */
+  router.push({ name: 'EmployeeList' })
+}
 /** ========================
  * Computed
  * ===================== */
@@ -550,6 +642,13 @@ watch(
 /** ========================
  * Formatters
  * ===================== */
+/** 全角変換 */
+const convertToFullWidth = (key: 'streetAddress' | 'buildingName') => {
+  editForm[key] = editForm[key]
+    .normalize('NFKC')
+    .replace(/[!-~]/g, (s) => String.fromCharCode(s.charCodeAt(0) + 0xfee0))
+    .replace(/ /g, '　')
+}
 /** 日付を年月日に分割 */
 const splitDate = (date: string) => {
   const [year, month, day] = date.split('-')
@@ -577,20 +676,29 @@ const splitPostalCode = (postalCode: string) => {
  * ===================== */
 /** 郵便番号検索 */
 const onSearchPostalCode = async () => {
-  const postalCode = postalCodeFirst.value + postalCodeSecond.value
-  if (postalCode.length !== 7) {
-    console.log('郵便番号は7桁で入力してください')
+  errors.value.postalCode = ''
+
+  /** 郵便番号バリデーションNG時は処理終了 */
+  if (!validatePostalCode()) {
     return
   }
-  const address = await searchAddressByPostalCode(postalCode)
-  if (!address) {
-    console.log('住所が見つかりませんでした')
-    return
+
+  try {
+    const postalCode = postalCodeFirst.value + postalCodeSecond.value
+
+    const address = await searchAddressByPostalCode(postalCode)
+
+    if (!address) {
+      setError('postalCode', '正しい郵便番号を入力してください。')
+      return
+    }
+    /** 都道府県設定 */
+    editForm.prefecture = address.prefecture
+    /** 市区町村・町名設定 */
+    editForm.streetAddress = `${address.city}${address.town}`
+  } catch (error) {
+    setError('postalCode', '郵便番号検索に失敗しました。')
   }
-  /** 都道府県設定 */
-  editForm.prefecture = address.prefecture
-  /** 市区町村・町名設定 */
-  editForm.streetAddress = `${address.city}${address.town}`
 }
 /** エラーメッセージ設定 */
 const setError = (key: keyof typeof errors.value, message: string) => {
@@ -611,6 +719,27 @@ const clearErrors = () => {
     assignmentDate: '',
     buildingName: '',
   }
+}
+/** 郵便番号バリデーション */
+const validatePostalCode = () => {
+  if (!postalCodeFirst.value && !postalCodeSecond.value) {
+    setError('postalCode', '郵便番号の入力は必須です。')
+    return false
+  } else if (
+    !/^\d+$/.test(postalCodeFirst.value) ||
+    !/^\d+$/.test(postalCodeSecond.value)
+  ) {
+    setError('postalCode', '郵便番号は半角数字で入力してください。')
+    return false
+  } else if (
+    postalCodeFirst.value.length !== 3 ||
+    postalCodeSecond.value.length !== 4
+  ) {
+    setError('postalCode', '郵便番号は上3桁・下4桁で入力してください。')
+    return false
+  }
+
+  return true
 }
 /** バリデーション */
 const validateForm = () => {
@@ -679,20 +808,7 @@ const validateForm = () => {
     isValid = false
   }
   /** 郵便番号 */
-  if (!postalCodeFirst.value || !postalCodeSecond.value) {
-    setError('postalCode', '郵便番号の入力は必須です。')
-    isValid = false
-  } else if (
-    postalCodeFirst.value.length !== 3 ||
-    postalCodeSecond.value.length !== 4
-  ) {
-    setError('postalCode', '郵便番号は上3桁・下4桁で入力してください。')
-    isValid = false
-  } else if (
-    !/^\d+$/.test(postalCodeFirst.value) ||
-    !/^\d+$/.test(postalCodeSecond.value)
-  ) {
-    setError('postalCode', '郵便番号は半角数字で入力してください。')
+  if (!validatePostalCode()) {
     isValid = false
   }
   /** 都道府県 */
@@ -833,9 +949,26 @@ const handleUpdate = async () => {
     /** 配属日変換 */
     assignmentDate: `${editForm.assignmentYear}-${editForm.assignmentMonth}-${editForm.assignmentDay}`,
   }
-
-  /** 従業員更新API実行 */
-  await updateEmployee(userId, requestBody, isPasswordChange.value)
+  try {
+    /** 従業員更新API実行 */
+    await updateEmployee(userId, requestBody, isPasswordChange.value)
+    /** 画面遷移 */
+    await router.push({ name: 'EmployeeList' })
+    /** 編集完了スナックバー表示 */
+    openEditCompleteSnackbar()
+  } catch (error: any) {
+    /** API結果 */
+    const message = error.response?.data?.message
+    const status = error.response?.status
+    /** メールアドレス重複チェック */
+    if (
+      beforeEditEmail.value !== editForm.email &&
+      status === 409 &&
+      message === 'email はすでに登録されています。'
+    ) {
+      setError('email', '入力したメールアドレスはすでに登録されています。')
+    }
+  }
 }
 
 /** ========================
@@ -852,31 +985,35 @@ onMounted(async () => {
     return
   }
   /** 生年月日分割 */
-  const birthDate = splitDate(employeeDetail.value.birthDate)
+  const birthDate = splitDate(employeeDetail.value.birthDate) ?? ''
   /** 配属日分割 */
-  const assignmentDate = splitDate(employeeDetail.value.assignmentDate)
+  const assignmentDate = splitDate(employeeDetail.value.assignmentDate) ?? ''
   /** 郵便番号分割 */
-  const postalCode = splitPostalCode(employeeDetail.value.postalCode)
+  const postalCode = splitPostalCode(employeeDetail.value.postalCode) ?? ''
   /** フォーム初期値設定 */
-  editForm.userName = employeeDetail.value.userName
-  editForm.email = employeeDetail.value.email
+  editForm.userName = employeeDetail.value.userName ?? ''
+  editForm.email = employeeDetail.value.email ?? ''
+  /** 比較用に取得時のメールアドレスを保持 */
+  beforeEditEmail.value = employeeDetail.value.email ?? ''
   /** 電話番号整形 */
-  editForm.phoneNumber = formatPhone(employeeDetail.value.phoneNumber)
+  editForm.phoneNumber = formatPhone(employeeDetail.value.phoneNumber) ?? ''
   /** 郵便番号設定 */
-  postalCodeFirst.value = postalCode.first
-  postalCodeSecond.value = postalCode.second
+  postalCodeFirst.value = postalCode.first ?? ''
+  postalCodeSecond.value = postalCode.second ?? ''
   /** 住所設定 */
-  editForm.prefecture = employeeDetail.value.prefecture
-  editForm.streetAddress = employeeDetail.value.streetAddress
-  editForm.buildingName = employeeDetail.value.buildingName
+  editForm.prefecture = employeeDetail.value.prefecture ?? ''
+  editForm.streetAddress = employeeDetail.value.streetAddress ?? ''
+  convertToFullWidth('streetAddress')
+  editForm.buildingName = employeeDetail.value.buildingName ?? ''
+  convertToFullWidth('buildingName')
   /** 生年月日設定 */
-  editForm.birthYear = birthDate.year
-  editForm.birthMonth = birthDate.month
-  editForm.birthDay = birthDate.day
+  editForm.birthYear = birthDate.year ?? ''
+  editForm.birthMonth = birthDate.month ?? ''
+  editForm.birthDay = birthDate.day ?? ''
   /** 配属日設定 */
-  editForm.assignmentYear = assignmentDate.year
-  editForm.assignmentMonth = assignmentDate.month
-  editForm.assignmentDay = assignmentDate.day
+  editForm.assignmentYear = assignmentDate.year ?? ''
+  editForm.assignmentMonth = assignmentDate.month ?? ''
+  editForm.assignmentDay = assignmentDate.day ?? ''
 })
 </script>
 
@@ -1116,6 +1253,7 @@ input::placeholder {
   justify-content: center;
   gap: 6px;
   font-size: 11px;
+  border-radius: 3px;
 }
 .password-check-button input {
   width: auto;
@@ -1151,9 +1289,9 @@ input[type='checkbox'] {
   }
 
   label {
-    margin-bottom: 2px;
+    margin-bottom: 4px;
     font-size: 10px;
-    gap: 4px;
+    gap: 5px;
   }
 
   .helper-text {
@@ -1162,13 +1300,14 @@ input[type='checkbox'] {
   }
 
   .required {
-    font-size: 8px;
-    padding: 1px 5px;
+    font-size: 7px;
+    padding: 1px 4px;
   }
 
   input,
   select {
-    height: 36px;
+    border: 1.5px solid #bbb;
+    height: 34px;
     font-size: 10px;
   }
 
@@ -1199,8 +1338,9 @@ input[type='checkbox'] {
   }
 
   .date-select {
-    height: 36px;
+    height: 34px;
     font-size: 10px;
+    border: 1.5px solid #bbb;
   }
 
   .prefecture-dropdown {
@@ -1243,13 +1383,22 @@ input[type='checkbox'] {
   }
   /* パスワード変更エリア */
   .password-change-title {
-    font-size: 13px;
+    font-size: 10px;
   }
 
   .password-check-button {
-    width: 100%;
-    height: 36px;
+    width: 120px;
+    height: 32px;
+    font-size: 9px;
+    gap: 4px;
+    border-radius: 2px;
   }
+  input[type='checkbox'] {
+    width: 10px;
+    height: 10px;
+    margin: 0px;
+  }
+
   .error-message {
     font-size: 8px;
   }

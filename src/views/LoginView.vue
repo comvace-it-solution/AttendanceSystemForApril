@@ -84,7 +84,7 @@ const {
   display: flex;
   justify-content: center;
   width: 100%;
-  min-height: 100vh;
+  min-height: calc(100vh - 100px);
   background-color: $accent-bg-color;
 
   @include sp {
@@ -99,6 +99,7 @@ const {
     justify-content: center;
     align-items: center;
     flex-shrink: 0; 
+    max-width: 600px;
 
     @include sp {
       flex: none;
@@ -109,9 +110,8 @@ const {
 }
 
 .login-card {
-  width: 80%;
-  max-width: 400px;
-  margin: 20px auto;
+  width: 70%;
+  margin: 10%auto;
   padding: 104px 10%;
   border-radius: 40px;
   background-color: #FFF9FD;

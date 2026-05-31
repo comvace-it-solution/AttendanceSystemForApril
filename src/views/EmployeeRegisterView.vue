@@ -1165,12 +1165,13 @@ input::placeholder {
   }
 
   .required {
-    font-size: 8px;
-    padding: 1px 5px;
+    font-size: 7px;
+    padding: 1px 4px;
   }
 
   input,
   select {
+    border: 1.5px solid #bbb;
     height: 36px;
     font-size: 10px;
   }
@@ -1202,8 +1203,9 @@ input::placeholder {
   }
 
   .date-select {
-    height: 36px;
+    height: 34px;
     font-size: 10px;
+    border: 1.5px solid #bbb;
   }
 
   .prefecture-dropdown {

@@ -1,12 +1,12 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router'
 // 各画面をインポート
-import LoginView from '@/views/LoginView.vue';
-import DashboardPage from '@/views/DashboardPage.vue';
-import AttendanceDetailsView from '@/views/AttendanceDetailsView.vue';
-import EmployeeList from '@/views/EmployeeList.vue';
-// import EmployeeRegisterView from '@/views/EmployeeRegisterView.vue'
-import EmployeeEditView from '@/views/EmployeeEditView.vue';
-import EmployeeDetailView from '@/views/EmployeeDetailView.vue';
+import LoginView from '@/views/LoginView.vue'
+import DashboardPage from '@/views/DashboardPage.vue'
+import AttendanceDetailsView from '@/views/AttendanceDetailsView.vue'
+import EmployeeList from '@/views/EmployeeList.vue'
+import EmployeeRegisterView from '@/views/EmployeeRegisterView.vue'
+import EmployeeEditView from '@/views/EmployeeEditView.vue'
+import EmployeeDetailView from '@/views/EmployeeDetailView.vue'
 // import ModalTestView from '../views/ModalTestView.vue'
 
 const router = createRouter({
@@ -31,7 +31,7 @@ const router = createRouter({
       component: AttendanceDetailsView,
       props: (route) => ({
         id: Number(route.params.id),
-        initialName: route.query.name as string,
+        initialName: (window.history.state?.name) as string || '',
       }),
     },
     // 従業員一覧
@@ -64,6 +64,6 @@ const router = createRouter({
     //   name: 'ModalTest',
     //   component: ModalTestView,    // },
   ],
-});
+})
 
-export default router;
+export default router
