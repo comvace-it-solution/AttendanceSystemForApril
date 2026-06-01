@@ -158,8 +158,13 @@ export function useAttendance(props: { id: number, initialName: string }) {
         };
       }
 
-      // 勤務日数
-      if (day.startTime && day.startTime !== '-') {
+      // 勤務日数（労働時間が0:00より大きい日をカウント）
+      if (
+        day.workingHours && 
+        day.workingHours !== '-' && 
+        day.workingHours !== '0:00' && 
+        day.workingHours !== '00:00'
+      ) {
         weeklyGroups[weekKey].count++;
       }
 
