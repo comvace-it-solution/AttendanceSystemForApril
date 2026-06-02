@@ -161,9 +161,7 @@ export function useAttendance(props: { id: number, initialName: string }) {
       // 勤務日数（労働時間が0:00より大きい日をカウント）
       if (
         day.workingHours && 
-        day.workingHours !== '-' && 
-        day.workingHours !== '0:00' && 
-        day.workingHours !== '00:00'
+        day.workingHours !== '0:00'
       ) {
         weeklyGroups[weekKey].count++;
       }
@@ -198,7 +196,10 @@ export function useAttendance(props: { id: number, initialName: string }) {
     }
 
     // 勤務日数
-    const totalWorkingDays = dailyData.value.filter(day => day.startTime !== '-').length;
+    const totalWorkingDays = dailyData.value.filter(day => 
+      day.workingHours && 
+      day.workingHours !== '0:00'
+    ).length;
 
     // 総勤務時間
     const totalMinutes = dailyData.value.reduce((acc, day) => {
