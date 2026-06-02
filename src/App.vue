@@ -16,11 +16,7 @@ const {
 <template>
   <AppHeader />
   <div style="height: var(--app-header-height)"></div>
-  <Snackbar
-    v-model="snackbarVisible"
-    :message="snackbarMessage"
-    :type="snackbarType"
-  />
+  <Snackbar v-model="snackbarVisible" :message="snackbarMessage" :type="snackbarType" />
   <Modal v-model="errorModalVisible" :title="modalTitle" />
   <RouterView />
 </template>
