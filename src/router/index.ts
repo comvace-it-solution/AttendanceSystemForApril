@@ -7,6 +7,8 @@ import EmployeeList from '@/views/EmployeeList.vue';
 import EmployeeRegisterView from '@/views/EmployeeRegisterView.vue';
 import EmployeeEditView from '@/views/EmployeeEditView.vue';
 import EmployeeDetailView from '@/views/EmployeeDetailView.vue';
+import LearningAppView from '@/views/LearningAppView.vue';
+import LearningGlossaryView from '@/views/LearningGlossaryView.vue';
 // import ModalTestView from '../views/ModalTestView.vue'
 
 const router = createRouter({
@@ -57,6 +59,17 @@ const router = createRouter({
       path: '/detail/:id',
       name: 'EmployeeDetail',
       component: EmployeeDetailView,
+    },
+    // TypeScript学習
+    {
+      path: '/learning',
+      name: 'Learning',
+      component: LearningAppView,
+    },
+    {
+      path: '/learning/glossary',
+      name: 'LearningGlossary',
+      component: LearningGlossaryView,
     },
     // モーダルテスト
     // {

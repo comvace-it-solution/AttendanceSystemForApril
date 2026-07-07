@@ -29,13 +29,11 @@
  * ===================== */
 import { computed, onMounted } from 'vue'
 import { useEmployeeDetail } from '../composables/useEmployeeDetail'
-import { useAuthStore } from '../stores/auth'
 import { useRoute } from 'vue-router'
 
 /** ========================
  * Store
  * ===================== */
-const authStore = useAuthStore()
 const route = useRoute()
 
 /** ========================
