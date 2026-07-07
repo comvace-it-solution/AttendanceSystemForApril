@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router';
 // 各画面をインポート
 import LoginView from '@/views/LoginView.vue';
 import DashboardPage from '@/views/DashboardPage.vue';
@@ -12,8 +12,15 @@ import LearningGlossaryView from '@/views/LearningGlossaryView.vue';
 // import ModalTestView from '../views/ModalTestView.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history:
+    import.meta.env.BASE_URL === '/'
+      ? createWebHistory(import.meta.env.BASE_URL)
+      : createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/',
+      redirect: '/learning',
+    },
     // ログイン
     {
       path: '/login',
